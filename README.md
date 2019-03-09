@@ -4,11 +4,11 @@ ArcShell is a Bash (and Korn) shell scripting framework. It is especially good a
 
 | Item or Link | Description |
 | --- | --- |
-| [Arclogic Software]([https://www.arclogicsoftware.com/](https://www.arclogicsoftware.com/)) | **Consulting, training, commercial support, and other services available.**
-| **Ethan Ray Post** [LinkedIn]([https://www.linkedin.com/in/ethanraypost/](https://www.linkedin.com/in/ethanraypost/)), [Twitter]([https://twitter.com/poststop](https://twitter.com/poststop)), [GitHub]([https://github.com/ethanpost](https://github.com/ethanpost)) | Founder of Arclogic Software. Creator of ArcShell. **Connections and follows are appreciated.** |
-| [ArcShell Announcements]([https://groups.google.com/forum/#!forum/arcshell-announcements](https://groups.google.com/forum/#!forum/arcshell-announcements)) email list. | ArcShell **announcements only** email list. |
-| [ArcShell]([https://groups.google.com/forum/#!forum/arcshell](https://groups.google.com/forum/#!forum/arcshell)) email list. | Email list for ArcShell discussions, bugs, questions, and development. **ASK YOUR QUESTIONS HERE!**|
-| **Contact Us** | **Email** Ethan@ArclogicSoftware.com. Call **931-450-8899** (please email or text before calling). [LinkedIn]([https://www.linkedin.com/in/ethanraypost/](https://www.linkedin.com/in/ethanraypost/)) messaging also works. |
+| [Arclogic Software](https://www.arclogicsoftware.com/) | **Consulting, training, commercial support, and other services available.**
+| **Ethan Ray Post** [LinkedIn](https://www.linkedin.com/in/ethanraypost/), [Twitter](https://twitter.com/poststop), [GitHub](https://github.com/ethanpost) | Founder of Arclogic Software. Creator of ArcShell. **Connections and follows are appreciated.** |
+| [ArcShell Announcements](https://groups.google.com/forum/#!forum/arcshell-announcements) email list. | ArcShell **announcements only** email list. |
+| [ArcShell](https://groups.google.com/forum/#!forum/arcshell) email list. | Email list for ArcShell discussions, bugs, questions, and development. **ASK YOUR QUESTIONS HERE!**|
+| **Contact Us** | **Email** Ethan@ArclogicSoftware.com. Call **931-450-8899** (please email or text before calling). [LinkedIn](https://www.linkedin.com/in/ethanraypost/) messaging also works. |
 | Credits | [Icons designed by SmashIcons from Flaticon](https://www.flaticon.com/packs/essential-collection) |
 
 # Training & Documentation

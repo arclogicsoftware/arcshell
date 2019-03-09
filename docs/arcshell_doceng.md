@@ -4,7 +4,7 @@
 
 
 ### doceng_generate_page_modules_index
-Builds the 'modules_index.md' file in the 'docs' folder.
+Builds the 'README.md' file in the 'docs' folder.
 ```bash
 > doceng_generate_page_modules_index
 ```

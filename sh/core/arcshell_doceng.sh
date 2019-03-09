@@ -10,7 +10,7 @@ _docengDir="${arcTmpDir}/_arcshell_doceng"
 mkdir -p "${_docengDir}"
 
 function doceng_generate_page_modules_index {
-   # Builds the 'modules_index.md' file in the 'docs' folder.
+   # Builds the 'README.md' file in the 'docs' folder.
    # >>> doceng_generate_page_modules_index 
    ${arcRequireBoundVariables}
    typeset source_file file_path root_file image_markdown tmpFile link_string
@@ -58,7 +58,7 @@ EOF
    echo ""
    echo "----" 
    cat "${tmpFile}1" 
-   ) > "${arcHome}/docs/index.md"
+   ) > "${arcHome}/docs/README.md"
    rm "${tmpFile}"*
 }
 
