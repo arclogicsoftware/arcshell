@@ -1,0 +1,21 @@
+
+
+logcheck_grep "
+dump
+crash
+critical
+alert
+Starting up
+Shutting down
+fail
+Can not
+cannot
+warning
+error
+could not
+panic
+emergency
+timeout
+" | log_notice -stdin -logkey "logcheck" "Log file alert."
+
+

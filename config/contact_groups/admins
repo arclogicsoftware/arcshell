@@ -1,0 +1,42 @@
+# [*] "truthy" values are allowed.
+
+# Comma separate list of email addresses.
+# group_emails="${email},${email}"
+# group_emails= 
+
+# Comma separate list of SMS email addresses.
+# group_texts="${email},${email}"
+# group_texts=
+
+# Is this a default group? [*] Defaults to true.
+# Default groups are returned when no other group is provided.
+# group_default_group=
+
+# Is this group enabled? [*] Defaults to true.
+# group_enabled=
+
+# Is this group disabled? [*] Defaults to false.
+# group_disabled=
+
+# Is this group on hold? [*] Defaults to false.
+# group_hold=
+
+# Disable SMS texts? [*] Defaults to false.
+# group_disable_texts= 
+
+# Message queueing (or digest delivery) is disabled unless one of 
+# the values below is set. Queueing can be bypassed when using
+# 'send_message' by using the '-now' option.
+
+# Send queued emails if oldest item in queue is older than X seconds.
+# group_max_email_queue_seconds=
+
+# Send queued emails if queue has been idle for X seconds.
+# group_max_email_queue_idle_seconds=
+
+# Send queued emails if number of items in queue exceeds X.
+# group_max_email_queue_count=
+
+# Send queued texts if oldest item in queue is older than X seconds.
+# group_max_text_queue_seconds=
+

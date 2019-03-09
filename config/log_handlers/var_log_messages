@@ -1,0 +1,20 @@
+
+
+logmon_grep -ignore_case "
+dump
+crash
+critical
+alert
+Starting up
+Shutting down
+fail
+Can not
+cannot
+warning
+error
+could not
+panic
+emergency
+timeout
+" | send_message -notice "/var/log/messages Notice"
+

@@ -1,0 +1,21 @@
+
+
+
+function tmpChecksDir {
+	[[ -d "${1}" ]] && echo "${1}"
+}
+
+tmpChecksDir "${HOME}/.ssh"
+tmpChecksDir "/etc"
+tmpChecksDir "/bin"
+tmpChecksDir "/sbin"
+tmpChecksDir "/usr/bin"
+tmpChecksDir "/usr/sbin"
+tmpChecksDir "/usr/lib"
+tmpChecksDir "/usr/local/bin"
+tmpChecksDir "/usr/local/sbin"
+tmpChecksDir "/opt/bin"
+tmpChecksDir "/opt/sbin"
+
+unset -f tmpChecksDir
+

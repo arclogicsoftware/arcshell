@@ -1,0 +1,3 @@
+# Truthy values including ArcShell cron expressions are acceptable.
+send_text=0
+send_email=1

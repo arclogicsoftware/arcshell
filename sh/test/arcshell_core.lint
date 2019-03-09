@@ -1,0 +1,61 @@
+
+# DoNotTest
+
+function __future {
+   cat <<EOF
+* Look for hard coded exit 1/0 or return 1/0 and consider variables instead.
+* utl_raise_invalid_arg_option should always have return.
+* utl_raise_invalid_arg_count should always have return.
+* Look for variables in functions which are not typeset and just issue warning or fyi.
+* Check for blank at end of EOF no "EOF " allowed to end a cat <<EOF
+* Make sure I am checking for even numbers of curly braces, parens, brackets, quotes, single quotes.
+* Lint should look for double double-quotes and provide warnings.
+* Look for variable names that are only used once in a library.
+* Check for use of "${1}, $1 etc... in functions then scan to make sure each call contains required # of parameters.
+* Warn if functions don't contain ${arcRequire...} or ${arcAllow...} 
+* Make sure config_load... uses eval.
+* Warn if function does not contain typeset.
+* Warn if function contains multiple returns or exits and not exitTrue exitFalse.
+* Warn if function does not contain any documentation.
+* Warn if eval is not used for data_load_data.
+* Check for function calls with different number of parms in calls.
+* Check for ^M chars.
+* Test for exits within a loop where using pipe into loop, which is bad for bash scope.
+* Check for return statments, should not be just one.
+EOF
+}
+
+function linter_get_duplicate_functions_from_file {
+   # Return duplicate function names from a file.
+   #
+   # Note: Names containing any form of "*foo*" are ignored. This was added becuase of 'objectFoo' used for config.sh unit testing.
+   #
+   ${arcRequireBoundVariables}
+   typeset file_name
+   file_name="${1}"
+   boot_boot_list_functions "${testFile}" | grep -vi ".*foo.*" | uniq -c | str_trim_line | egrep -v "^1 "
+}
+
+function test_linter_get_duplicate_functions_from_file {
+   # Files should not contain duplicate function names.
+   linter_get_duplicate_functions_from_file "${testFile}" | assert -z
+}
+
+function test_linter_readme_function_exists {
+   # Ensures __readme function has been addded to file.
+   boot_boot_list_functions "${testFile}" | grep "__readme" | assert -z
+}
+
+function test_space_before_and_after_double_brackets {
+   # Common syntax error, no space before ]] or after [[.
+   grep "\[\[" "${testFile}" | grep -v "\[\[ " | assert -z "[[ is usually followed by a space."
+   grep "]]" "${testFile}" | grep -v " ]]" | assert -z "]] is usually preceded by a space."
+}
+
+function test_file_ends_with_blank_line {
+   # Loops fail to process final line of file if no line return.
+   # So we make sure there is at least one blank line at the end
+   # of every file.
+   tail -1 "${testFile}" | utl_remove_blank_lines -stdin | assert -z
+}
+

@@ -1,0 +1,6 @@
+# Number of days to archive data for.
+stats_archive_days=30
+# Type of calculation to use when archiving data.
+# Can be of 'avg', 'sum', 'last'.
+stats_archive_type='avg'
+

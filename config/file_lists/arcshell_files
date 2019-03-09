@@ -1,0 +1,13 @@
+
+cat <<EOF
+${arcHome}/config
+${arcHome}/app
+${arcHome}/sh
+${arcHome}/global
+${arcHome}/schedules
+${arcUserHome}/sh
+${arcUserHome}/schedules
+${arcUserHome}/config
+${arcUserHome}/app
+${HOME}/.arcshell
+EOF

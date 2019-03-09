@@ -1,0 +1,233 @@
+
+# module_name="Contact Groups"
+# module_about="Manages group membership and the rules used to send messages to the group."
+# module_version=1
+# module_image="user-6.png"
+# copyright_notice="Copyright 2019 Arclogic Software"
+
+mkdir -p "${arcGlobalHome}/config/contact_groups"
+
+_contactgroupsHome="${arcTmpDir}/_arcshell_contact_groups"
+mkdir -p "${_contactgroupsHome}/default_groups"
+
+function __readmeContactGroups {
+   cat <<EOF
+## Contact Groups
+
+Use contact groups to...
+
+* Get messages and alerts to the right people.
+* At the right time.
+* Using the allowed means.
+
+With contact groups you can...
+
+* Direct messages to particular groups.
+* Define on-call rotations.
+* Implement message queuing and send message digests. 
+
+This is all accomplished by setting up a simple configuration file for each group. 
+
+EOF
+}
+
+function test_function_setup {
+   (
+   cat <<EOF
+   group_enabled=1
+   group_emails="foo@bar.com"
+   group_default_group=1
+EOF
+   ) > "${arcHome}/config/contact_groups/foo" 
+   (
+   cat <<EOF
+   group_enabled=0
+   group_default_group=0
+EOF
+   ) > "${arcHome}/config/contact_groups/bar" 
+   contact_groups_refresh
+}
+
+
+function __setupArcShellContactGroups {
+   # Run setup for actions for contact groups.
+   # >>> __setupArcShellContactGroups
+   contact_groups_refresh
+}
+
+function contact_group_load {
+   # Loads a group into the current shell.
+   # >>> eval "$(contact_group_load 'group_name')"
+   ${arcRequireBoundVariables}
+   utl_raise_invalid_option "contact_group_load" "(( $# == 1 ))" "$*" && ${returnFalse} 
+   debug3 "contact_group_load: $*"
+   typeset group_name 
+   group_name="${1}"
+   _configRaiseObjectNotFound "contact_groups" "${group_name}" && ${returnFalse} 
+   echo "$(config_load_object "contact_groups" "${group_name}")"
+}
+
+function test_contact_group_load {
+   typeset group_emails
+   group_emails= 
+   eval "$(contact_group_load "foo")"
+   echo "${group_emails}" | assert "foo@bar.com"
+}
+
+function _groupsGenerateDefaultGroupsLookup {
+   # Generates the lookup files we need to see which groups are default groups.
+   # >>> _groupsGenerateDefaultGroupsLookup
+   ${arcRequireBoundVariables}
+   typeset group_name group_default_group
+   rm -rf "${_contactgroupsHome}/default_groups"
+   mkdir "${_contactgroupsHome}/default_groups"
+   while read group_name; do
+      group_default_group=
+      eval "$(contact_group_load "${group_name}")"
+      if is_truthy "${group_default_group:-1}"; then
+         touch "${_contactgroupsHome}/default_groups/${group_name}"
+      fi
+   done < <(contact_groups_list)
+   ${returnTrue} 
+}
+
+function test__groupsGenerateDefaultGroupsLookup {
+   _groupsGenerateDefaultGroupsLookup && pass_test || fail_test 
+}
+
+function _groupsRaiseGroupNotFound {
+   # Return an error and true if the group is not found.
+   # >>> _groupsRaiseGroupNotFound "group_name"
+   ${arcRequireBoundVariables}
+   typeset group_name
+   group_name="${1}"
+   if _configRaiseObjectNotFound "contact_groups" "${group_name}"; then
+      ${returnTrue} 
+   else 
+      ${returnFalse} 
+   fi
+}
+
+function test__groupsRaiseGroupNotFound {
+   _groupsRaiseGroupNotFound "barX" 2>&1 | assert_match "ERROR"
+   ! _groupsRaiseGroupNotFound "foo" && pass_test || fail_test 
+}
+
+function contact_group_exists {
+   # Return true if the contact group exists.
+   # >>> contact_group_exists "group_name"
+   ${arcRequireBoundVariables}
+   utl_raise_invalid_option "contact_group_exists" "(( $# == 1 ))" "$*" && ${returnFalse} 
+   typeset group_name 
+   group_name="${1}"
+   if config_does_object_exist "contact_groups" "${group_name}"; then
+      ${returnTrue}
+   else
+      ${returnFalse} 
+   fi
+}
+
+function contact_group_is_enabled {
+   # Returns true if group is "enabled" and not "disabled".
+   # >>>  contact_group_is_enabled "group_name"
+   ${arcRequireBoundVariables}
+   utl_raise_invalid_option "contact_group_is_enabled" "(( $# == 1 ))" "$*" && ${returnFalse} 
+   debug3 "contact_group_is_enabled: $*"
+   typeset group_name group_disabled group_enabled
+   group_name="${1}"
+   _groupsRaiseGroupNotFound "${group_name}" && ${returnFalse} 
+   eval "$(contact_group_load "${group_name}")"
+   if is_truthy "${group_disabled:-0}"; then
+      ${returnFalse} 
+   elif is_truthy "${group_enabled:-1}"; then
+      ${returnTrue} 
+   else 
+      ${returnFalse} 
+   fi
+}
+
+function test_contact_group_is_enabled {
+   contact_group_is_enabled "foo" && pass_test || fail_test
+   ! contact_group_is_enabled "bar" && pass_test || fail_test 
+}
+
+function _groupsGetDefaultGroupCount {
+   # Return the number of default groups defined.
+   # >>> _groupsGetDefaultGroupCount
+   ${arcRequireBoundVariables}
+   contact_groups_list_default | num_line_count
+} 
+
+function test__groupsGetDefaultGroupCount {
+   _groupsGetDefaultGroupCount | assert ">=2"
+}
+
+function contact_groups_enabled_count {
+   # Return the number of enabled contact groups.
+   # >>> contact_groups_enabled_count
+   contact_groups_list_enabled | num_line_count
+}
+
+function contact_groups_list {
+   # Return the list of all groups.
+   # >>> contact_groups_list [-l|-a]
+   # -l: Long list. Include file path to the groups configuration file.
+   # -a: All. List every configuration file for every group.
+   ${arcRequireBoundVariables}
+   config_list_all_objects $* "contact_groups" 
+}
+
+function test_contact_groups_list {
+   contact_groups_list | egrep "bar|foo" | assert -l ">=2"
+   contact_groups_list | assert -l ">=2"
+}
+
+function contact_groups_list_enabled {
+   # Return the list of groups which are currently enabled.
+   # >>> contact_groups_list_enabled
+   ${arcRequireBoundVariables}
+   typeset group_name 
+   while read group_name; do
+      contact_group_is_enabled "${group_name}" && echo "${group_name}"
+   done < <(contact_groups_list)
+}
+
+function contact_groups_list_default {
+   # Return a list of the default groups, they are not necessarily enabled.
+   # >>> contact_groups_list_default
+   ${arcRequireBoundVariables}
+   debug3 "contact_groups_list_default: $*"
+   typeset group_name
+   while read group_name; do
+      # Need to check exists in the event refresh has not been run after a change.
+      contact_group_exists "${group_name}" && echo "${group_name}"
+   done < <(file_list_files "${_contactgroupsHome}/default_groups")
+}
+
+function test_contact_groups_list_default {
+   contact_groups_list_default | assert -l ">=2"
+}
+
+function contact_groups_refresh {
+   # Rebuilds objects when a contact group config file has been changed.
+   # >>> contact_groups_refresh
+   _groupsGenerateDefaultGroupsLookup
+   log_terminal "Contact groups have been refreshed."
+}
+
+function contact_group_delete {
+   # Delete a contact group.
+   # > Make sure you run 'contact_groups_refesh' after deleting one or more groups.
+   # >>> contact_group_delete "group_name"
+   ${arcRequireBoundVariables}
+   typeset group_name 
+   utl_raise_invalid_option "contact_group_delete" "(( $# == 1 ))" && ${returnFalse} 
+   group_name="${1}"
+   config_delete_object "contact_groups" "${group_name}"
+}
+
+function test_file_teardown {
+   contact_group_delete "foo"
+   contact_group_delete "bar"
+   contact_groups_refresh
+}
