@@ -53,7 +53,7 @@ else
    target_dir="${arcHome}"
    if [[ -d "${target_dir}" ]]; then
       log_boring -logkey "arcshell" -tags "update" "Updating '${target_dir}' from '${source_dir}'."
-      rsync_dir ${delete_option:-0} -ssh "${arcNode}" -exclude ".git,user,.gitattributes,.gitignore,nohup.out" "${source_dir}" "${target_dir}"
+      rsync_dir -ssh "${arcNode}" -exclude ".git,user,.gitattributes,.gitignore,nohup.out" "${source_dir}" "${target_dir}"
       #rsync --times --perms --progress --stats --recursive "${source_dir}/" "${target_dir}"
       cd "${arcHome}" || ${exitFalse}
       "./arcshell_setup.sh"
