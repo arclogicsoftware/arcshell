@@ -29,6 +29,6 @@ new_directory="$(file_list_dirs "${tmpDir}")"
 cd "${new_directory}" || ${returnFalse} 
 find "${tmpDir}/${new_directory}" -type f -name "*.sh" -exec chmod 700 {} \;
 ./arcshell_update.sh 
-#cd "${starting_dir}"
-#rm -rf "${tmpDir}"
-${returnTrue} 
+cd "${starting_dir}"
+rm -rf "${tmpDir}"
+exit 0
