@@ -16,13 +16,6 @@ Returns the current version of ArcShell.
 # -n: Returns the version as a real number instead of a string.
 ```
 
-### arc_download
-Download the latest ArcShell 'tar' file from a download link using wget.
-```bash
-> arc_download ["download_url"]
-# download_url: URL to download an ArcShell tar.gz file.
-```
-
 ### arc_install
 Install ArcShell on one or more remote nodes over SSH.
 ```bash

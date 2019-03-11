@@ -7,7 +7,6 @@ alerts_count
 alert_send
 alerts_list
 arcdev_setup_env
-arc_download
 arc_install
 arc_is_daemon_running
 arc_is_daemon_suspended
@@ -348,6 +347,7 @@ os_is_process_id_process_name_running
 os_return_cpu_usage
 os_return_load
 os_return_os_type
+os_return_total_cpu_by_process
 os_return_total_cpu_seconds
 os_return_vmstat
 os_spawn_busy_process

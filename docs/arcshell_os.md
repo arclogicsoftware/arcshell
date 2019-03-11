@@ -3,6 +3,12 @@
 ## Reference
 
 
+### os_return_total_cpu_by_process
+Return processes by total CPU seconds.
+```bash
+> os_return_total_cpu_by_process [-l]
+```
+
 ### os_spawn_busy_process
 Spawns busy process N seconds and returns the internal loop count. Breaks if loop count exceeds 10,000.
 ```bash

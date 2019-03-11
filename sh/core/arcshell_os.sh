@@ -5,6 +5,30 @@
 # module_image="server.png"
 # copyright_notice="Copyright 2019 Arclogic Software"
 
+
+# ToDo: Convert to awk for speed.
+function os_return_total_cpu_by_process {
+   # Return processes by total CPU seconds.
+   # >>> os_return_total_cpu_by_process [-l]
+   ${arcRequireBoundVariables}
+   typeset p dash_count colon_count days hour minute seconds total_seconds process_id command_line user_name
+   while read process_id cpu_time_string command_line user_name; do
+      dash_count=$(str_get_char_count "-" "${cpu_time_string}")
+      colon_count=$(str_get_char_count ":" "${cpu_time_string}")
+      days=0
+      (( ${dash_count} )) && days=$(echo "${cpu_time_string}" | cut -d"-" -f1)
+      time=$(echo "${cpu_time_string}" | cut -d"-" -f2)
+      (( ${colon_count} == 1 )) && time="00:${time}"
+      IFS=":" read hours minutes seconds < <(echo "${time}")  
+      days=$(num_correct_for_octal_error ${days})
+      hours=$(num_correct_for_octal_error ${hours})
+      minutes=$(num_correct_for_octal_error ${minutes})
+      seconds=$(num_correct_for_octal_error ${seconds})
+      ((total_seconds=(days*24*60*60)+(hours*60*60)+(minutes*60)+seconds))
+      echo "${total_seconds} ${process_id}:${user_name}:${command_line}"
+   done < <(ps -eo pid,time,comm,user | sort -n | egrep -v "00:00:.*|PID")
+}
+
 function os_spawn_busy_process {
    # Spawns busy process N seconds and returns the internal loop count. Breaks if loop count exceeds 10,000.
    # >>> os_spawn_busy_process "seconds"

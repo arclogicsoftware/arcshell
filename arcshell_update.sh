@@ -43,7 +43,7 @@ fi
 
 . "${HOME}/.arcshell"
 
-if boot_is_dir_within_dir "$(pwd)" "${arcHome}"; then
+if [[ "$(pwd)" -ef "${arcHome}" ]]; then
    _arcshellUpdateThrowError "You can't run 'arcshell_update.sh' from the current ArcShell home."
    ${exitFalse}
 else

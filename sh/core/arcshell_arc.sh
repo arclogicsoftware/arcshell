@@ -119,29 +119,29 @@ function arc_version {
    fi
 }
 
-function arc_download {
-   # Download the latest ArcShell 'tar' file from a download link using wget.
-   # >>> arc_download ["download_url"]
-   # download_url: URL to download an ArcShell tar.gz file.
-   ${arcRequireBoundVariables}
-   typeset pwd0 download_url
-   download_url="${1:-${arcshell_download_url:-}}"
-   utl_raise_empty_var "download_url is not set. Please provide a URL." "${download_url}" && ${returnFalse} 
-   find "${arcUserHome}/config/packages" -type f -name "arcshell.tar.gz" -exec rm {} \;
-   pwd0="$(pwd)"
-   cd "${arcUserHome}/config/packages" || ${returnFalse} 
-   wget -q -O "./arcshell.tar.gz" "${download_url}"
-   cd "${pwd0}"
-   pkg_unset 
-   if [[ -f "${arcUserHome}/config/packages/arcshell.tar.gz" ]]; then
-      log_terminal "ArcShell successfully downloaded the file to '${arcUserHome}/config/packages/arcshell.tar.gz'."
-      pkg_set "${arcUserHome}/config/packages/arcshell.tar.gz"
-      ${returnTrue} 
-   else
-      log_error "Failed to download ArcShell from '${download_url}'."
-      ${returnFalse} 
-   fi
-}
+# function arc_download {
+#    # Download the latest ArcShell 'tar' file from a download link using wget.
+#    # >>> arc_download ["download_url"]
+#    # download_url: URL to download an ArcShell tar.gz file.
+#    ${arcRequireBoundVariables}
+#    typeset pwd0 download_url
+#    download_url="${1:-${arcshell_download_url:-}}"
+#    utl_raise_empty_var "download_url is not set. Please provide a URL." "${download_url}" && ${returnFalse} 
+#    find "${arcUserHome}/config/packages" -type f -name "arcshell.tar.gz" -exec rm {} \;
+#    pwd0="$(pwd)"
+#    cd "${arcUserHome}/config/packages" || ${returnFalse} 
+#    wget -q -O "./arcshell.tar.gz" "${download_url}"
+#    cd "${pwd0}"
+#    pkg_unset 
+#    if [[ -f "${arcUserHome}/config/packages/arcshell.tar.gz" ]]; then
+#       log_terminal "ArcShell successfully downloaded the file to '${arcUserHome}/config/packages/arcshell.tar.gz'."
+#       pkg_set "${arcUserHome}/config/packages/arcshell.tar.gz"
+#       ${returnTrue} 
+#    else
+#       log_error "Failed to download ArcShell from '${download_url}'."
+#       ${returnFalse} 
+#    fi
+# }
 
 function arc_install {
    # Install ArcShell on one or more remote nodes over SSH.
@@ -218,6 +218,17 @@ function _arcInstall {
       ${returnFalse} 
    log_terminal "Deploy to '${ssh_node}' complete."
    ${returnTrue} 
+}
+
+function _arcUpdateFromGitHubZip {
+   #
+   # >>> _arcUpdateFromZip "zip_file_path"
+   ${arcRequireBoundVariables}
+   typeset zip_file_path
+   boot_raise_program_not_found "unzip" && ${returnFalse} 
+   zip_file_path="${1}"
+   file_raise_file_not_found "${zip_file_path}" && ${returnFalse} 
+
 }
 
 function arc_update {
