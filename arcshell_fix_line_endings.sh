@@ -1,4 +1,8 @@
 
+# This script will search files for control M line endings and remove them. 
+# These can be added sometimes when working in a GitHub development
+# environment and going back and forth between machines. There is probably
+# a way to fix this but I don't know it. :)
 
 arcHome="$(pwd)"
 

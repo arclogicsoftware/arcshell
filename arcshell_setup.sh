@@ -1,6 +1,5 @@
 
 # Copyright 2019 Arclogic Software
-# To purchase a license for your organization visit to https://arclogicsoftware.com
 
 # Todo: Implement -crontab.
 
