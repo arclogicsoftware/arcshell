@@ -54,6 +54,10 @@ If you don't want to watch each of the videos below you can watch a shorter [ove
 | 2.8 | Start And Stop ArcShell Services |[4 min](https://www.screencast.com/t/QhxhrKyMSc) |
 | 2.9 | The ArcShell Menu | [4 min](https://www.screencast.com/t/VrW7Tvh9PfX) |
 
+**Also Watch**
+
+Install, Update, And Deploy From GitHub [10 min](https://www.screencast.com/t/clsSBkpp6Tt)
+
 ### SSH Connection Management With ArcShell
 
 | # | Item| Description | Length |
