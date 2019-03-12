@@ -3,10 +3,10 @@
 ## Reference
 
 
-### os_return_total_cpu_by_process
-Return processes by total CPU seconds.
+### os_return_process_cpu_seconds
+Returns a record for each process and converts '0-00:00:00' cpu time to seconds.
 ```bash
-> os_return_total_cpu_by_process [-l]
+> os_return_process_cpu_seconds
 ```
 
 ### os_spawn_busy_process

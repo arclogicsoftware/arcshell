@@ -67,10 +67,10 @@ BEGIN {
          value=delta/elapsed_seconds
       }
       else if ( stat_calc == "per/min" && elapsed_seconds > 0 ) {
-         value=delta/elapsed_seconds/60
+         value=delta/elapsed_seconds*60
       }
       else if ( stat_calc == "per/hr" && elapsed_seconds > 0 ) {
-         value=delta/elapsed_seconds/60/60
+         value=delta/elapsed_seconds*60*60
       }
    }  
    if ( length(value) > 0 ) {

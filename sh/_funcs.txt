@@ -106,16 +106,10 @@ debug0
 debug1
 debug2
 debug3
-debug4
-debug5
-debug6
 debugd0
 debugd1
 debugd2
 debugd3
-debugd4
-debugd5
-debugd6
 debug_dump
 debug_follow
 debug_get
@@ -347,7 +341,7 @@ os_is_process_id_process_name_running
 os_return_cpu_usage
 os_return_load
 os_return_os_type
-os_return_total_cpu_by_process
+os_return_process_cpu_seconds
 os_return_total_cpu_seconds
 os_return_vmstat
 os_spawn_busy_process

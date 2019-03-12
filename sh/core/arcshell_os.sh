@@ -5,28 +5,12 @@
 # module_image="server.png"
 # copyright_notice="Copyright 2019 Arclogic Software"
 
-
-# ToDo: Convert to awk for speed.
-function os_return_total_cpu_by_process {
-   # Return processes by total CPU seconds.
-   # >>> os_return_total_cpu_by_process [-l]
+# ToDo: Add options to summarize by "comm" or "user" or both.
+function os_return_process_cpu_seconds {
+   # Returns a record for each process and converts '0-00:00:00' cpu time to seconds.
+   # >>> os_return_process_cpu_seconds
    ${arcRequireBoundVariables}
-   typeset p dash_count colon_count days hour minute seconds total_seconds process_id command_line user_name
-   while read process_id cpu_time_string command_line user_name; do
-      dash_count=$(str_get_char_count "-" "${cpu_time_string}")
-      colon_count=$(str_get_char_count ":" "${cpu_time_string}")
-      days=0
-      (( ${dash_count} )) && days=$(echo "${cpu_time_string}" | cut -d"-" -f1)
-      time=$(echo "${cpu_time_string}" | cut -d"-" -f2)
-      (( ${colon_count} == 1 )) && time="00:${time}"
-      IFS=":" read hours minutes seconds < <(echo "${time}")  
-      days=$(num_correct_for_octal_error ${days})
-      hours=$(num_correct_for_octal_error ${hours})
-      minutes=$(num_correct_for_octal_error ${minutes})
-      seconds=$(num_correct_for_octal_error ${seconds})
-      ((total_seconds=(days*24*60*60)+(hours*60*60)+(minutes*60)+seconds))
-      echo "${total_seconds} ${process_id}:${user_name}:${command_line}"
-   done < <(ps -eo pid,time,comm,user | sort -n | egrep -v "00:00:.*|PID")
+   ps -eo pid,time,user,comm | awk -f "${arcHome}/sh/core/_os_return_process_cpu_seconds.awk"
 }
 
 function os_spawn_busy_process {
@@ -133,14 +117,12 @@ function os_return_load {
    fi
 }
 
-
 function os_return_os_type {
    # Return short hostname in upper-case.
    # >>> os_return_os_type
    ${arcRequireBoundVariables}
    uname -s | str_to_upper_case -stdin
 }
-
 
 function os_disks {
    # Return the list of disks available.
@@ -161,7 +143,6 @@ function os_disks {
          ;;
    esac
 }
-
  
 function os_is_process_id_process_name_running {
    # Return true if a process ID is running. Checks using process ID alone, or by ID and regular expression.
@@ -184,7 +165,6 @@ function os_is_process_id_process_name_running {
       ${returnFalse}
    fi
 }
-
 
 function os_get_process_count {
    # Return number of processes running which match the provided regular expressions.
@@ -209,7 +189,6 @@ function os_get_process_count {
       ${returnFalse} 
    fi
 }
-
 
 function os_create_process {
    # Create one or more temporary idle processes, typically used for integration and testing purposes.
@@ -252,7 +231,6 @@ EOF
    cd "${myDir}"
 }
 
-
 function _os_get_any_shell_but_bash {
    if boot_is_program_found "/tmp/arcsh"; then
       echo "/tmp/arcsh"
@@ -269,10 +247,8 @@ function _os_get_any_shell_but_bash {
    fi 
 }
 
-
 function _osThrowError {
    # Error handler for os.sh module.
    # >>> _osThrowError "errorText"
    throw_error "arcshell_os.sh" "${1}"
 }
-

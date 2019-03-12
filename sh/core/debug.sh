@@ -162,7 +162,6 @@ function debug_truncate {
    [[ -s "${_g_debug_file}" ]] && cp /dev/null "${_g_debug_file}"
 }
 
-
 function debug_start {
    # Begin a new debug session for the current process.
    # >>> debug_start [debug_level]
@@ -175,7 +174,6 @@ function debug_start {
    fi
 }
 
-
 function debug_dump {
    # Dump stored debug calls to standard output as reset the storage file.
    # >>> debug_dump [-x]
@@ -185,7 +183,6 @@ function debug_dump {
    (( $# == 0 )) && cp /dev/null "${_g_debug_session_file}" 
 }
 
-
 function debug_stop { 
    # End the current debug session and remove buffered lines from the session debug file.
    # >>> debug_stop
@@ -193,7 +190,6 @@ function debug_stop {
    _g_debug_session_level=0
    [[ -f "${_g_debug_session_file}" ]] && rm "${_g_debug_session_file}"
 }
-
 
 function _debugFormatLogFileEntry {
    # Formats and returns the 3 input values.
@@ -230,7 +226,6 @@ function _debug {
    fi
 }
 
-
 function _debugd {
    # Writes standard input to the log file using a format for multiple lines/details.
    # >>> _debugd debug_level
@@ -250,38 +245,38 @@ function _debugd {
    fi
 }
 
-
 function debug0 {
    # Level 0 debug call. These are logged even if debug is not enabled.
    # >>> debug0 "str"
-   _debug "DEBUG" 0 "${1}" 
+   (( ${debug_module_disabled:-0} )) && ${returnTrue} 
+   _debug "DEBUG" 0 "${1}" # DISABLE_FLAG
 }
-
 
 function debug1 {
    # Level 1 debug call.
    # >>> debug1 "X"
-   _debug "DEBUG" 1 "${1}" 
+   (( ${debug_module_disabled:-0} )) && ${returnTrue} 
+   _debug "DEBUG" 1 "${1}" # DISABLE_FLAG
 }
-
 
 function debug2 {
    # Level 2 debug call.
    # >>> debug2 "X"
-   _debug "DEBUG" 2 "${1}" 
+   (( ${debug_module_disabled:-0} )) && ${returnTrue} 
+   _debug "DEBUG" 2 "${1}" # DISABLE_FLAG
 }
-
 
 function debug3 {
    # Level 3 debug call.
    # >>> debug3 "X"
-   _debug "DEBUG" 3 "${1:-}"
+   (( ${debug_module_disabled:-0} )) && ${returnTrue} 
+   _debug "DEBUG" 3 "${1:-}" # DISABLE_FLAG
 }
-
 
 function debugd0 {
    # Level 0 "detail" debug call. Reads from standard input.
    # >>> debugd0 ["X"]
+   (( ${debug_module_disabled:-0} )) && ${returnTrue} 
    if (( $# )); then
       echo "$*" | _debugd 0
    else 
@@ -289,10 +284,10 @@ function debugd0 {
    fi
 }
 
-
 function debugd1 {
    # Level 1 "detail" debug call. Reads from standard input.
    # >>> debugd1 ["X"]
+   (( ${debug_module_disabled:-0} )) && ${returnTrue} 
    if (( $# )); then
       echo "$*" | _debugd 1
    else 
@@ -300,10 +295,10 @@ function debugd1 {
    fi
 }
 
-
 function debugd2 {
    # Level 2 "detail" debug call. Reads from standard input.
    # >>> debugd2 ["X"]
+   (( ${debug_module_disabled:-0} )) && ${returnTrue} 
    if (( $# )); then
       echo "$*" | _debugd 2
    else 
@@ -311,17 +306,16 @@ function debugd2 {
    fi
 }
 
-
 function debugd3 {
    # Level 3 "detail" debug call. Reads from standard input.
    # >>> debugd3 ["X"]
+   (( ${debug_module_disabled:-0} )) && ${returnTrue} 
    if (( $# )); then
       echo "$*" | _debugd 3
    else 
       cat | _debugd 3
    fi
 }
-
 
 function debug_get {
    # Return last ```X``` lines from the ```_g_debug_file```.
@@ -333,7 +327,6 @@ function debug_get {
       tail -100 "${_g_debug_file}"
    fi
 }
-
 
 function _debugWrite {
    # Writes text file and optionally return the same to standard out or standard error.
@@ -352,31 +345,6 @@ function _debugWrite {
       1) echo "${text}" ;;
       2) echo "${text}" 3>&1 1>&2 2>&3 ;;
    esac
-}
-
-
-function debug4 {
-   :
-}
-
-function debug5 {
-   :
-}
-
-function debug6 {
-   :
-}
-
-function debugd4 {
-   :
-}
-
-function debugd5 {
-   :
-}
-
-function debugd6 {
-   :
 }
 
 _g_DebugIsLoaded=1

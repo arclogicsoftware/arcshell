@@ -8,12 +8,14 @@ Statistics storage engine with aggregation and calculation capabilities.
 ### stats_read
 Read metrics from standard input and queue for processing. Required input format is "metric|value".
 ```bash
-> stats_read [-s|-m|-h|-v] [-tags,-t "X,x"] "stat_group"
-# -tags: Tag list.
-# -s: Calculate rate per second.
-# -m: Calculate rate per minute.
-# -h: Calculate rate per hour.
-# -v: Calculate the delta.
+> stats_read [-s|-m|-h|-v] [-1] [-donottrack,-x] [-tags,-t "X,x"] "stat_group"
+# -tags,-t: Tag list.
+# -second,-s: Calculate rate per second.
+# -minute,-m: Calculate rate per minute.
+# -hour,-h: Calculate rate per hour.
+# -delta,-v: Calculate the delta.
+# -1: Return results to standard out.
+# -donottrack,-x: Do not track history.
 ```
 
 ### stat_groups_list

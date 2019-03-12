@@ -10,6 +10,8 @@ mkdir -p "${_statsDir}/tmp"
 
 statsHost="$(hostname)"
 
+# ToDo: add stats_clear or stats_reset.
+
 function __readmeStats {
 cat <<EOF
 # arcshell_stats.sh
@@ -21,29 +23,36 @@ EOF
 
 function stats_read {
    # Read metrics from standard input and queue for processing. Required input format is "metric|value".
-   # >>> stats_read [-s|-m|-h|-v] [-tags,-t "X,x"] "stat_group" 
-   # -tags: Tag list.
-   # -s: Calculate rate per second.
-   # -m: Calculate rate per minute.
-   # -h: Calculate rate per hour.
-   # -v: Calculate the delta.
-   typeset stat_group stat_calc tags weekday dayofweek
+   # >>> stats_read [-s|-m|-h|-v] [-1] [-donottrack,-x] [-tags,-t "X,x"] "stat_group" 
+   # -tags,-t: Tag list.
+   # -second,-s: Calculate rate per second.
+   # -minute,-m: Calculate rate per minute.
+   # -hour,-h: Calculate rate per hour.
+   # -delta,-v: Calculate the delta.
+   # -1: Return results to standard out.
+   # -donottrack,-x: Do not track history.
+   typeset stat_group stat_calc tags weekday dayofweek tmpFile standard_out do_not_track
    debug3 "stats_read: $*"
    ${arcRequireBoundVariables}
+   standard_out=0
+   do_not_track=0
    stat_calc="value"
    tags=""
    weekday=0
    dt_is_weekday && weekday=1
    dayofweek=$(date "+%w")
+   tmpFile="$(mktempf)"
    while (( $# > 0)); do
       case "${1}" in 
          # Remove spaces, replace commas with spaces.
-         "-t"|"-tags"|"-tag") shift; tags="$(utl_format_tags "${1}")" ;;
-         "-s") stat_calc="per/sec"                                    ;;
-         "-m") stat_calc="per/min"                                    ;;
-         "-h") stat_calc="per/hr"                                     ;;
-         "-v") stat_calc="delta"                                      ;;
-         *) break                                                     ;;
+         "-t"|"-tag"*) shift; tags="$(utl_format_tags "${1}")" ;;
+         "-s"|"-second"*) stat_calc="per/sec" ;;
+         "-m"|"-minute"*) stat_calc="per/min" ;;
+         "-h"|"-hour"*) stat_calc="per/hr" ;;
+         "-v"|"-delta"*) stat_calc="delta" ;;
+         "-1") standard_out=1 ;;
+         "-x"|"-donottrack") do_not_track=1 ;;
+         *) break ;;
       esac
       shift
    done
@@ -60,6 +69,10 @@ function stats_read {
    echo ">|$(dt_epoch)|$(dt_y_m_d_h_m_s "|" | sed 's/|0/|/g')|${weekday}|${dayofweek}|${stat_group}|${stat_calc}" | \
       tee -a "${_statsDir}/tmp/${stat_group}.appendedDatasets" > \
       "${_statsDir}/tmp/${stat_group}.lastDataset"
+   # debug0 "appendedDatasets-1"
+   # cat "${_statsDir}/tmp/${stat_group}.appendedDatasets" | debugd0
+   # debug0 "lastDataset"
+   # cat "${_statsDir}/tmp/${stat_group}.lastDataset" | debugd0
    # Inject the averages data if it exists.
    if [[ -f "${_statsDir}/${stat_group}/${stat_group}-averages.csv" ]]; then
       cat "${_statsDir}/${stat_group}/${stat_group}-averages.csv" >> \
@@ -71,10 +84,18 @@ function stats_read {
    else
       cat >> "${_statsDir}/tmp/${stat_group}.appendedDatasets"
    fi
+   # debug0 "appendedDatasets-2"
+   # cat "${_statsDir}/tmp/${stat_group}.appendedDatasets" | debugd0
    mkdir -p "${_statsDir}/${stat_group}"
    ${arcAwkProg} -v tags="${tags}" -f "${arcHome}/sh/core/_stats_calc.awk" \
-      "${_statsDir}/tmp/${stat_group}.appendedDatasets" \
-      >> "${_statsDir}/${stat_group}/${stat_group}.csv"
+      "${_statsDir}/tmp/${stat_group}.appendedDatasets" > "${tmpFile}"
+   if (( ${standard_out} )); then
+      cat "${tmpFile}" | awk -F"|" '{print $14"|"$16}'
+   fi
+   if ! (( ${do_not_track} )); then
+      cat "${tmpFile}" >> "${_statsDir}/${stat_group}/${stat_group}.csv"
+   fi
+   rm "${tmpFile}"
    mv "${_statsDir}/tmp/${stat_group}.lastDataset" "${_statsDir}/tmp/${stat_group}.appendedDatasets"
    ${returnTrue} 
 }

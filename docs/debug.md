@@ -197,15 +197,3 @@ Return last ```X``` lines from the ```_g_debug_file```.
 # X: Number of lines to return. Defaults to 100.
 ```
 
-### debug4
-
-### debug5
-
-### debug6
-
-### debugd4
-
-### debugd5
-
-### debugd6
-
