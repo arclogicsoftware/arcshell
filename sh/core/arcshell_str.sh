@@ -884,7 +884,7 @@ function test_str_split_line {
 }
 
 function str_to_upper_case {
-   # Convert ```string``` to upper-case.
+   # Converts 'string' to upper-case.
    # >>> str_to_upper_case [-stdin|"string"]
    ${arcRequireBoundVariables}
    if [[ "${1:-}" == "-stdin" ]]; then

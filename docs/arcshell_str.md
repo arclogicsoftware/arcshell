@@ -295,7 +295,7 @@ Read standard in and split into separate lines using a token.
 ```
 
 ### str_to_upper_case
-Convert ```string``` to upper-case.
+Converts 'string' to upper-case.
 ```bash
 > str_to_upper_case [-stdin|"string"]
 ```

@@ -1,10 +1,12 @@
+
 # ArcShell
 
 ArcShell is a Bash (and Korn) shell scripting framework. It is especially good at **automating** and **monitoring**.
 
 | Item or Link | Description |
 | --- | --- |
-| [Arclogic Software](https://www.arclogicsoftware.com/) | **Consulting, training, commercial support, and other services available.**
+| [Arclogic Software](https://www.arclogicsoftware.com/) | **Consulting, training, commercial support, and other services available.** |
+| [Modules](https://github.com/arclogicsoftware/arcshell/tree/master/docs) | Make sure you check out the list of modules available with ArcShell. Plenty of training down below in the README and more on the way. |
 | **Ethan Ray Post** [LinkedIn](https://www.linkedin.com/in/ethanraypost/), [Twitter](https://twitter.com/poststop), [GitHub](https://github.com/ethanpost) | Founder of Arclogic Software. Creator of ArcShell. **Connections and follows are appreciated.** |
 | [ArcShell Announcements](https://groups.google.com/forum/#!forum/arcshell-announcements) email list. | ArcShell **announcements only** email list. |
 | [ArcShell](https://groups.google.com/forum/#!forum/arcshell) email list. | Email list for ArcShell discussions, bugs, questions, and development. **ASK YOUR QUESTIONS HERE!**|
