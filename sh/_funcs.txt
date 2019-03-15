@@ -369,6 +369,7 @@ sch_list
 sch_reset_tasks
 sendgrid_send
 send_message
+send_slack
 sensor
 sensor_check
 sensor_delete_sensor

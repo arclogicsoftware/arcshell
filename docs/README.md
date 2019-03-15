@@ -5,6 +5,7 @@
 | [Alerting](#alerting) | Easily incorporates recurring alerts and notifications into your scripts. |
 | [ArcShell](#arcshell) | Contains functions to manage local and remote ArcShell nodes. |
 | [Caching](#caching) | A simple yet powerful key value data store. |
+| [Chat](#chat) | Supports sending messages to services like Slack. |
 | [Compiler](#compiler) | Transforms modules with multiple dependencies into single executable files. |
 | [Configuration](#configuration) | Manages configuration files and semi-static objects. |
 | [Contact Groups](#contact_groups) | Manages group membership and the rules used to send messages to the group. |
@@ -132,6 +133,23 @@ A simple yet powerful key value data store.
 ### Links
 
 * [Reference](./arcshell_cache.md)
+
+
+----
+
+<a name="chat"/>
+
+![smartphone-10.png](./images/smartphone-10.png)
+
+## Chat (arcshell_chat.sh)
+
+Supports sending messages to services like Slack.
+
+
+
+### Links
+
+* [Reference](./arcshell_chat.md)
 
 
 ----

@@ -16,6 +16,6 @@ os_load=$(os_return_load)
 
 echo "${os_load}" | threshold_monitor -config "os_load.cfg" "os_load"
 
-echo "server_load|${os_load}" | stats_read -tags "os" "os_load" 
+echo "os_load|${os_load}" | stats_read -tags "os" "os_load" 
 
 exit 0

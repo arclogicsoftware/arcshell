@@ -15,6 +15,7 @@ fi
 . "${arcHome}/sh/core/arcshell_alerts.sh"
 . "${arcHome}/sh/core/arcshell_arc.sh"
 . "${arcHome}/sh/core/arcshell_cache.sh"
+. "${arcHome}/sh/core/arcshell_chat.sh"
 . "${arcHome}/sh/core/arcshell_compiler.sh"
 . "${arcHome}/sh/core/arcshell_config.sh"
 . "${arcHome}/sh/core/arcshell_counters.sh"

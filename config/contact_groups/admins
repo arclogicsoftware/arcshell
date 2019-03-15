@@ -1,4 +1,4 @@
-# [*] "truthy" values are allowed.
+# (*)='Truthy' value are accepted.
 
 # Comma separate list of email addresses.
 # group_emails="${email},${email}"
@@ -8,20 +8,26 @@
 # group_texts="${email},${email}"
 # group_texts=
 
-# Is this a default group? [*] Defaults to true.
+# Should reference a valid chat configuration file for Slack.
+# group_slack_profile="slack.cfg"
+
+# Disables slack notifications when truthy(*).
+# group_disable_slack=0
+
+# Is this a default group? Defaults to true. (*)
 # Default groups are returned when no other group is provided.
 # group_default_group=
 
-# Is this group enabled? [*] Defaults to true.
+# Is this group enabled? Defaults to true. (*)
 # group_enabled=
 
-# Is this group disabled? [*] Defaults to false.
+# Is this group disabled? Defaults to false. (*)
 # group_disabled=
 
-# Is this group on hold? [*] Defaults to false.
+# Is this group on hold? Defaults to false. (*)
 # group_hold=
 
-# Disable SMS texts? [*] Defaults to false.
+# Disable SMS texts? Defaults to false. (*)
 # group_disable_texts= 
 
 # Message queueing (or digest delivery) is disabled unless one of 
