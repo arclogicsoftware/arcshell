@@ -48,6 +48,7 @@ fi
 . "${arcHome}/sh/core/arcshell_stats_ext.sh"
 . "${arcHome}/sh/core/arcshell_str.sh"
 . "${arcHome}/sh/core/arcshell_tar.sh"
+. "${arcHome}/sh/core/arcshell_threshold_monitor.sh"
 . "${arcHome}/sh/core/arcshell_timeout.sh"
 . "${arcHome}/sh/core/arcshell_timer.sh"
 . "${arcHome}/sh/core/unittest.sh"

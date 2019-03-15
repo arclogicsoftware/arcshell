@@ -28,7 +28,7 @@ function __exampleTimer {
    timer_end "foo"
 }
 
-function timer_mins_expired {
+function timer_minutes_have_expired {
    # Returns true when timer interval has passed and resets the timer.
    # >>> timer_expired_minutes [-force,-f] "timerKey" minutes
    ${arcRequireBoundVariables}
@@ -41,7 +41,7 @@ function timer_mins_expired {
       esac
       shift
    done
-   utl_raise_invalid_option "timer_mins_expired" "(( $# == 2 ))" "$*" && ${returnFalse} 
+   utl_raise_invalid_option "timer_minutes_have_expired" "(( $# == 2 ))" "$*" && ${returnFalse} 
    timerKey="${1}"
    minutes=${2}
    if ! timer_exists "${timerKey}"; then
@@ -59,19 +59,20 @@ function timer_mins_expired {
    fi
 }
 
-function test_timer_mins_expired {
+function test_timer_minutes_have_expired {
    :
 }
 
 function timer_secs_expired {
    # Returns true when timer interval has passed and resets the timer.
-   # >>> timer_secs_expired [-force,-f] "timerKey" seconds
+   # >>> timer_secs_expired [-inittrue,-t] "timerKey" seconds
+   # -inittrue: Returns true the first time the timer is initialized.
    ${arcRequireBoundVariables}
-   typeset timerKey seconds forceRun
-   forceRun=0
+   typeset timerKey seconds inittrue
+   inittrue=0
    while (( $# > 0)); do
       case "${1}" in
-         "-force"|"-f") forceRun=1 ;;
+         "-runonce"|"-f") inittrue=1 ;;
          *) break ;;
       esac
       shift
@@ -81,7 +82,7 @@ function timer_secs_expired {
    seconds=${2}
    if ! timer_exists "${timerKey}"; then
       timer_create -start "${timerKey}" 
-      if (( ${forceRun} )); then
+      if (( ${inittrue} )); then
          ${returnTrue} 
       else 
          ${returnFalse} 

@@ -240,7 +240,7 @@ function sch_enable_task {
    typeset task_name task_enabled 
    task_name="${1}"
    task_enabled="${2:-1}"
-   if _schDoesTaskExist "${task_name}"; then
+   if sch_does_task_exist "${task_name}"; then
       echo "${task_enabled}" > "${_schDir}/tasks/${task_name}.enabled"
       rm "${_schDir}/tasks/${task_name}.disabled" 2> /dev/null
    else
@@ -258,7 +258,7 @@ function sch_disable_task {
    typeset task_name task_disabled 
    task_name="${1}"
    task_disabled="${2:-1}"
-   if _schDoesTaskExist "${task_name}"; then
+   if sch_does_task_exist "${task_name}"; then
       echo "${task_disabled}" > "${_schDir}/tasks/${task_name}.disabled"
       rm "${_schDir}/tasks/${task_name}.enabled" 2> /dev/null
    else
@@ -285,12 +285,12 @@ function _schReturnTaskFilePath {
    fi
 }
 
-function _schDoesTaskExist {
+function sch_does_task_exist {
    # Return true if the task name exists.
-   # >>> _schDoesTaskExist "task_name"
+   # >>> sch_does_task_exist "task_name"
    # task_name: Base name of task file.
    ${arcRequireBoundVariables}
-   debug3 "_schDoesTaskExist: $*"
+   debug3 "sch_does_task_exist: $*"
    typeset task_name 
    task_name="${1}"
    if _schListAllTaskFileBaseNames | grep "^${task_name}$" 1> /dev/null; then

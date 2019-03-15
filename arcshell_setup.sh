@@ -357,5 +357,13 @@ Ethan@ArclogicSoftware.com
 
 EOF
 
-
+# Patching Code
+if (( $(arc_version -n) <= 201903121129 )); then
+   # Remove the delivered file manually if it exists.
+   find "${arcHome}/config/schedules" -name "arcshell_collect_server_load" -exec rm {} \;
+   # Check to see if user has a copy of this file elsewhere.
+   if sch_does_task_exist "arcshell_collect_server_load.sh"; then
+      log_error -2 -logkey "arcshell" -tags "deprecated" "arcshell_collect_server_load.sh scheduled task is deprecated."
+   fi
+fi
 

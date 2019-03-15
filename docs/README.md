@@ -37,6 +37,7 @@
 | [Statistics](#statistics) | Stores statistics. Performs aggregation, analysis, and anomaly detection. |
 | [Strings](#strings) | Library loaded with string functions. |
 | [Tar](#tar) | This module is used to to work with tar files. |
+| [Threshold Monitor](#threshold_monitor) | Monitors values based on thresholds combined with time limits. |
 | [Timeout](#timeout) | Implement timeouts to kill hung processes and perform other time dependent tasks. |
 | [Timer](#timer) | Create and manage timers for timing all sorts of things. |
 | [Utilities](#utilities) | Misc. utilities. |
@@ -690,6 +691,47 @@ This module is used to to work with tar files.
 ### Links
 
 * [Reference](./arcshell_tar.md)
+
+
+----
+
+<a name="threshold_monitor"/>
+
+![battery-6.png](./images/battery-6.png)
+
+## Threshold Monitor (arcshell_threshold_monitor.sh)
+
+Monitors values based on thresholds combined with time limits.
+
+## Example(s)
+```bash
+
+
+   # Input can be a one or two fields. Either "metric|value" or just "value".
+   # Input can be more than one line.
+
+   # Monitor OS load average with three different thresholds.
+   os_return_load | \
+      threshold_monitor \
+         -t1 "4,12h,warning" \
+         -t2 "14,30m,warning" \
+         -t3 "20,0m,critical" \
+         "os_load"
+
+   # A configuration file can be used instead.
+   os_return_load | \
+      threshold_monitor -config "os_load.cfg" "os_load"
+
+   # threshold_monitor can be used like this.
+   if os_return_load | threshold_monitor -config "os_load.cfg" "os_load"; then
+      # Do something here.
+      :
+   fi
+```
+
+### Links
+
+* [Reference](./arcshell_threshold_monitor.md)
 
 
 ----

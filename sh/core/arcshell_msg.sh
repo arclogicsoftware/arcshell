@@ -258,7 +258,7 @@ function _msgSendMail {
    subject="${2}"
    from_address="${arcshell_from_address:-${LOGNAME}@$(hostname)}"
    if [[ "${arcshell_mail_program:-"mail"}" == "mail" ]]; then
-      debug2 "mail -a 'From: ${from_address}' -s '${subject}' '${to}'"
+      debug3 "mail -a 'From: ${from_address}' -s '${subject}' '${to}'"
       cat | mail -a "From: " -s "${subject}" "${to}"
    elif [[ "${arcshell_mail_program:-}" == "mailx" ]]; then
       cat | mailx -r "${from_address}" -s "${subject}" "${to}"

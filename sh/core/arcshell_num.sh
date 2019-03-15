@@ -161,6 +161,7 @@ function num_is_gt {
    # isThisNum: Integer or decimal.
    # gtThanThisNum: Integer or decimal.
    ${arcRequireBoundVariables}
+   #debug3 "num_is_gt: $*"
    typeset isThisNum gtThanThisNum
    isThisNum="${1}"
    gtThanThisNum="${2}"

@@ -18,10 +18,6 @@ Logs a warning if a reboot has been detected. Total reboots are counted using a 
 
 Checks the message queues and sends queued messages when set criteria is met.
 
-### arcshell_collect_server_load.sh
-
-Collects server load metrics.
-
 ### arcshell_collect_vmstats.sh
 
 Collects server performance metrics using "vmstat".
@@ -29,6 +25,10 @@ Collects server performance metrics using "vmstat".
 ### arcshell_monitor_cpu_usage.sh
 
 Collects and monitors server CPU usage.
+
+### arcshell_monitor_server_load.sh
+
+Collects os load metrics and monitor for os load thresholds.
 
 ## 05m
 

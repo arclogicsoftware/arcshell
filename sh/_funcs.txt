@@ -362,6 +362,7 @@ rmtempf
 rsync_dir
 sanelog
 sch_disable_task
+sch_does_task_exist
 sch_enable_task
 sch_is_task_enabled
 sch_list
@@ -489,6 +490,7 @@ str_to_upper_case
 str_trim_line
 str_uniq
 tar_open
+threshold_monitor
 throw_error
 throw_message
 timeout_delete_timer
@@ -499,8 +501,8 @@ timer_delete
 timer_end
 timer_exists
 timer_log_timer
-timer_mins_expired
 timer_minutes
+timer_minutes_have_expired
 timer_reset
 timer_seconds
 timer_secs_expired

@@ -56,3 +56,10 @@ Disables a task.
 # truthy_value:
 ```
 
+### sch_does_task_exist
+Return true if the task name exists.
+```bash
+> sch_does_task_exist "task_name"
+# task_name: Base name of task file.
+```
+

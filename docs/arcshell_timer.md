@@ -3,7 +3,7 @@
 ## Reference
 
 
-### timer_mins_expired
+### timer_minutes_have_expired
 Returns true when timer interval has passed and resets the timer.
 ```bash
 > timer_expired_minutes [-force,-f] "timerKey" minutes
@@ -12,7 +12,8 @@ Returns true when timer interval has passed and resets the timer.
 ### timer_secs_expired
 Returns true when timer interval has passed and resets the timer.
 ```bash
-> timer_secs_expired [-force,-f] "timerKey" seconds
+> timer_secs_expired [-inittrue,-t] "timerKey" seconds
+# -inittrue: Returns true the first time the timer is initialized.
 ```
 
 ### timer_create
