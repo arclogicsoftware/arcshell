@@ -10,7 +10,7 @@ function os_return_process_cpu_seconds {
    # Returns a record for each process and converts '0-00:00:00' cpu time to seconds.
    # >>> os_return_process_cpu_seconds
    ${arcRequireBoundVariables}
-   ps -eo pid,time,user,comm | awk -f "${arcHome}/sh/core/_os_return_process_cpu_seconds.awk"
+   ps -eo pid,time,user,comm | tr '/' '_' | awk -f "${arcHome}/sh/core/_os_return_process_cpu_seconds.awk"
 }
 
 function os_spawn_busy_process {
