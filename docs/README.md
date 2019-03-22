@@ -738,10 +738,10 @@ Monitors values based on thresholds combined with time limits.
 
    # A configuration file can be used instead.
    os_return_load | \
-      threshold_monitor -config "os_load.config" "os_load"
+      threshold_monitor -config "os_load.cfg" "os_load"
 
    # threshold_monitor can be used like this.
-   if os_return_load | threshold_monitor -config "os_load.config" "os_load"; then
+   if os_return_load | threshold_monitor -config "os_load.cfg" "os_load"; then
       # Do something here.
       :
    fi

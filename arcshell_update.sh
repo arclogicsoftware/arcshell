@@ -64,7 +64,7 @@ else
       log_boring -logkey "arcshell" -tags "update" "Updating '${target_dir}' from '${source_dir}'."
       rsync_dir ${delete_option} -ssh "${arcNode}" -exclude ".git,global,user,.gitattributes,.gitignore,nohup.out" "${source_dir}" "${target_dir}"
       cd "${arcHome}" || ${exitFalse}
-      "./arcshell_setup.sh -doc"
+      ./arcshell_setup.sh -doc
       rm -rf "${source_dir}"
    fi
    ${exitTrue}
