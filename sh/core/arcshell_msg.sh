@@ -40,6 +40,8 @@ function __configArcShellMessaging {
    ${returnTrue} 
 }
 
+# ToDo: Add Slack configuration settings to msg_check function.
+
 function msg_check {
    # Returns a bunch of information about the state of messaging configuration.
    # >>> msg_check
@@ -150,14 +152,14 @@ function send_message {
    while (( $# > 0)); do
       if keyword_does_exist "${1:1}"; then
          keyword="${1:1}"
-         shift 
+      else
+         case "${1}" in
+            "-keyword"|"-k") shift; keyword="${1}"         ;;
+            "-group"|"-g"|"-groups") shift; groups="${1}"  ;;
+            "-now"|"-n") send_now=1 ;;
+            *) break ;;
+         esac
       fi
-      case "${1}" in
-         "-keyword"|"-k") shift; keyword="${1}"         ;;
-         "-group"|"-g"|"-groups") shift; groups="${1}"  ;;
-         "-now"|"-n") send_now=1 ;;
-         *) break ;;
-      esac
       shift
    done
    utl_raise_invalid_option "send_message" "(( $# <= 1 ))" "$*" && ${returnFalse}
@@ -190,9 +192,18 @@ function send_message {
    cat "${tmpFile}.1" >> "${tmpFile}" && rm "${tmpFile}.1"
    while read group_name; do
 
+      # Load keyword every time even through it does not change.
+      # Why? One of the values might be over-ridden in a contact group.
+      eval "$(keyword_load "${keyword}")"
+      eval "$(contact_group_load "${group_name}")"
+
       # Messages can only be sent to disabled groups if -now has been provided.
       if ! contact_group_is_enabled "${group_name}" && ! (( ${send_now} )); then
          continue
+      fi
+
+      if is_truthy "${send_slack:-0}" && [[ -n "${arcshell_app_slack_webhook:-}" ]]; then
+         cat "${tmpFile}" | send_slack -stdin
       fi
 
       # Messages are sent right away when no queuing or the -now option provided.
@@ -216,7 +227,7 @@ function _msgSendNow {
    # >>> _msgSendNow "keyword" "group_name" "subject" 
    ${arcRequireBoundVariables}
    debug3 "_msgSendNow: $*"
-   typeset keyword subject group_name tmpFile
+   typeset keyword group_name subject tmpFile
    keyword="${1}"
    group_name="${2}"
    subject="${3}"

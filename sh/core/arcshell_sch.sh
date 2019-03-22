@@ -11,6 +11,7 @@ mkdir -p "${_schDir}/tasks"
 # ToDo: Disable/enable using regex match.
 # ToDo: Scheduled jobs report.
 # ToDo: Wrap process in another script and obtain more control over knowing if process is still running (start/end times, duration,...).
+# ToDo: A wrapper would also fix the Korn shell problem shown below in the notes.
 
 function __readmeScheduler {
    cat <<EOF
@@ -29,12 +30,40 @@ To create a task just drop an executable file in one of the folders.
 ## Notes
 
 1) You must load the ArcShell environment in each task file if you are using Korn shell. This is optional with Bash shell. Korn shell does not export the core library functions.
+2) Scheduled task files should have unique names.
 
 EOF
 }
 
+function test_file_setup {
+   (
+   cat <<EOF
+echo "Time, got the time"
+EOF
+   ) > "${arcHome}/schedules/01m/test_task.sh"
+   chmod 700 "${arcHome}/schedules/01m/test_task.sh"
+}
+
+function test_file_teardown {
+   sch_delete_task "test_task.sh"
+}
+
 function __setupArcShellScheduler {
    _schPropogateSchedules
+}
+
+function sch_delete_task {
+   # Deletes all matching task files and associated references.
+   # >>> sch_delete_task "task_name"
+   # task_name: Name of task file.
+   ${arcRequireBoundVariables}
+   debug3 "sch_delete_task: $*"
+   typeset task_name 
+   task_name="${1}"
+   find "${_schDir}" -type f -name "${task_name}*" -exec rm {} \;
+   find "${arcHome}/schedules" -type f -name "${task_name}" -exec rm {} \;
+   find "${arcGlobalHome}/schedules" -type f -name "${task_name}" -exec rm {} \;
+   find "${arcUserHome}/schedules" -type f -name "${task_name}" -exec rm {} \;
 }
 
 function arcshell_check_schedules {
@@ -43,7 +72,7 @@ function arcshell_check_schedules {
    ${arcRequireBoundVariables}
    typeset schedule_name config_file schedule
    while read schedule_name; do 
-      config_file=$(_schReturnConfigFile "${schedule_name}")
+      config_file=$(_schReturnConfigFilePath "${schedule_name}")
       if [[ ! -f "${config_file}" ]]; then
          log_error -2 -logkey "scheduler" "Config file not found: ${config_file}: arcshell_check_schedules"
          continue
@@ -53,12 +82,32 @@ function arcshell_check_schedules {
       if is_truthy "${schedule:-0}"; then
          _schProcessSchedule "${schedule_name}"
       fi
-   done < <(sch_list)
+   done < <(sch_list_schedules)
    ${returnTrue} 
 }
 
 function test_arcshell_check_schedules {
    arcshell_check_schedules && pass_test || fail_test 
+}
+
+function _schReturnConfigFilePath {
+   # Returns the full path to the right configuration file for this schedule.
+   # >>> _schReturnConfigFilePath "schedule_name"
+   ${arcRequireBoundVariables}
+   typeset schedule_name 
+   schedule_name="${1}"
+   if [[ -f "${arcUserHome}/schedules/${schedule_name}/schedule.config" ]]; then
+      echo "${arcUserHome}/schedules/${schedule_name}/schedule.config"
+      ${returnTrue} 
+   fi
+   if [[ -f "${arcGlobalHome}/schedules/${schedule_name}/schedule.config" ]]; then
+      echo "${arcGlobalHome}/schedules/${schedule_name}/schedule.config"
+      ${returnTrue} 
+   fi
+   if [[ -f "${arcHome}/schedules/${schedule_name}/schedule.config" ]]; then
+      echo "${arcHome}/schedules/${schedule_name}/schedule.config"
+      ${returnTrue} 
+   fi
 }
 
 function _schProcessSchedule {
@@ -77,7 +126,7 @@ function _schProcessSchedule {
          counters_set "scheduler,total_tasks_executed,${task_file_path},+1"
          log_boring -logkey "scheduler" -tags "${schedule_name}" "pid=${bg_process};file='${task_file_path}'"
       fi
-   done < <(_shReturnFileLongNamesForSchedule "${schedule_name}")
+   done < <(_schReturnFullTaskFilePathForSchedule "${schedule_name}")
    counters_set "scheduler,schedule_count,${schedule_name},+1"
    ${returnTrue} 
 }
@@ -87,7 +136,7 @@ function test__schProcessSchedule {
 }
 
 function sch_is_task_enabled {
-   # Return true if the given task name is enabled and not disabled.
+   # Return true if the given task name is both enabled and not disabled.
    # >>> sch_is_task_enabled "task_name"
    # task_name: The base name of the task file is the task name.
    ${arcRequireBoundVariables}
@@ -101,11 +150,30 @@ function sch_is_task_enabled {
    fi
 }
 
-function _shReturnFileLongNamesForSchedule {
+function test_sch_is_task_enabled {
+   sch_does_task_exist "test_task.sh" && pass_test || fail_test 
+   sch_is_task_enabled "test_task.sh" && pass_test || fail_test 
+   sch_disable_task "test_task.sh" && pass_test || fail_test 
+   ! sch_is_task_enabled "test_task.sh" && pass_test || fail_test 
+   sch_enable_task "test_task.sh" "* * * * *" && pass_test || fail_test 
+   sch_is_task_enabled "test_task.sh" && pass_test || fail_test 
+   sch_enable_task "test_task.sh" "5 4 * * *" && pass_test || fail_test 
+   ! sch_is_task_enabled "test_task.sh" && pass_test || fail_test 
+   sch_enable_task "test_task.sh" && pass_test || fail_test 
+   sch_is_task_enabled "test_task.sh" && pass_test || fail_test 
+   sch_disable_task "test_task.sh" && pass_test || fail_test 
+   ! sch_is_task_enabled "test_task.sh" && pass_test || fail_test 
+   sch_disable_task "test_task.sh" "5 4 * * *" && pass_test || fail_test 
+   sch_is_task_enabled "test_task.sh" && pass_test || fail_test 
+   sch_disable_task "test_task.sh" "* * * * *" && pass_test || fail_test 
+   ! sch_is_task_enabled "test_task.sh" && pass_test || fail_test 
+}
+
+function _schReturnFullTaskFilePathForSchedule {
    # Returns the full path to each task associated with a schedule.
-   # >>> _shReturnFileLongNamesForSchedule "schedule_name"
+   # >>> _schReturnFullTaskFilePathForSchedule "schedule_name"
    ${arcRequireBoundVariables}
-   debug3 "_shReturnFileLongNamesForSchedule: $*"
+   debug3 "_schReturnFullTaskFilePathForSchedule: $*"
    typeset schedule_name task_file_base_name  
    schedule_name="${1}"
    while read task_file_base_name; do
@@ -121,14 +189,17 @@ function _schIsTaskEnabled {
    debug3 "_schIsTaskEnabled: $*"
    typeset task_name 
    task_name="${1}"
-   if [[ -f "${_schDir}/tasks/${task_name}.enabled" ]]; then
-      if is_truthy "$(cat "${_schDir}/tasks/${task_name}.enabled")"; then
-         ${returnTrue} 
-      else
-         ${returnFalse} 
-      fi
-   else
+   if ! [[ -f "${_schDir}/tasks/${task_name}.enabled" ]]; then 
+      debug3 "_schIsTaskEnabled: True"
       ${returnTrue} 
+   fi
+   . "${_schDir}/tasks/${task_name}.enabled"
+   if is_truthy "${task_enabled:-1}"; then
+      debug3 "_schIsTaskEnabled: True"
+      ${returnTrue} 
+   else
+      debug3 "_schIsTaskEnabled: False"
+      ${returnFalse} 
    fi
 }
 
@@ -140,13 +211,13 @@ function _schIsTaskDisabled {
    debug3 "_schIsTaskDisabled: $*"
    typeset task_name 
    task_name="${1}"
-   if [[ -f "${_schDir}/tasks/${task_name}.disabled" ]]; then
-      if is_truthy "$(cat "${_schDir}/tasks/${task_name}.disabled")"; then
-         ${returnTrue} 
-      else
-         ${returnFalse} 
-      fi
+   ! [[ -f "${_schDir}/tasks/${task_name}.disabled" ]] && ${returnFalse} 
+   . "${_schDir}/tasks/${task_name}.disabled"
+   if is_truthy "${task_disabled:-0}"; then
+      debug3 "_schIsTaskDisabled: True"
+      ${returnTrue} 
    else
+      debug3 "_schIsTaskDisabled: True"
       ${returnFalse} 
    fi
 }
@@ -168,9 +239,9 @@ function _schPropogateSchedules {
    done < <(file_list_dirs "${arcGlobalHome}/schedules")
 }
 
-function sch_list {
+function sch_list_schedules {
    # Returns the list of available schedules.
-   # >>> sch_list [-l]
+   # >>> sch_list_schedules [-l]
    case "${1:-}" in 
       "-l") _schListSchedulesLong ;;
       *) _schListSchedules ;;
@@ -188,7 +259,7 @@ function _schListSchedules {
 }
 
 function _schListSchedulesLong {
-   # Return a pretty version of all tasks.
+   # Return a long listing of schedules with included tasks.
    # >>> _schListSchedulesLong
    printf "%-50s %-10s %-10s\n" "Task" "Schedule"  "Status"
    #str_repeat "-" 72
@@ -200,27 +271,7 @@ function _schListSchedulesLong {
             printf "%-50s %-10s %-10s\n" "${task_name}" "${schedule_name}"  "Disabled"
          fi
       done < <(_schReturnTaskFileBaseNamesForSchedule "${schedule_name}")
-   done < <(sch_list)
-}
-
-function _schReturnConfigFile {
-   # Returns the full path to the right configuration file for this schedule.
-   # >>> _schReturnConfigFile "schedule_name"
-   ${arcRequireBoundVariables}
-   typeset schedule_name 
-   schedule_name="${1}"
-   if [[ -f "${arcUserHome}/schedules/${schedule_name}/schedule.config" ]]; then
-      echo "${arcUserHome}/schedules/${schedule_name}/schedule.config"
-      ${returnTrue} 
-   fi
-   if [[ -f "${arcGlobalHome}/schedules/${schedule_name}/schedule.config" ]]; then
-      echo "${arcGlobalHome}/schedules/${schedule_name}/schedule.config"
-      ${returnTrue} 
-   fi
-   if [[ -f "${arcHome}/schedules/${schedule_name}/schedule.config" ]]; then
-      echo "${arcHome}/schedules/${schedule_name}/schedule.config"
-      ${returnTrue} 
-   fi
+   done < <(sch_list_schedules)
 }
 
 function sch_reset_tasks {
@@ -237,14 +288,16 @@ function sch_enable_task {
    # truthy_value:
    ${arcRequireBoundVariables}
    debug3 "sch_enable_task: $*"
-   typeset task_name task_enabled 
+   typeset task_name task_enabled_truthy_value
    task_name="${1}"
-   task_enabled="${2:-1}"
+   task_enabled_truthy_value="${2:-1}"
    if sch_does_task_exist "${task_name}"; then
-      echo "${task_enabled}" > "${_schDir}/tasks/${task_name}.enabled"
+      echo "task_enabled=\"${task_enabled_truthy_value}\"" > "${_schDir}/tasks/${task_name}.enabled"
       rm "${_schDir}/tasks/${task_name}.disabled" 2> /dev/null
+      ${returnTrue} 
    else
       log_error -2 -logkey "scheduler" "Task not found: ${task_name}: sch_enable_task"
+      ${returnFalse} 
    fi
 }
 
@@ -255,15 +308,37 @@ function sch_disable_task {
    # truthy_value:
    ${arcRequireBoundVariables}
    debug3 "sch_disable_task: $*"
-   typeset task_name task_disabled 
+   typeset task_name task_disabled_truthy_value
    task_name="${1}"
-   task_disabled="${2:-1}"
+   task_disabled_truthy_value="${2:-1}"
    if sch_does_task_exist "${task_name}"; then
-      echo "${task_disabled}" > "${_schDir}/tasks/${task_name}.disabled"
+      echo "task_disabled=\"${task_disabled_truthy_value}\"" > "${_schDir}/tasks/${task_name}.disabled"
       rm "${_schDir}/tasks/${task_name}.enabled" 2> /dev/null
+      ${returnTrue} 
    else
       log_error -2 -logkey "scheduler" "Task not found: ${task_name}: sch_disable_task"
+      ${returnFalse} 
    fi
+}
+
+function sch_disable_all_tasks {
+   # Disable all tasks.
+   # >>> sch_disable_all_tasks
+   ${arcRequireBoundVariables}
+   typeset task_name
+   while read task_name; do
+      sch_disable_task "${task_name}"
+   done < <(sch_list_schedules)
+}
+
+function sch_enable_all_tasks {
+   # Enable all tasks.
+   # >>> sch_enable_all_tasks
+   ${arcRequireBoundVariables}
+   typeset task_name
+   while read task_name; do
+      sch_enable_task "${task_name}"
+   done < <(sch_list_schedules)
 }
 
 function _schReturnTaskFilePath {
@@ -293,18 +368,18 @@ function sch_does_task_exist {
    debug3 "sch_does_task_exist: $*"
    typeset task_name 
    task_name="${1}"
-   if _schListAllTaskFileBaseNames | grep "^${task_name}$" 1> /dev/null; then
+   if sch_list_tasks | grep "^${task_name}$" 1> /dev/null; then
       ${returnTrue} 
    else
       ${returnFalse} 
    fi
 }
 
-function _schListAllTaskFileBaseNames {
-   # 
-   # >>> _schListAllTaskFileBaseNames
+function sch_list_tasks {
+   # Returns a list of the unique task names.
+   # >>> sch_list_tasks
    ${arcRequireBoundVariables}
-   debug3 "_schListAllTaskFileBaseNames: $*"
+   debug3 "sch_list_tasks: $*"
    typeset task_file 
    (
    while read task_file; do
@@ -313,7 +388,7 @@ function _schListAllTaskFileBaseNames {
       find "${arcGlobalHome}/schedules" -type f 
       find "${arcUserHome}/schedules" -type f 
       ) 
-   ) | sort -u
+   ) | grep -v "schedule.config" | sort -u
 }
 
 function _schReturnTaskFileBaseNamesForSchedule {

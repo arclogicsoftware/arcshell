@@ -34,9 +34,9 @@ function os_spawn_busy_process {
 
 # ToDo: Might implement /proc/stat sampling (https://stackoverflow.com/questions/1332861/how-can-i-determine-the-current-cpu-utilization-from-the-shell).
 
-function os_return_cpu_usage {
+function os_return_cpu_pct_used {
    # Returns current CPU usage.
-   # >>> os_return_cpu_usage
+   # >>> os_return_cpu_pct_used
    ${arcRequireBoundVariables}
    typeset idle_cpu cpu_usage 
    idle_cpu=0
@@ -46,7 +46,7 @@ function os_return_cpu_usage {
          :
          ;;
       *) 
-         log_error -logkey "arcshell" -tags "os" "'os_return_cpu_usage' is may not operate correctly for this OS." 
+         log_error -logkey "arcshell" -tags "os" "'os_return_cpu_pct_used' is may not operate correctly for this OS." 
          ;;         
    esac
    column_number="$(vmstat 1 1 | str_return_matching_column_num -stdin "id")"

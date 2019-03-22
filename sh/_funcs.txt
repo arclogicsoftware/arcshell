@@ -338,7 +338,7 @@ os_create_process
 os_disks
 os_get_process_count
 os_is_process_id_process_name_running
-os_return_cpu_usage
+os_return_cpu_pct_used
 os_return_load
 os_return_os_type
 os_return_process_cpu_seconds
@@ -361,11 +361,15 @@ rmtempd
 rmtempf
 rsync_dir
 sanelog
+sch_delete_task
+sch_disable_all_tasks
 sch_disable_task
 sch_does_task_exist
+sch_enable_all_tasks
 sch_enable_task
 sch_is_task_enabled
-sch_list
+sch_list_schedules
+sch_list_tasks
 sch_reset_tasks
 sendgrid_send
 send_message

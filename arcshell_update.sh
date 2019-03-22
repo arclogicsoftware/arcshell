@@ -23,6 +23,15 @@ function _arcshellUpdateThrowError {
    throw_error "arcshell_update.sh" "${1}"
 }
 
+delete_option=
+while (( $# > 0)); do
+   case "${1}" in
+      "-delete"|"-d") delete_option="-delete " ;;
+      *) break ;;
+   esac
+   shift
+done
+
 if [[ $0 != "arcshell_update.sh" && $0 != "./arcshell_update.sh" && $0 != $(pwd)/arcshell_update.sh ]]; then
    _arcshellUpdateThrowError "\$0 is '$0'. Switch to the arcshell_update.sh directory and then execute './arcshell_update.sh'"
    ${exitFalse}
@@ -53,7 +62,7 @@ else
    target_dir="${arcHome}"
    if [[ -d "${target_dir}" ]]; then
       log_boring -logkey "arcshell" -tags "update" "Updating '${target_dir}' from '${source_dir}'."
-      rsync_dir -ssh "${arcNode}" -exclude ".git,user,.gitattributes,.gitignore,nohup.out" "${source_dir}" "${target_dir}"
+      rsync_dir ${delete_option} -ssh "${arcNode}" -exclude ".git,global,user,.gitattributes,.gitignore,nohup.out" "${source_dir}" "${target_dir}"
       cd "${arcHome}" || ${exitFalse}
       "./arcshell_setup.sh -doc"
       rm -rf "${source_dir}"

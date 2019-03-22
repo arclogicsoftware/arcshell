@@ -1,0 +1,19 @@
+# The initial keyword to associate with the alert. 
+# It must be one of the configured keywords.
+alert_keyword="slack"
+
+# How many times should the initial alert type notify with the above keyword?
+alert_count=999
+
+# What is the notification interval in minutes?
+alert_interval=1
+
+# Once the above completes we can change the keyword.
+# It can be less critical or more.
+alert_reminder_keyword=
+
+# Reminder count before automatically closing the alert.
+alert_reminder_count=
+
+# Reminder interval in minutes.
+alert_reminder_interval=

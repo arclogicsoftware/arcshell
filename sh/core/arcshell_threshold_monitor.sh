@@ -22,10 +22,10 @@ function __exampleThresholdMonitoring {
 
    # A configuration file can be used instead.
    os_return_load | \
-      threshold_monitor -config "os_load.cfg" "os_load"
+      threshold_monitor -config "os_load.config" "os_load"
 
    # threshold_monitor can be used like this.
-   if os_return_load | threshold_monitor -config "os_load.cfg" "os_load"; then
+   if os_return_load | threshold_monitor -config "os_load.config" "os_load"; then
       # Do something here.
       :
    fi
@@ -157,8 +157,8 @@ function _thresholdsHandleThresholdOption {
       args="${args},"
    fi
    IFS="," read threshold duration_min keyword < <(echo "${args}")
-   duration_secs=$(dt_get_seconds_from_interval_string "${duration_min_1}")
-   ((duration_min_1=duration_secs/60))
+   duration_secs=$(dt_get_seconds_from_interval_string "${duration_min}")
+   ((duration_min=duration_secs/60))
    echo "${threshold},${duration_min},${keyword}"
    ${returnTrue} 
 }
@@ -249,6 +249,6 @@ function _thresholdSendMessage {
    #debug1 "${_thresholdDir}/thresholds_${threshold_group}.message_file"
    #cat "${_thresholdDir}/thresholds_${threshold_group}.message_file" | debugd1
    cat "${_thresholdDir}/thresholds_${threshold_group}.message_file" | \
-      send_message -${sensor_keyword} "Threshold Exceeded in the '${threshold_group}' Threshold Group"
+      send_message -${sensor_keyword} "A threshold in the '${threshold_group}' group has exceeded one of it's limits."
 }
 

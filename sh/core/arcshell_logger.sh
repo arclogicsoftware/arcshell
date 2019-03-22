@@ -454,11 +454,15 @@ function log_warning {
       esac
       shift
    done
-   utl_raise_invalid_option "log_warning" "(( $# <= 1 ))" "$*" && ${returnFalse} 
-   log_text="${1:-}"
-   _log_log_type "WARNING" "${log_key}" "${log_text}" "${tags:-}"
+   utl_raise_invalid_option "log_warning" "(( $# == 1 ))" "$*" && ${returnFalse} 
+   log_text="${1}"
    if (( ${stdin} )); then
-      cat | log_detail 
+      log_input="$(cat)"
+      [[ -z "${log_input:-}" ]] && ${returnFalse} 
+   fi
+   _log_log_type "WARNING" "${log_key}" "${log_text}" "${tags:-}"
+   if [[ -n "${log_input:-}" ]]; then
+      echo "${log_input}" | log_detail 
    fi
 }
 

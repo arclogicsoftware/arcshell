@@ -121,11 +121,14 @@ sleep 3
 
 # Load the current arcshell environment if it is found.
 
+typeset from_version
+from_version=209903121129
 
 if [[ -f "${HOME}/.arcshell" ]]; then
    arcHome=
    . "${HOME}/.arcshell"
-   log_setup "Looks like ArcShell version ${arcVersion:-} may already be installed."
+   from_version=$(arc_version -n)
+   log_setup "Looks like ArcShell version $(arc_version) may already be installed."
    if [[ -n "${alternate_user_home:-}" ]] && ! [[ "${alternate_user_home}" != "${arcHome}" ]]; then
       if ! _setupArcShellMoveUserHome "${arcUserHome}" "${alternate_user_home}"; then
          ${exitFalse}
@@ -306,7 +309,7 @@ sed '1d' "${arcHome}/resource/arcshell_daemon.sh"
 chmod 700 "${arcUserHome}/arcshell.sh"
 
 log_setup "Securing ArcShell files and directories." 1
-# arc_secure_home
+#arc_secure_home
 
 log_setup "Running setup.config files..." 1
 while read f; do
@@ -358,12 +361,26 @@ Ethan@ArclogicSoftware.com
 EOF
 
 # Patching Code
-if (( $(arc_version -n) <= 201903121129 )); then
+if (( ${from_version} <= 201903121129 )); then
    # Remove the delivered file manually if it exists.
    find "${arcHome}/config/schedules" -name "arcshell_collect_server_load" -exec rm {} \;
    # Check to see if user has a copy of this file elsewhere.
    if sch_does_task_exist "arcshell_collect_server_load.sh"; then
       log_error -2 -logkey "arcshell" -tags "deprecated" "arcshell_collect_server_load.sh scheduled task is deprecated."
    fi
+fi
+
+if (( ${from_version} <= 201903202348 )); then
+   sch_delete_task "arcshell_check_alerts.sh"
+   sch_delete_task "arcshell_check_message_queues.sh"
+   sch_delete_task "arcshell_check_for_reboot.sh"
+   sch_delete_task "arcshell_run_misc_tasks_05m.sh"
+   sch_delete_task "arcshell_run_misc_tasks_10m.sh"
+   sch_delete_task "arcshell_10m_tasks.sh"
+   if [[ -f "${arcHome}/schedules/01m/arcshell_monitor_cpu_usage.sh" ]]; then
+      mv "${arcHome}/schedules/01m/arcshell_monitor_cpu_usage.sh" \
+         "${arcHome}/schedules/05m/"
+   fi
+   sch_delete_task "arcshell_hourly_tasks.sh"
 fi
 

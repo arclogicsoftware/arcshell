@@ -34,11 +34,18 @@ function sendgrid_send {
    tmpFile="$(mktempf)"
    cat > "${tmpFile}"
    cat "${tmpFile}" | sed 's/"/\\"/g' | str_replace_end_of_line_with_slash_n -stdin > "${tmpFile}1"
+   # curl --request POST \
+   #    --url https://api.sendgrid.com/v3/mail/send \
+   #    --header "Authorization: Bearer ${SENDGRID_API_KEY}" \
+   #    --header "Content-Type: application/json" \
+   #    --data "$(_sendgridReturnJSONDataRecord "${to}" "${from_address}" "${subject}" "${tmpFile}1")"
+   _sendgridReturnJSONDataRecord "${to}" "${from_address}" "${subject}" "${tmpFile}1"
    curl --request POST \
       --url https://api.sendgrid.com/v3/mail/send \
       --header "Authorization: Bearer ${SENDGRID_API_KEY}" \
       --header "Content-Type: application/json" \
-      --data "$(_sendgridReturnJSONDataRecord "${to}" "${from_address}" "${subject}" "${tmpFile}1")"
+      -d @${tmpFile}1.data
+   
    if (( $? )); then
       cat "${tmpFile}" | log_error -stdin -2 -logkey "sendgrid" -tags "sendgrid" "Error: Trying to post to SendGrid."
       rm "${tmpFile}"*
@@ -57,11 +64,14 @@ function _sendgridReturnJSONDataRecord {
    # subject: Subject text.
    # tmpFile: Path to file containing contents of the message to encode.
    ${arcRequireBoundVariables}
+   debug3 "_sendgridReturnJSONDataRecord: $*"
    typeset to from subject tmpFile
    to="${1}"
    from="${2}"
    subject="${3}"
    tmpFile="${4}"
+   [[ ! -s "${tmpFile}" ]] && date > "${tmpFile}"
+   (
    cat <<EOF
 {  
    "personalizations":[  
@@ -85,6 +95,9 @@ function _sendgridReturnJSONDataRecord {
    ]
 }
 EOF
+   ) > "${tmpFile}.data"
+   debug3 "${tmpFile}.data"
+   cat "${tmpFile}.data" | debugd3
    ${returnTrue} 
 }
 

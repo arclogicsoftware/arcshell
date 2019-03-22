@@ -19,7 +19,7 @@ typeset x
 x="monitor_critical_os_files_for_changes"
 ! lock_aquire -try 5 -term 1200 "${x}" && ${exitFalse}
 timer_time "watching_critical_os_files"
-watch_file -hash -tags "security,os" -watch "critical_os_files" "${x}"
+watch_file -hash -tags "security,os" -watch "critical_os_files.cfg" "${x}"
 timer_end "watching_critical_os_files"
 lock_release "${x}"
 

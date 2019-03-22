@@ -8,12 +8,6 @@
 # group_texts="${email},${email}"
 # group_texts=
 
-# Should reference a valid chat configuration file for Slack.
-# group_slack_profile="slack.cfg"
-
-# Disables slack notifications when truthy(*).
-# group_disable_slack=0
-
 # Is this a default group? Defaults to true. (*)
 # Default groups are returned when no other group is provided.
 # group_default_group=
@@ -24,11 +18,15 @@
 # Is this group disabled? Defaults to false. (*)
 # group_disabled=
 
-# Is this group on hold? Defaults to false. (*)
-# group_hold=
-
 # Disable SMS texts? Defaults to false. (*)
 # group_disable_texts= 
+
+# -----------------------------------------------------------------------------
+# Message Queueing/Digest Delivery Settings
+# -----------------------------------------------------------------------------
+
+# Is this group on hold? Defaults to false. (*)
+# group_hold=
 
 # Message queueing (or digest delivery) is disabled unless one of 
 # the values below is set. Queueing can be bypassed when using
@@ -45,4 +43,16 @@
 
 # Send queued texts if oldest item in queue is older than X seconds.
 # group_max_text_queue_seconds=
+
+# -----------------------------------------------------------------------------
+# Slack
+#
+# Do not uncomment slack settings unless they are being used.
+# -----------------------------------------------------------------------------
+
+# Over-rides arcshell.cfg setting.
+# arcshell_app_slack_webhook=
+
+# Over-rides keyword configuration setting.
+send_slack=1
 

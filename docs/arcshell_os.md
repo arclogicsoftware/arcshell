@@ -16,10 +16,10 @@ Spawns busy process N seconds and returns the internal loop count. Breaks if loo
 # seconds: The number of seconds to run for.
 ```
 
-### os_return_cpu_usage
+### os_return_cpu_pct_used
 Returns current CPU usage.
 ```bash
-> os_return_cpu_usage
+> os_return_cpu_pct_used
 ```
 
 ### os_return_total_cpu_seconds

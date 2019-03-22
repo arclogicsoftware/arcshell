@@ -2,35 +2,43 @@
 
 ## 01h
 
-### arcshell_hourly_tasks.sh
+### arcshell_01h_tasks.sh
+
+* Collects the size and monitors the size of the ArcShell home directory.
+* Removes ArcShell .tmp files that are older than 1 day.
+* Remove ArcShell debug session files older than 1 day. 
+* Track enabled notification groups.
+* Tracks and logs any changes in ArcShell files.
 
 ## 01m
 
-### arcshell_check_alerts.sh
+### arcshell_01m_tasks.sh
 
-Monitor alerts and send recurring notifications when required.
-
-### arcshell_check_for_reboot.sh
-
-Logs a warning if a reboot has been detected. Total reboots are counted using a counter.
-
-### arcshell_check_message_queues.sh
-
-Checks the message queues and sends queued messages when set criteria is met.
+* Reboot check.
+* Monitor alerts and sends recurring notifications when required.
+* Monitor the ArcShell message queues.
 
 ### arcshell_collect_vmstats.sh
 
 Collects server performance metrics using "vmstat".
-
-### arcshell_monitor_cpu_usage.sh
-
-Collects and monitors server CPU usage.
 
 ### arcshell_monitor_server_load.sh
 
 Collects os load metrics and monitor for os load thresholds.
 
 ## 05m
+
+### arcshell_05m_tasks.sh
+
+* Collects stats for all of the sensor related counters.
+
+### arcshell_monitor_cpu_usage.sh
+
+Collects and monitors server CPU usage and per process CPU usage.
+
+### arcshell_monitor_cron_logs.sh
+
+Monitors the cron log files.
 
 ### arcshell_monitor_os_logs.sh
 
@@ -44,20 +52,7 @@ Log File | About |
 dmesg | Monitored for new lines if the program is available. | 
 errpt -a | "" |
 
-### arcshell_run_misc_tasks_05m.sh
-
 ## 10m
-
-### arcshell_run_misc_tasks_10m.sh
-
-Performs some basic ArcShell house keeping.
-
-Task | About |
--- | -- |
-'.tmp' file cleanup | Removes ArcShell .tmp files that are older than 1 day. |
-Debug Session file cleanup. | Remove ArcShell debug session files older than 1 day. | 
-Track enabled notification groups. | Keep track of the # of enabled notification groups. Log a notice any time is changes.|
-Monitor ArcShell files for changes. | Tracks and logs any changes in ArcShell files. | 
 
 ## 20m
 

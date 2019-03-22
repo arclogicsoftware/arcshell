@@ -16,34 +16,36 @@ EOF
 arcHome=
 . "${HOME}/.arcshell"
 
+! is_truthy "${archell_monitor_os_logs:-1}" && ${returnFalse} 
+
 boot_is_aux_instance && exit 0
 
 ! lock_aquire -try 5 -term 1200 "monitor_os_logs" && ${exitFalse}
 
 if [[ -r "/var/log/syslog" ]]; then
    log_boring -logkey "os" -tags "logs" "Monitoring /var/log/syslog file."
-   logmon_read_log -max 10 "/var/log/syslog" | logmon_handle_log -stdin "var_log_syslog"
+   logmon_read_log -max 10 "/var/log/syslog" | logmon_handle_log -stdin "var_log_syslog.cfg"
 fi
 
 if [[ -r "/var/log/syslog.out" ]]; then
    log_boring -logkey "os" -tags "logs" "Monitoring /var/log/syslog.out file."
    logmon_read_log -max 10 "/var/log/syslog.out" | \
-      logmon_handle_log -stdin "var_log_syslog"
+      logmon_handle_log -stdin "var_log_syslog.cfg"
 fi
 
 if [[ -r "/var/log/messages" ]]; then
    log_boring -logkey "os" -tags "logs" "Monitoring /var/log/messages file."
-   logmon_read_log -max 10 "/var/log/messages" | logmon_handle_log -stdin "var_log_messages"
+   logmon_read_log -max 10 "/var/log/messages" | logmon_handle_log -stdin "var_log_messages.cfg"
 fi
 
 if boot_is_program_found "dmesg"; then
    log_boring -logkey "os" -tags "logs" "Monitoring dmesg."
-   dmesg | sensor -new "dmesg_sensor" | logmon_handle_log -stdin "var_log_dmesg"
+   dmesg | sensor -new "dmesg_sensor" | logmon_handle_log -stdin "var_log_dmesg.cfg"
 fi
 
 if boot_is_program_found "errpt"; then
    log_boring -logkey "os" -tags "logs" "Monitoring errpt -a."
-   errpt -a | sensor -new "errpt_sensor" | logmon_handle_log -stdin "var_log_errpt"
+   errpt -a | sensor -new "errpt_sensor" | logmon_handle_log -stdin "var_log_errpt.cfg"
 fi
 
 lock_release "monitor_os_logs"

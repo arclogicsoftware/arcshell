@@ -1,19 +1,23 @@
 
-function __usageRunMiscTasks10m {
+function __usageArcShell01hTasks {
    cat <<EOF
-Performs some basic ArcShell house keeping.
-
-Task | About |
--- | -- |
-'.tmp' file cleanup | Removes ArcShell .tmp files that are older than 1 day. |
-Debug Session file cleanup. | Remove ArcShell debug session files older than 1 day. | 
-Track enabled notification groups. | Keep track of the # of enabled notification groups. Log a notice any time is changes.|
-Monitor ArcShell files for changes. | Tracks and logs any changes in ArcShell files. | 
+* Collects the size and monitors the size of the ArcShell home directory.
+* Removes ArcShell .tmp files that are older than 1 day.
+* Remove ArcShell debug session files older than 1 day. 
+* Track enabled notification groups.
+* Tracks and logs any changes in ArcShell files.
 EOF
 } 
 
 arcHome=
 . "${HOME}/.arcshell"
+
+typeset dir_size_mb
+dir_size_mb=$(file_get_dir_mb_size "${arcHome}")
+
+counters_set "arcshell,arcshell_home_size_mb,=${dir_size_mb})"
+
+echo ${dir_size_mb} | threshold_monitor -stdin -t1 "2048,60,warning" "arcshell_home_size_mb"
 
 # Purge .tmp files older than 24 hours.
 find "${arcTmpDir}/tmp" -type f -mtime +1 -exec rm {} \;
@@ -34,5 +38,5 @@ fi
 typeset x
 x="monitor_arcshell_files_for_changes"
 ! lock_aquire -try 5 -term 1200 "${x}" && ${exitFalse}
-watch_file -tags "arcshell" -look -recurse -exclude "\.git.*|.*user.*tmp.*|\.tar\." -watch "arcshell_files" "${x}"
+watch_file -tags "arcshell" -look -recurse -exclude "\.git.*|.*user.*tmp.*|\.tar\." -watch "arcshell_files.cfg" "${x}"
 lock_release "${x}"

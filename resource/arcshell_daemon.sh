@@ -7,14 +7,10 @@
 arcHome=
 . "${HOME}/.arcshell"
 
-function __todoArcShellDaemon {
-   cat <<EOF
-* Add uptime reporting.
-* Add downtime reporting when restarting.
-* Add -force option where needed.
-* Add suspend time limit.
-EOF
-}
+# ToDo: Add uptime reporting.
+# ToDo: Add cron windows for suspend.
+# ToDo: Add suspend time limit.
+# ToDo: Add -force option where needed (no idea what I was thinking here).
 
 typeset _g_arcshellStartDaemon x process_count total_line_count last_line_count number_of_new_lines c
 
