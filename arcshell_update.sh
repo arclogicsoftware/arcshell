@@ -23,15 +23,6 @@ function _arcshellUpdateThrowError {
    throw_error "arcshell_update.sh" "${1}"
 }
 
-delete_option=
-while (( $# > 0)); do
-   case "${1}" in
-      "-delete"|"-d") delete_option="-delete " ;;
-      *) break ;;
-   esac
-   shift
-done
-
 if [[ $0 != "arcshell_update.sh" && $0 != "./arcshell_update.sh" && $0 != $(pwd)/arcshell_update.sh ]]; then
    _arcshellUpdateThrowError "\$0 is '$0'. Switch to the arcshell_update.sh directory and then execute './arcshell_update.sh'"
    ${exitFalse}
@@ -51,6 +42,15 @@ if [[ ! -f "${HOME}/.arcshell" ]]; then
    _arcshellUpdateThrowError "'${HOME}/.arcshell' was not found. This program is only run if ArcShell is already installed."
    ${exitFalse}
 fi
+
+delete_option=
+while (( $# > 0)); do
+   case "${1}" in
+      "-delete"|"-d") delete_option="-delete " ;;
+      *) break ;;
+   esac
+   shift
+done
 
 . "${HOME}/.arcshell"
 

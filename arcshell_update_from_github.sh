@@ -3,23 +3,7 @@
 arcHome=
 . ~/.arcshell 
 
-__github_download_url="${1:-"https://github.com/arclogicsoftware/arcshell/archive/master.zip"}"
-
-if [[ ! -f "${HOME}/.arcshell" ]]; then
-   throw_error "$0" "${HOME}/.arcshell is not found. Make sure ArcShell is already installed: $*: $0"
-   exit 1
-fi
-
 typeset tmpDir new_directory starting_dir delete_option
-tmpDir="$(mktempd)"
-starting_dir="$(pwd)"
-cd "${tmpDir}" || ${returnFalse} 
-
-boot_raise_program_not_found "wget" && ${returnFalse} 
-boot_raise_program_not_found "unzip" && ${returnFalse} 
-
-wget "${__github_download_url}" 
-unzip "${tmpDir}/"*".zip"
 
 delete_option=
 while (( $# > 0)); do
@@ -29,6 +13,23 @@ while (( $# > 0)); do
    esac
    shift
 done
+
+__github_download_url="${1:-"https://github.com/arclogicsoftware/arcshell/archive/master.zip"}"
+
+if [[ ! -f "${HOME}/.arcshell" ]]; then
+   throw_error "$0" "${HOME}/.arcshell is not found. Make sure ArcShell is already installed: $*: $0"
+   exit 1
+fi
+
+tmpDir="$(mktempd)"
+starting_dir="$(pwd)"
+cd "${tmpDir}" || ${returnFalse} 
+
+boot_raise_program_not_found "wget" && ${returnFalse} 
+boot_raise_program_not_found "unzip" && ${returnFalse} 
+
+wget "${__github_download_url}" 
+unzip "${tmpDir}/"*".zip"
 
 if (( $(file_list_dirs "${tmpDir}" | wc -l) != 1 )); then
    log_error -2 -logkey "arcshell" "Downloaded file contained more than one root directory: $*: _arcDownloadAndUpdateFromGitHubMasterZipFile"
