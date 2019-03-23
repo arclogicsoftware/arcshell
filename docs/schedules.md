@@ -36,9 +36,12 @@ Collects os load metrics and monitor for os load thresholds.
 
 Collects and monitors server CPU usage and per process CPU usage.
 
-### arcshell_monitor_cron_logs.sh
+### arcshell_monitor_cron.sh
 
-Monitors the cron log files.
+* Monitors cron job output by monitoring log files if configured.
+* Monitors crontab file for changes and backs file up anytime a change is detected.
+* Uses a counter to track the number of cron jobs.
+* Monitors the status of the cron daemon.
 
 ### arcshell_monitor_os_logs.sh
 

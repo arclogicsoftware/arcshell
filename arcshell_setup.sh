@@ -5,19 +5,21 @@
 
 function arcshell_setup_usage {
    cat <<EOF
-./arcshell_setup.sh [-usr "X"] [-doc] [-aux] [-admin "X"] [-help]arcUserHome
+./arcshell_setup.sh [-usr "X"] [-doc] [-aux] [-reset] [-admin "X"] [-help]
 
    -usr     : Sets or moves the user home to directory "X". Fails if "X" already exists.
    -doc     : Rebuilds the documentation.
    -main    : Usually only one install per host should be designated main.
    -aux     : Designate the install as an auxilliary install.
+   -reset   : Resets the system by deleting all data in the ArcShell temp folder.
    -help    : Get help.
 
 EOF
 }
 
-typeset alternate_user_home build_the_docs
+typeset alternate_user_home build_the_docs reset_arcshell
 
+reset_arcshell=0
 alternate_user_home=
 build_the_docs=0
 auxiliary_instance=
@@ -39,6 +41,7 @@ while (( $# > 0)); do
       "-doc") build_the_docs=1 ;;
       "-aux") auxiliary_instance=1 ;;
       "-main") auxiliary_instance=0  ;;
+      "-reset") reset_arcshell=1 ;;
       "-help") arcshell_setup_usage; exit 0 ;;
       *) break ;;
    esac
@@ -146,6 +149,11 @@ fi
 arcVersion="$(cat "$(pwd)/resource/version.txt")"
 
 log_setup "ArcShell version is ${arcVersion}" 1
+
+if [[ -d "${arcTmpDir:-}" ]] && (( ${reset_arcshell} )); then
+   rm -rf "${arcTmpDir}"
+   mkdir -p "${arcTmpDir}"
+fi
 
 export arcHome="$(pwd)"
 export arcGlobalHome="${arcHome}/global"

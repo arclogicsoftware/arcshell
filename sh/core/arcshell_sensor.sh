@@ -206,7 +206,6 @@ function sensor_return_sensor_value {
    ${returnTrue} 
 }
 
-
 function sensor_get_last_diff {
    # Return the diff from last time sensor ran.
    # >>> sensor_get_last_diff [-group,-g "X"] "sensor_key"
