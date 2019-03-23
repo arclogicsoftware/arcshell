@@ -2,7 +2,7 @@
 
 | Module | About |
 | --- | --- |
-| [Alerting](#alerting) | Easily incorporates recurring alerts and notifications into your scripts. |
+| [Alerting](#alerting) | Easily incorporate recurring alerts and notifications into your scripts. |
 | [ArcShell](#arcshell) | Contains functions to manage local and remote ArcShell nodes. |
 | [Caching](#caching) | A simple yet powerful key value data store. |
 | [Chat](#chat) | Supports sending messages to services like Slack. |
@@ -53,7 +53,7 @@
 
 ## Alerting (arcshell_alerts.sh)
 
-Easily incorporates recurring alerts and notifications into your scripts.
+Easily incorporate recurring alerts and notifications into your scripts.
 
 ## Example(s)
 ```bash

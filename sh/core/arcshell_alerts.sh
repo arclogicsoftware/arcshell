@@ -1,6 +1,6 @@
 
 # module_name="Alerting"
-# module_about="Easily incorporates recurring alerts and notifications into your scripts."
+# module_about="Easily incorporate recurring alerts and notifications into your scripts."
 # module_version=1
 # module_image="alarm-clock-1.png"
 # copyright_notice="Copyright 2019 Arclogic Software"
@@ -14,13 +14,14 @@ mkdir -p "${_alertsDir}"
 
 function __readmeAlerting {
    cat <<EOF
+
 # Alerting
 
 **Easily incorporates recurring alerts and notifications into your scripts.**
 
 Use alerts to set up a recurring notifications until a condition is resolved or the alert cycle completes.
 
-Alerts are opened using an alert type. 
+Alerts are opened using an alert type. Alerts can be routed to one or more **contact groups** but this is optional as ArcShell will automatically route them to any available group.
 
 Alert types are found in the \`\`\`\${arcHome}/config/alert_types\`\`\` folder.
 

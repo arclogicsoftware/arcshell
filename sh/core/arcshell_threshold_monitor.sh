@@ -161,7 +161,7 @@ function _thresholdsHandleThresholdOption {
       duration_min="${duration_min}m"
    fi
    duration_secs=$(dt_return_seconds_from_interval_str "${duration_min}" )
-   ((duration_min=duration_min*60))
+   ((duration_min=duration_secs/60))
    echo "${threshold},${duration_min},${keyword}"
    ${returnTrue} 
 }
@@ -171,19 +171,19 @@ function test__thresholdsHandleThresholdOption {
    _thresholdsHandleThresholdOption "1.0,2,warning" | assert_match "1.0,2,warning" "Should return the input unchanged."
    _thresholdsHandleThresholdOption "1.0,2" | assert_match "1.0,2," "Should have added a comma."
    # All fields provided.
-   IFS="," read x y z < <(_thresholdsHandleThresholdOption ".2,2.0,notice")
+   IFS="," read x y z < <(_thresholdsHandleThresholdOption ".2,2,notice")
    [[ "${x}" == ".2" ]] && pass_test || fail_test 
-   [[ "${y}" == "2.0" ]] && pass_test || fail_test 
+   [[ "${y}" == "2" ]] && pass_test || fail_test 
    [[ "${z}" == "notice" ]] && pass_test || fail_test 
    # No keyword, has trailing comma.
-   IFS="," read x y z < <(_thresholdsHandleThresholdOption ".2,2.0,")
+   IFS="," read x y z < <(_thresholdsHandleThresholdOption ".2,2,")
    [[ "${x}" == ".2" ]] && pass_test || fail_test 
-   [[ "${y}" == "2.0" ]] && pass_test || fail_test 
+   [[ "${y}" == "2" ]] && pass_test || fail_test 
    [[ -z "${z:-}" ]] && pass_test || fail_test 
    # No keyword, does not have trailing comma.
-   IFS="," read x y z < <(_thresholdsHandleThresholdOption ".2,2.0")
+   IFS="," read x y z < <(_thresholdsHandleThresholdOption ".2,2")
    [[ "${x}" == ".2" ]] && pass_test || fail_test 
-   [[ "${y}" == "2.0" ]] && pass_test || fail_test 
+   [[ "${y}" == "2" ]] && pass_test || fail_test 
    [[ -z "${z:-}" ]] && pass_test || fail_test 
 }
 
@@ -210,6 +210,8 @@ function _thresholdsEval {
    #debug1 "current_value=${current_value}"
    if num_is_gt ${current_value} ${defined_threshold}; then
       (( ${sensor_start_time} == 0 )) && sensor_start_time=$(dt_epoch)  
+   else
+      sensor_start_time=0
    fi
    #debug1 "sensor_start_time=${sensor_start_time}"
    if (( ${sensor_start_time} > 0 )); then
