@@ -13,7 +13,7 @@ function keyword_raise_not_found {
    ${arcRequireBoundVariables}
    typeset keyword 
    keyword="${1}"
-   if _configRaiseObjectNotFound "keywords" "${keyword}"; then
+   if _configRaiseObjectNotFound "keywords" "${keyword}.cfg"; then
       ${returnTrue} 
    else
       ${returnFalse} 
@@ -26,7 +26,7 @@ function keyword_does_exist {
    ${arcRequireBoundVariables}
    typeset keyword 
    keyword="${1}"
-   if config_does_object_exist "keywords" "${keyword}"; then
+   if config_does_object_exist "keywords" "${keyword}.cfg"; then
       ${returnTrue} 
    else
       ${returnFalse} 
@@ -41,7 +41,7 @@ function keyword_load {
    typeset keyword 
    keyword="${1}"
    keyword_raise_not_found "${keyword}" && ${returnFalse} 
-   echo "$(config_load_object "keywords" "${keyword}")"
+   echo "$(config_load_object "keywords" "${keyword}.cfg")"
 }
 
 function test_keyword_load {

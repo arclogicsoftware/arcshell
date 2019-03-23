@@ -66,7 +66,10 @@ Keyword Configuration File Example
 ```
 # /media/sf_temp/arcshell/config/keywords/critical.cfg
 #
-
+# Truthy values including ArcShell cron expressions are acceptable.
+send_text=1
+send_email=1
+send_slack=0
 ```
 
 ## Reference
