@@ -248,9 +248,3 @@ function test_speed_test {
    echo "Results: ${t}s"
 }
 
-function _cacheThrowError {
-   # Error handler for this library.
-   # >>> _cacheThrowError "errorText"
-  throw_error "arcshell_cache.sh" "${1}"
-}
-

@@ -29,6 +29,14 @@ function __configArcShell {
    fi
 }
 
+function __readmeArcShellModule {
+   cat <<EOF
+This module provides users with the ability to install, package, update, uninstall, and run commands on other ArcShell nodes over SSH. 
+
+There are other helpful commands which can be used when building your own modules for ArcShell. Please see the documentation for each function below.
+EOF
+}
+
 function __exampleArcShell {
    # Package the current ArcShell home.
    arc_pkg 
@@ -459,6 +467,7 @@ arcNode='${arcNode}'
 arcHome='${arcHome}'
 arcGlobalHome='${arcGlobalHome}'
 arcUserHome='${arcUserHome}'
+arc_version='${arc_version}'
 EOF
    ssh_show
 }

@@ -12,7 +12,7 @@ mkdir -p "${_alertsDir}"
 
 # ToDo: Add alerts_report function.
 
-function __alertsReadMe {
+function __readmeAlerting {
    cat <<EOF
 Use alerts to set up a recurring notifications until a condition is resolved or the alert cycle completes.
 
