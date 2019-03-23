@@ -4,7 +4,7 @@ This module runs scheduled tasks from your scheduled task folders.
 
 ## Schedules
 
-To create a schedule create a new directory in one of the 'schedules' folders. This is the name of the schedule. Then add a 'schedule.config' file to configure the schedule.
+To create a schedule create a new directory in one of the 'schedules' folders. This is the name of the schedule. Then add a 'schedule.cfg' file to configure the schedule.
 
 ## Tasks
 

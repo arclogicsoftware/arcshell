@@ -65,7 +65,7 @@ log_set_file "\${path_to_log_file}"
 Log entries are currently being written to:
 EOF
 (( ${_g_log_to_log} )) && echo "> '$(_logReturnLogFile)'"
-(( ${_g_log_to_stdout} )) && echo "> STDIN"
+(( ${_g_log_to_stdout} )) && echo "> STDOUT"
 (( ${_g_log_to_stderr} )) && echo "> STDERR"
 cat <<EOF
 To change the output targets run the 'log_set_output' command.
@@ -75,24 +75,24 @@ EOF
 
 function log_set_output {
    # Sets the log output targets for the current session.
-   # >>> log_set_output "targets"
-   # targets: List of numbers which determine output targets. 0 file, 1 stdout, 2 stderr.
+   # >>> log_set_output [-0] [-1|-2]
+   # -0: Log to log file.
+   # -1: Log to standard out.
+   # -2: Log to standard error.
    ${arcRequireBoundVariables}
    typeset output_targets 
    _g_log_to_log=0
-   _g_log_to_log_stdout=0
+   _g_log_to_stdout=0
    _g_log_to_stderr=0
-   if str_instr "0" "$*" 1>/dev/null ; then
-      _g_log_to_log=1
-   fi
-   if str_instr "1" "$*" 1>/dev/null ; then
-      _g_log_to_stdout=1
-      _g_log_to_stderr=0
-   fi
-   if str_instr "2" "$*" 1>/dev/null ; then
-      _g_log_to_stderr=1
-      _g_log_to_stdout=0
-   fi
+    while (( $# > 0)); do
+      case "${1}" in
+         "-0") _g_log_to_log=1 ;;
+         "-1") _g_log_to_stdout=1; _g_log_to_stderr=0 ;;
+         "-2") _g_log_to_stdout=0; _g_log_to_stderr=1 ;;
+         *) break ;;
+      esac
+      shift
+   done
 }
 
 function log_set_file {

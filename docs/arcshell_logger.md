@@ -18,8 +18,10 @@ Returns current coniguration settings.
 ### log_set_output
 Sets the log output targets for the current session.
 ```bash
-> log_set_output "targets"
-# targets: List of numbers which determine output targets. 0 file, 1 stdout, 2 stderr.
+> log_set_output [-0] [-1|-2]
+# -0: Log to log file.
+# -1: Log to standard out.
+# -2: Log to standard error.
 ```
 
 ### log_set_file

@@ -21,7 +21,7 @@ This module runs scheduled tasks from your scheduled task folders.
 
 ## Schedules
 
-To create a schedule create a new directory in one of the 'schedules' folders. This is the name of the schedule. Then add a 'schedule.config' file to configure the schedule.
+To create a schedule create a new directory in one of the 'schedules' folders. This is the name of the schedule. Then add a 'schedule.cfg' file to configure the schedule.
 
 ## Tasks
 
@@ -96,16 +96,16 @@ function _schReturnConfigFilePath {
    ${arcRequireBoundVariables}
    typeset schedule_name 
    schedule_name="${1}"
-   if [[ -f "${arcUserHome}/schedules/${schedule_name}/schedule.config" ]]; then
-      echo "${arcUserHome}/schedules/${schedule_name}/schedule.config"
+   if [[ -f "${arcUserHome}/schedules/${schedule_name}/schedule.cfg" ]]; then
+      echo "${arcUserHome}/schedules/${schedule_name}/schedule.cfg"
       ${returnTrue} 
    fi
-   if [[ -f "${arcGlobalHome}/schedules/${schedule_name}/schedule.config" ]]; then
-      echo "${arcGlobalHome}/schedules/${schedule_name}/schedule.config"
+   if [[ -f "${arcGlobalHome}/schedules/${schedule_name}/schedule.cfg" ]]; then
+      echo "${arcGlobalHome}/schedules/${schedule_name}/schedule.cfg"
       ${returnTrue} 
    fi
-   if [[ -f "${arcHome}/schedules/${schedule_name}/schedule.config" ]]; then
-      echo "${arcHome}/schedules/${schedule_name}/schedule.config"
+   if [[ -f "${arcHome}/schedules/${schedule_name}/schedule.cfg" ]]; then
+      echo "${arcHome}/schedules/${schedule_name}/schedule.cfg"
       ${returnTrue} 
    fi
 }
@@ -328,7 +328,7 @@ function sch_disable_all_tasks {
    typeset task_name
    while read task_name; do
       sch_disable_task "${task_name}"
-   done < <(sch_list_schedules)
+   done < <(sch_list_tasks)
 }
 
 function sch_enable_all_tasks {
@@ -338,7 +338,7 @@ function sch_enable_all_tasks {
    typeset task_name
    while read task_name; do
       sch_enable_task "${task_name}"
-   done < <(sch_list_schedules)
+   done < <(sch_list_tasks)
 }
 
 function _schReturnTaskFilePath {
@@ -388,7 +388,7 @@ function sch_list_tasks {
       find "${arcGlobalHome}/schedules" -type f 
       find "${arcUserHome}/schedules" -type f 
       ) 
-   ) | grep -v "schedule.config" | sort -u
+   ) | grep -v "schedule.cfg" | sort -u
 }
 
 function _schReturnTaskFileBaseNamesForSchedule {
@@ -407,7 +407,7 @@ function _schReturnTaskFileBaseNamesForSchedule {
    if [[ -d "${arcUserHome}/schedules/${schedule_name}" ]]; then
       file_list_files "${arcUserHome}/schedules/${schedule_name}"
    fi
-   ) | grep -v "schedule.config" | sort -u
+   ) | grep -v "schedule.cfg" | sort -u
 }
 
 function test__schReturnTaskFileBaseNamesForSchedule {

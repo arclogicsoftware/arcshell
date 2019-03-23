@@ -326,24 +326,24 @@ function test_dt_epoch {
    rmtempf "$0"
 }
 
-function dt_get_seconds_from_interval_str {
+function dt_return_seconds_from_interval_str {
    # Converts the allowable interval styled strings to the equivalent value in seconds.
    #
    # An interval string looks like this, 1d, 1h, 1m, 1s, where d=day, h=hour, m=minutes, s=seconds. This function converts those values to seconds, so 1h returns 3600.
-   # >>> dt_get_seconds_from_interval_str "intervalString"
+   # >>> dt_return_seconds_from_interval_str "intervalString"
    # **Example**
    # ```
-   # numberOfSeconds=$(dt_get_seconds_from_interval_str "1h")
+   # numberOfSeconds=$(dt_return_seconds_from_interval_str "1h")
    # echo ${numberOfSeconds}
    # 60
    # ```
    ${arcRequireBoundVariables}
    typeset intervalDesignator integerValue numberOfSeconds
    intervalDesignator=$(str_get_last_char ${1})
-   if $(is_defined "${intervalDesignator}"); then
-      integerValue=$(echo "${1}" | sed 's/.$//')
-   else
+   if num_is_num "${intervalDesignator}"; then
       numberOfSeconds=${1}
+   else 
+      integerValue=$(echo "${1}" | sed 's/.$//')
    fi
    case ${intervalDesignator} in 
       "d") ((numberOfSeconds=integerValue*60*60*24)) ;;
@@ -354,15 +354,15 @@ function dt_get_seconds_from_interval_str {
    if num_is_num ${numberOfSeconds}; then
       echo ${numberOfSeconds} 
    else
-      _dtThrowError "Return value is not a number: dt_get_seconds_from_interval_str: ${numberOfSeconds}: ${1}"
+      _dtThrowError "Return value is not a number: dt_return_seconds_from_interval_str: ${numberOfSeconds}: ${1}"
    fi
 }
 
-function test_dt_get_seconds_from_interval_str {
-   dt_get_seconds_from_interval_str "60s" | assert 60
-   dt_get_seconds_from_interval_str "1m" | assert 60
-   dt_get_seconds_from_interval_str "1h" | assert 3600
-   dt_get_seconds_from_interval_str "1d" | assert 86400
+function test_dt_return_seconds_from_interval_str {
+   dt_return_seconds_from_interval_str "60s" | assert 60
+   dt_return_seconds_from_interval_str "1m" | assert 60
+   dt_return_seconds_from_interval_str "1h" | assert 3600
+   dt_return_seconds_from_interval_str "1d" | assert 86400
 }
 
 function dt_get_duration_from_elapsed_seconds {

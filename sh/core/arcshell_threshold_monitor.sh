@@ -157,8 +157,11 @@ function _thresholdsHandleThresholdOption {
       args="${args},"
    fi
    IFS="," read threshold duration_min keyword < <(echo "${args}")
-   duration_secs=$(dt_get_seconds_from_interval_string "${duration_min}")
-   ((duration_min=duration_secs/60))
+   if num_is_num "${duration_min}"; then
+      duration_min="${duration_min}m"
+   fi
+   duration_secs=$(dt_return_seconds_from_interval_str "${duration_min}" )
+   ((duration_min=duration_min*60))
    echo "${threshold},${duration_min},${keyword}"
    ${returnTrue} 
 }

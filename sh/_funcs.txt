@@ -143,13 +143,13 @@ dt_date_stamp
 dt_day
 dt_epoch
 dt_get_duration_from_elapsed_seconds
-dt_get_seconds_from_interval_str
 dt_hour
 dt_is_weekday
 dt_is_weekend
 dt_minute
 dt_month
 dt_return_minutes_since_epoch
+dt_return_seconds_from_interval_str
 dt_return_seconds_since_epoch
 dt_second
 dt_seconds_remaining_in_minute

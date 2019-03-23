@@ -188,7 +188,7 @@ function test_timer_autolog {
    timer_delete "timer1" && pass_test || fail_test 
    timer_create -force -autolog -start "timer1" && pass_test || fail_test 
    assert_sleep 2
-   log_set_output 1
+   log_set_output -1
    timer_stop "timer1" | egrep "DATA" | assert -l 1
    log_set_default
 }
@@ -302,7 +302,7 @@ function timer_log_timer {
 function test_timer_log_timer {
    timer_create -force -start 
    assert_sleep 3
-   log_set_output 1
+   log_set_output -1
    timer_log_timer | egrep "DATA" | assert -l 1
    log_set_default
 }

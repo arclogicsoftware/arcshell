@@ -103,15 +103,15 @@ Return unit epoch in minutes or seconds.
 > dt_epoch
 ```
 
-### dt_get_seconds_from_interval_str
+### dt_return_seconds_from_interval_str
 Converts the allowable interval styled strings to the equivalent value in seconds.
 
 An interval string looks like this, 1d, 1h, 1m, 1s, where d=day, h=hour, m=minutes, s=seconds. This function converts those values to seconds, so 1h returns 3600.
 ```bash
-> dt_get_seconds_from_interval_str "intervalString"
+> dt_return_seconds_from_interval_str "intervalString"
 # **Example**
 # ```
-# numberOfSeconds=$(dt_get_seconds_from_interval_str "1h")
+# numberOfSeconds=$(dt_return_seconds_from_interval_str "1h")
 # echo ${numberOfSeconds}
 # 60
 # ```
