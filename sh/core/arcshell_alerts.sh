@@ -14,13 +14,17 @@ mkdir -p "${_alertsDir}"
 
 function __readmeAlerting {
    cat <<EOF
+# Alerting
+
+**Easily incorporates recurring alerts and notifications into your scripts.**
+
 Use alerts to set up a recurring notifications until a condition is resolved or the alert cycle completes.
 
 Alerts are opened using an alert type. 
 
-Alert types are found in the \`\`\`${arcHome}/config/alert_types\`\`\` folder.
+Alert types are found in the \`\`\`\${arcHome}/config/alert_types\`\`\` folder.
 
-To change the settings for an alert type copy the alert type file to the \`\`\`${arcGlobalHome}/config/alert_types\`\`\` folder or \`\`\`${arcUserHome}/config/alert_types\`\`\` and modify it. 
+To change the settings for an alert type copy the alert type file to the \`\`\`\${arcGlobalHome}/config/alert_types\`\`\` folder or \`\`\`\${arcUserHome}/config/alert_types\`\`\` and modify it. 
 
 Alert types can be created by placing new files in one of these two folders. We recommend keeping the number of alert types to a minimum.
 
@@ -41,18 +45,18 @@ $(utl_get_function_body "${arcHome}/sh/core/arcshell_alerts.sh" "__exampleAlerti
 
 \`\`\`
 
-Alert Type Configuration File Example 
+**Alert Type Example**
 
 \`\`\`
-# ${arcHome}/config/alert_types/high.cfg
+# \${arcHome}/config/alert_types/high.cfg
 #
 $(cat "${arcHome}/config/alert_types/high.cfg")
 \`\`\`
 
-Keyword Configuration File Example
+**Keyword Example**
 
 \`\`\`
-# ${arcHome}/config/keywords/critical.cfg
+# \${arcHome}/config/keywords/critical.cfg
 #
 $(cat "${arcHome}/config/keywords/critical.cfg")
 \`\`\`

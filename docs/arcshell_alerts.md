@@ -1,10 +1,14 @@
+# Alerting
+
+**Easily incorporates recurring alerts and notifications into your scripts.**
+
 Use alerts to set up a recurring notifications until a condition is resolved or the alert cycle completes.
 
 Alerts are opened using an alert type. 
 
-Alert types are found in the ```/media/sf_temp/arcshell/config/alert_types``` folder.
+Alert types are found in the ```${arcHome}/config/alert_types``` folder.
 
-To change the settings for an alert type copy the alert type file to the ```/media/sf_temp/arcshell/global/config/alert_types``` folder or ```/media/sf_temp/arcshell/user/config/alert_types``` and modify it. 
+To change the settings for an alert type copy the alert type file to the ```${arcGlobalHome}/config/alert_types``` folder or ```${arcUserHome}/config/alert_types``` and modify it. 
 
 Alert types can be created by placing new files in one of these two folders. We recommend keeping the number of alert types to a minimum.
 
@@ -35,10 +39,10 @@ Alerts can be closed even if they are not open without effect. This makes coding
 
 ```
 
-Alert Type Configuration File Example 
+**Alert Type Example**
 
 ```
-# /media/sf_temp/arcshell/config/alert_types/high.cfg
+# ${arcHome}/config/alert_types/high.cfg
 #
 # The initial keyword to associate with the alert. 
 # It must be one of the configured keywords.
@@ -61,10 +65,10 @@ alert_reminder_count=999
 alert_reminder_interval=60
 ```
 
-Keyword Configuration File Example
+**Keyword Example**
 
 ```
-# /media/sf_temp/arcshell/config/keywords/critical.cfg
+# ${arcHome}/config/keywords/critical.cfg
 #
 # Truthy values including ArcShell cron expressions are acceptable.
 send_text=1
