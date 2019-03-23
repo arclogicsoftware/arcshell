@@ -35,6 +35,40 @@ Alerts can be closed even if they are not open without effect. This makes coding
 
 ```
 
+Alert Type Configuration File Example 
+
+```
+# /media/sf_temp/arcshell/config/alert_types/high.cfg
+#
+# The initial keyword to associate with the alert. 
+# It must be one of the configured keywords.
+alert_keyword="critical"
+
+# How many times should the initial alert type notify with the above keyword?
+alert_count=1
+
+# What is the notification interval in minutes?
+alert_interval=
+
+# Once the above completes we can change the keyword.
+# It can be less critical or more.
+alert_reminder_keyword="warning"
+
+# Reminder count before automatically closing the alert.
+alert_reminder_count=999
+
+# Reminder interval in minutes.
+alert_reminder_interval=60
+```
+
+Keyword Configuration File Example
+
+```
+# /media/sf_temp/arcshell/config/keywords/critical.cfg
+#
+
+```
+
 ## Reference
 
 

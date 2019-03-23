@@ -40,6 +40,23 @@ Alerts can be closed even if they are not open without effect. This makes coding
 $(utl_get_function_body "${arcHome}/sh/core/arcshell_alerts.sh" "__exampleAlerting")
 
 \`\`\`
+
+Alert Type Configuration File Example 
+
+\`\`\`
+# ${arcHome}/config/alert_types/high.cfg
+#
+$(cat "${arcHome}/config/alert_types/high.cfg")
+\`\`\`
+
+Keyword Configuration File Example
+
+\`\`\`
+# ${arcHome}/config/keywords/critical.cfg
+#
+$(cat "${arcHome}/config/keywords/critical.cfg")
+\`\`\`
+
 EOF
 }
 
@@ -73,7 +90,7 @@ alert_reminder_keyword="warning"
 alert_reminder_count=2
 alert_reminder_interval=5
 EOF
-   ) > "${arcGlobalHome}/config/alert_types/critical"
+   ) > "${arcGlobalHome}/config/alert_types/critical.cfg"
 }
 
 function __setupArcShellAlerting {
@@ -135,13 +152,13 @@ function test_alert_open_critical {
 }
 
 function test_empty_config_file {
-   cp /dev/null "${arcGlobalHome}/config/alert_types/critical.config"
+   cp /dev/null "${arcGlobalHome}/config/alert_types/critical.cfg"
    alert_close "test" && pass_test || fail_test 
    ! alert_is_open "test" && pass_test || fail_test 
    alert_open -critical "test" && pass_test || fail_test 
    alert_is_open "test" && pass_test || fail_test 
    ! alert_open -critical "test" && pass_test || fail_test 
-   rm "${arcGlobalHome}/config/alert_types/critical.config"
+   rm "${arcGlobalHome}/config/alert_types/critical.cfg"
 }
 
 function alert_open {
@@ -160,7 +177,7 @@ function alert_open {
    stdin=
    while (( $# > 0 )); do
       maybeAlertType="${1:1}"
-      if config_does_object_exist "alert_types" "${maybeAlertType}"; then
+      if config_does_object_exist "alert_types" "${maybeAlertType}.cfg"; then
          alert_type="${maybeAlertType}"
          shift
       fi
@@ -219,7 +236,7 @@ function _alertOpenAlert {
    _alertID="${2}"
    _alertTitle="${3}"
    _alertFile="${_alertsDir}/${_alertID}.dat"
-   eval "$(config_load_object "alert_types" "${_alertType}")"
+   eval "$(config_load_object "alert_types" "${_alertType}.cfg")"
    alert_groups="${_alertGroups:-}"
    alert_date="$(date)"
    alert_title="${_alertTitle:-}"
@@ -250,7 +267,7 @@ function _alertRaiseAlertTypeNotFound {
    ${arcRequireBoundVariables}
    typeset alert_type 
    alert_type="${1}"
-   if ! config_does_object_exist "alert_types" "${alert_type}"; then
+   if ! config_does_object_exist "alert_types" "${alert_type}.cfg"; then
       log_error -2 -logkey "alerting" "Alert type not found: $*: _alertRaiseAlertTypeNotFound"
       ${returnTrue} 
    else
@@ -491,7 +508,7 @@ function test_alerts_close_all {
 }
 
 function test_file_teardown {
-   rm "${arcGlobalHome}/config/alert_types/critical"
+   rm "${arcGlobalHome}/config/alert_types/critical.cfg"
    _g_alertTesting=0
 }
 
