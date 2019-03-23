@@ -1,5 +1,15 @@
 # arcshell_cache.sh
 
+## Example(s)
+```bash
+
+   # Cache a value for 'city'.
+   cache_save "city" "Nashville"
+   # Get the value of 'city'.
+   x="$(cache_get "city")"
+   echo "City is ${x}."
+```
+
 ## Reference
 
 

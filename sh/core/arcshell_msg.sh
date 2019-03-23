@@ -99,7 +99,7 @@ function _msgReturnQueueItemTypeCount {
    # Return total number of items in all queues of the provided type.
    # >>> _msgReturnQueueItemTypeCount "queue_type"
    queue_type="${1}"
-   grep "Meta       :" "${_msgDir}/queues/"*"${queue_type}" 2> /dev/null | num_line_count
+   grep "^id=[0-9]*,[0-9]*" "${_msgDir}/queues/"*"${queue_type}" 2> /dev/null | num_line_count
 }
 
 function _msgPurgeInvalidContactGroups {
@@ -348,17 +348,12 @@ function _msgReturnMessageBanner {
 
       cat <<EOF
 -------------------------------------------------------------------------------
-Date:      : $(date)
-Keyword    : ${keyword}
-Meta       : ${_msgUniqId_}
-Subject    : ${subject}
-Group(s)   : ${groups}
+${subject}
+$(date)
+node=${arcNode} | keyword=${keyword} | groups=${groups}
+id=${_msgUniqId_}
 -------------------------------------------------------------------------------
 EOF
-}
-
-function test__msgReturnMessageBanner {
-   _msgReturnMessageBanner "foo" "foo" "default" "default" | egrep "^Meta       :|\-\-|^Subject    :" | assert -l 4
 }
 
 function _msgAppendToQueues {
@@ -511,7 +506,7 @@ function _msgAreEmailsReadyToSend {
 
 function test__msgAreEmailsReadyToSend {
    _msgDeleteQueue "foo" "emailQueue"
-   echo "bar" | send_message -k "email" -group "foo" "Bar"
+   echo "bar" | send_message -email -group "foo" "Bar"
    _msgReturnQueuedItemsCount "foo" "emailQueue" | assert "=1" "Email queue should contain 1 item."
    assert_sleep 5
    _msgAreEmailsReadyToSend "foo" && pass_test || fail_test 
@@ -567,7 +562,7 @@ function _msgReturnQueuedItemsCount {
    queue_name="${2}"
    _groupsRaiseGroupNotFound "${group_name}" && ${returnFalse} 
    touch "${_msgDir}/queues/${group_name}.${queue_name}"
-   x=$(grep "^Meta       : " "${_msgDir}/queues/${group_name}.${queue_name}" | wc -l)
+   x=$(grep "^id=[0-9]*,[0-9]*" "${_msgDir}/queues/${group_name}.${queue_name}" | wc -l)
    debug3 "x=${x}: _msgReturnQueuedItemsCount"
    echo ${x}
 }
@@ -585,7 +580,7 @@ function _msgReturnMaxQueuedSeconds {
    group_name="${1}"
    queue_name="${2}"
    now=$(dt_epoch)
-   first_item=$(grep "^Meta       : .*,.*" "${_msgDir}/queues/${group_name}.${queue_name}" | head -1 | awk '{print $3}' | cut -d"," -f1)
+   first_item=$(grep "^id=[0-9]*,[0-9]*" "${_msgDir}/queues/${group_name}.${queue_name}" | head -1 | awk -F"=" '{print $2}' | cut -d"," -f1)
    if [[ -z "${first_item:-}" ]]; then
       x=0
    else 
@@ -596,7 +591,7 @@ function _msgReturnMaxQueuedSeconds {
 }
 
 function test__msgReturnMaxQueuedSeconds {
-   echo "bar" | send_message -keyword "email" -group "foo" "Bar Test"
+   echo "bar" | send_message -email -group "foo" "Bar Test"
    assert_sleep 5
    _msgReturnMaxQueuedSeconds "foo" "emailQueue" | assert ">0"
 }
@@ -609,7 +604,7 @@ function _msgReturnMinQueuedSeconds {
    group_name="${1}"
    queue_name="${2}"
    now=$(dt_epoch)
-   last_item=$(grep "^Meta       : .*,.*" "${_msgDir}/queues/${group_name}.${queue_name}" | tail -1 | awk '{print $3}' | cut -d"," -f1)
+   last_item=$(grep "^id=[0-9]*,[0-9]*" "${_msgDir}/queues/${group_name}.${queue_name}" | tail -1 | awk -F"=" '{print $2}' | cut -d"," -f1)
    if num_is_num ${last_item}; then
       ((x=now-last_item))
    else

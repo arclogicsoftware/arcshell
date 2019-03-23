@@ -1,5 +1,26 @@
 # arcshell_timer.sh
 
+## Example(s)
+```bash
+
+   # Create the timer and start it.
+   timer_create -force -start "foo"
+   # Do something for 5 seconds.
+   sleep 5
+   # Should return 5.
+   timer_seconds "foo"
+   # Do something for 55 seconds.
+   sleep 55
+   # Should return 1.
+   timer_minutes "foo"
+   # Stop the timer.
+   timer_stop "foo"
+   # Starts the timer counting from the point it was stopped at.
+   timer_start "foo"
+   # End the timer.
+   timer_end "foo"
+```
+
 ## Reference
 
 

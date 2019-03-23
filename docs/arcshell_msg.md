@@ -6,6 +6,8 @@
 | __messaging_max_text_lines | Maximum number of lines to include when sending a text. Defaults to 3. |
 | __messaging_max_email_lines | Maximum number of lines to include when sending an email. Defaults to 9999. |
 
+
+
 ## Reference
 
 

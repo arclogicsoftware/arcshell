@@ -41,12 +41,7 @@ Once the settings for the initial and reminder windows are exhausted the alert i
 
 Alerts can be closed even if they are not open without effect. This makes coding if then else blocks to open and close alerts easy to implement.
 
-\`\`\`
-$(utl_get_function_body "${arcHome}/sh/core/arcshell_alerts.sh" "__exampleAlerting")
-
-\`\`\`
-
-**Alert Type Example**
+**Example of an alert type configuration file.**
 
 \`\`\`
 # \${arcHome}/config/alert_types/high.cfg
@@ -54,7 +49,7 @@ $(utl_get_function_body "${arcHome}/sh/core/arcshell_alerts.sh" "__exampleAlerti
 $(cat "${arcHome}/config/alert_types/high.cfg")
 \`\`\`
 
-**Keyword Example**
+**Example of a keyword configuration file.**
 
 \`\`\`
 # \${arcHome}/config/keywords/critical.cfg

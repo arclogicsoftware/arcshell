@@ -1,5 +1,31 @@
 # arcshell_threshold_monitor.sh
 
+## Example(s)
+```bash
+
+
+   # Input can be a one or two fields. Either "metric|value" or just "value".
+   # Input can be more than one line.
+
+   # Monitor OS load average with three different thresholds.
+   os_return_load | \
+      threshold_monitor \
+         -t1 "4,12h,warning" \
+         -t2 "14,30m,warning" \
+         -t3 "20,0m,critical" \
+         "os_load"
+
+   # A configuration file can be used instead.
+   os_return_load | \
+      threshold_monitor -config "os_load.cfg" "os_load"
+
+   # threshold_monitor can be used like this.
+   if os_return_load | threshold_monitor -config "os_load.cfg" "os_load"; then
+      # Do something here.
+      :
+   fi
+```
+
 ## Reference
 
 

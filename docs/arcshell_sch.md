@@ -15,6 +15,8 @@ To create a task just drop an executable file in one of the folders.
 1) You must load the ArcShell environment in each task file if you are using Korn shell. This is optional with Bash shell. Korn shell does not export the core library functions.
 2) Scheduled task files should have unique names.
 
+
+
 ## Reference
 
 

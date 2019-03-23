@@ -2,6 +2,26 @@ This module provides users with the ability to install, package, update, uninsta
 
 There are other helpful commands which can be used when building your own modules for ArcShell. Please see the documentation for each function below.
 
+## Example(s)
+```bash
+
+   # Package the current ArcShell home.
+   arc_pkg 
+   # Set the SSH connection to 'tst'. 'tst' is already configured as an SSH connection.
+   ssh_set "tst"
+   # Setup ArcShell on 'tst' using the package we just created. 
+   arc_install -force
+   # Assume some change has been made. Re-package the current ArcShell home.
+   arc_pkg 
+   # Update the remote ArcShell home on 'tst' using the new package.
+   arc_update 
+   # Assume another change has been made.
+   # Use rsync to sync the current ArcShell home to 'tst' home. This skips the packaging step.
+   arc_sync
+   # Remove ArcShell from the report 'tst' home/
+   arc_uninstall
+```
+
 ## Reference
 
 

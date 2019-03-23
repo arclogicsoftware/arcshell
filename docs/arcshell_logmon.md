@@ -10,6 +10,8 @@ logmon_read_log -max 10 "/var/log/messages" | \
    logmon_handle_log -stdin "var_log_messages"
 ```
 
+
+
 ## Reference
 
 

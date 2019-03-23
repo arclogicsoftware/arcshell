@@ -25,22 +25,7 @@ Once the settings for the initial and reminder windows are exhausted the alert i
 
 Alerts can be closed even if they are not open without effect. This makes coding if then else blocks to open and close alerts easy to implement.
 
-```
-
-   # Source in ArcShell
-   . "${HOME}/.arcshell"
-
-   # Open a 'critical' alert if the cron process is not running.
-   if (( $(ps -ef | grep "cron" | grep -v "grep" | num_line_count) == 0 )); then
-      alert_open -critical "cron_process_alert" "'cron' process is not running!"
-   else
-      # Automatically closes alert if it has been opened.
-      alert_close "cron_process_alert"
-   fi
-
-```
-
-**Alert Type Example**
+**Example of an alert type configuration file.**
 
 ```
 # ${arcHome}/config/alert_types/high.cfg
@@ -66,7 +51,7 @@ alert_reminder_count=999
 alert_reminder_interval=60
 ```
 
-**Keyword Example**
+**Example of a keyword configuration file.**
 
 ```
 # ${arcHome}/config/keywords/critical.cfg
@@ -75,6 +60,21 @@ alert_reminder_interval=60
 send_text=1
 send_email=1
 send_slack=0
+```
+
+## Example(s)
+```bash
+
+   # Source in ArcShell
+   . "${HOME}/.arcshell"
+
+   # Open a 'critical' alert if the cron process is not running.
+   if (( $(ps -ef | grep "cron" | grep -v "grep" | num_line_count) == 0 )); then
+      alert_open -critical "cron_process_alert" "'cron' process is not running!"
+   else
+      # Automatically closes alert if it has been opened.
+      alert_close "cron_process_alert"
+   fi
 ```
 
 ## Reference

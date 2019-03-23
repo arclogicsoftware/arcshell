@@ -157,25 +157,6 @@ function _docengReturnReadme {
    fi
 }
 
-function _docengReturnDOCS {
-   # Runs the __DOCS__ function in file if found.
-   # >>> _docengReturnReadme "file_path"
-   ${arcRequireBoundVariables}
-   typeset file_path readme_function
-   file_path="${1}"
-   readme_function="$(grep "^function __DOCS__" "${file_path}" | cut -d" " -f2)"
-   if [[ -n "${readme_function:-}" ]]; then 
-      _comGe
-      ${readme_function}
-      ${returnTrue} 
-   else
-      echo "# $(basename "${file_path}")"
-      ${returnFalse} 
-   fi
-}
-
-
-
 function _docengDoesRepoExist {
    # Return true if a repo exists for the provided directory.
    # >>> _docengDoesRepoExist "directory"
@@ -288,6 +269,8 @@ function doceng_do_markdown {
    (
    cat <<EOF
 $(_docengReturnReadme "${file_path}")
+
+$(doceng_return_examples "${file_path}")
 
 ## Reference
 

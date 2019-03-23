@@ -125,13 +125,15 @@ function _statsGenerateHourlyAverageValues {
    # >>> _statsGenerateHourlyAverageValues "stat_group" 
    ${arcRequireBoundVariables}
    debug3 "_statsGenerateHourlyAverageValues: $*"
-   typeset stat_group x d
+   typeset stat_group one_hour_ago_epoch d
    stat_group="${1}"
-   x=$(_statsReturnEpochSecondsAgo 3600)
+   # Stats using -donottrack option won't have a .csv file.
+   ! [[ -f "${_statsDir}/${stat_group}/${stat_group}.csv" ]] && ${returnTrue} 
+   one_hour_ago_epoch=$(_statsReturnEpochSecondsAgo 3600)
    #x=$(_statsReturnEpochSecondsAgo 4000000)
    d="$(dt_year)|$(dt_month)|$(dt_day)|$(dt_hour)"
    # Limits the records processed to those that are less than one hour old.
-   ${arcAwkProg} -F"|" '$1>'${x} "${_statsDir}/${stat_group}/${stat_group}.csv" | \
+   ${arcAwkProg} -F"|" '$1>'${one_hour_ago_epoch} "${_statsDir}/${stat_group}/${stat_group}.csv" | \
       ${arcAwkProg} -f "${arcHome}/sh/core/_stats_calc_generate_hourly.awk" \
       | grep -v "${d}" >> "${_statsDir}/${stat_group}/${stat_group}-hourly.csv"
    debug3 "_statsGenerateHourlyAverageValues: Complete"

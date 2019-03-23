@@ -1,5 +1,22 @@
 # arcshell_flags.sh
 
+## Example(s)
+```bash
+
+   # Set a flag.
+   flag_set "status" "active"
+   # Check to see if the flag exists.
+   if flag_exists "status"; then
+      echo "The 'status' flag exists."
+   fi
+   # Get the value of a flag.
+   if [[ "$(flag_get 'status')" == "active" ]]; then
+      flag_set "status" "inactive"
+   fi
+   # Unset (remove) the flag.
+   flag_unset "status"
+```
+
 ## Reference
 
 

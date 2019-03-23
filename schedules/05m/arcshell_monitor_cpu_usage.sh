@@ -11,8 +11,10 @@ arcHome=
 boot_is_aux_instance && exit 0
 
 typeset cpu_pct_used 
-# Sleep so we miss the spin cpu testing.
-sleep 40
+
+# Stagger data collection point just a bit.
+sleep $(num_random 45 75)
+
 cpu_pct_used="$(os_return_cpu_pct_used)"
 
 # Monitors CPU used for the node.
