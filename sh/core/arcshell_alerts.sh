@@ -10,12 +10,52 @@ _g_alertTesting=0
 
 mkdir -p "${_alertsDir}"
 
-function __todoAlerting {
+# ToDo: Add alerts_report function.
+
+function __alertsReadMe {
    cat <<EOF
-* Need an alerts_report function.
-* Ability to associate outputs with an alert id.
+Use alerts to set up a recurring notifications until a condition is resolved or the alert cycle completes.
+
+Alerts are opened using an alert type. 
+
+Alert types are found in the \`\`\`${arcHome}/config/alert_types\`\`\` folder.
+
+To change the settings for an alert type copy the alert type file to the \`\`\`${arcGlobalHome}/config/alert_types\`\`\` folder or \`\`\`${arcUserHome}/config/alert_types\`\`\` and modify it. 
+
+Alert types can be created by placing new files in one of these two folders. We recommend keeping the number of alert types to a minimum.
+
+Each alert type allows you to configure two alert windows. The initial window and a reminder window. 
+
+Each window is associated with an ArcShell "keyword", an alert count, and an alert interval.
+
+Alert notifications are sent to the ArcShell messaging system with the associated keyword. Please see the ArcShell **keywords** and **messaging** documentation for more.
+
+The initial alert count defines the number of notifications that  occur before moving to the reminder window. The initial alert interval defines the number of minutes between notifications.
+
+Once the settings for the initial and reminder windows are exhausted the alert is automatically closed. If the condition still exists it will likely be re-opened and the cycle will reiterate. 
+
+Alerts can be closed even if they are not open without effect. This makes coding if then else blocks to open and close alerts easy to implement.
+
+\`\`\`
+$(utl_get_function_body "${arcHome}/sh/core/arcshell_alerts.sh" "__exampleAlerting")
+
+\`\`\`
 EOF
 }
+
+function __exampleAlerting {
+   # Source in ArcShell
+   . "${HOME}/.arcshell"
+
+   # Open a 'critical' alert if the cron process is not running.
+   if (( $(ps -ef | grep "cron" | grep -v "grep" | num_line_count) == 0 )); then
+      alert_open -critical "cron_process_alert" "'cron' process is not running!"
+   else
+      # Automatically closes alert if it has been opened.
+      alert_close "cron_process_alert"
+   fi
+}
+
 
 function test_file_setup {
    __setupArcShellAlerting
@@ -38,19 +78,6 @@ EOF
 
 function __setupArcShellAlerting {
    objects_register_object_model "arcshell_alert" "_alertObject" 
-}
-
-function __exampleAlerting {
-   # Source in ArcShell
-   . "${HOME}/.arcshell"
-
-   # Open a 'critical' alert if the cron process is not running.
-   if (( $(ps -ef | grep "cron" | grep -v "grep" | num_line_count) == 0 )); then
-      alert_open -critical "cron_process_alert" "'cron' process is not running!"
-   else
-      # Automatically closes alert if it has been opened.
-      alert_close "cron_process_alert"
-   fi
 }
 
 function _alertObject {
@@ -317,9 +344,9 @@ function alert_send {
       ((alert_reminder_sent_count=alert_reminder_sent_count+1))
    fi
    if [[ -n "${alert_groups:-}" ]] && (( ${_g_alertTesting} == 0 )); then
-      _alertReturnsAlertText "${alert_id}" | send_message -keyword "${active_keyword}"  -groups "${alert_groups}" "${alert_title}"
+      _alertReturnsAlertText "${alert_id}" | send_message -${active_keyword} -groups "${alert_groups}" "${alert_title}"
    else
-      _alertReturnsAlertText "${alert_id}" | send_message -keyword "${active_keyword}" "${alert_title}"
+      _alertReturnsAlertText "${alert_id}" | send_message -${active_keyword} "${alert_title}"
    fi
    alert_last_sent=$(dt_epoch)
    objects_save_temporary_object "arcshell_alert" "${alert_id}" 
