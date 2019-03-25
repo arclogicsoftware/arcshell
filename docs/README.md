@@ -14,10 +14,11 @@
 | [Demo](#demo) | Create playable command line demonstrations. |
 | [Documentation Engine](#documentation_engine) | Generate documentation and help commands from source files. |
 | [Dates & Times](#dates_times) | Makes working with dates and times easier. |
+| [Event Counter](#event_counter) | This module counts things using text based indicators. |
 | [Files](#files) | Simplifies many common file and directory related tasks. |
 | [Flags](#flags) | Simple way to set and retrieve a keyed value. |
 | [Google Charts](#google_charts) | A module for generating charts using Google Charts. |
-| [Keywords](#keywords) | Manages keywords and their attributes. |
+| [Keywords](#keywords) | Manages ArcShell keywords. |
 | [Locking](#locking) | Creates and manages locks for you. |
 | [Application Logger](#application_logger) | Logs and keeps track of events. |
 | [Log Monitoring](#log_monitoring) | Monitor log files. Trigger alerts, notifications, and log entries using flexible log file handlers. |
@@ -290,6 +291,23 @@ Makes working with dates and times easier.
 
 ----
 
+<a name="event_counter"/>
+
+![view-1.png](./images/view-1.png)
+
+## Event Counter (arcshell_event_counter.sh)
+
+This module counts things using text based indicators.
+
+
+
+### Links
+
+* [Reference](./arcshell_event_counter.md)
+
+
+----
+
 <a name="files"/>
 
 ![file.png](./images/file.png)
@@ -362,7 +380,7 @@ A module for generating charts using Google Charts.
 
 ## Keywords (arcshell_keywords.sh)
 
-Manages keywords and their attributes.
+Manages ArcShell keywords.
 
 
 

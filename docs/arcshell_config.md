@@ -67,6 +67,12 @@ Return the string required to source in the objects's configuration file.
 > config_load_object "object_type" "object_name"
 ```
 
+### config_load_all_objects
+Return the strings required to source in the objects's configuration file.
+```bash
+> config_load_all_objects [-reverse,-r] "object_type" "object_name"
+```
+
 ### config_return_all_paths_for_object
 Return the full path to all files of object type and object name.
 ```bash

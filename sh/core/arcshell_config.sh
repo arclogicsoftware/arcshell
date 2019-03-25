@@ -608,6 +608,34 @@ function test_config_load_object {
    echo "${test_value}" | assert 1
 }
 
+function config_load_all_objects {
+   # Return the strings required to source in the objects's configuration file.
+   # >>> config_load_all_objects [-reverse,-r] "object_type" "object_name"
+   ${arcRequireBoundVariables}
+   typeset object_type object_name reverse_option object_home
+   reverse_option=0
+   while (( $# > 0)); do
+      case "${1}" in
+         "-reverse"|"-r") reverse_option=1 ;;
+         *) break ;;
+      esac
+      shift
+   done
+   utl_raise_invalid_option "config_load_all_objects" "(( $# == 2 ))" "$*" && ${returnFalse}
+   object_type="${1}"
+   object_name="${2}"
+   _configRaiseObjectNotFound "${object_type}" "${object_name}" && ${returnFalse} 
+   if (( ${reverse_option} )); then
+      while read object_path; do
+         echo ". "${object_path}""
+      done < <(config_return_all_paths_for_object "${object_type}" "${object_name}" | str_reverse_cat -stdin)
+   else
+      while read object_path; do
+         echo ". "${object_path}""
+      done < <(config_return_all_paths_for_object "${object_type}" "${object_name}")
+   fi
+}
+
 function config_return_all_paths_for_object {
    # Return the full path to all files of object type and object name. 
    # >>> config_return_all_paths_for_object "object_type" "object_name"

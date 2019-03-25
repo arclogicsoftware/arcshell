@@ -1,5 +1,4 @@
 
-
 # module_name="Chat"
 # module_about="Supports sending messages to services like Slack."
 # module_version=1

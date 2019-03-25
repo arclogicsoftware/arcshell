@@ -60,6 +60,9 @@ alert_reminder_interval=60
 send_text=1
 send_email=1
 send_slack=0
+
+# This char is used by the event_module to log each send_message.
+event_counter_char="!"
 ```
 
 ## Example(s)

@@ -1,11 +1,35 @@
 
 # module_name="Keywords"
-# module_about="Manages keywords and their attributes."
+# module_about="Manages ArcShell keywords."
 # module_version=1
 # module_image="sign-1.png"
 # copyright_notice="Copyright 2019 Arclogic Software"
 
 mkdir -p "${arcHome}/config/keywords"
+
+function __readmeKeywords {
+   cat <<EOF
+Keywords are found in the \`\`\`\${arcHome}/config/keywords\`\`\` folder.
+
+To change the settings for a keyword copy the keyword file to the \`\`\`\${arcGlobalHome}/config/keywords\`\`\` folder or \`\`\`\${arcUserHome}/config/keywords\`\`\` and modify it. 
+
+Keywords can be created by placing new files in one of these two folders. We recommend keeping the number of keywords to a minimum.
+
+When ArcShell loads a keyword it loads all files in top down order. Delivered, global, then user.
+
+**Example of a keyword configuration file.**
+
+Truthy values are allowable. 
+
+Keyword configuration files are shell scripts. You can use shell to conditionally set the values.
+
+\`\`\`
+# \${arcHome}/config/keywords/critical.cfg
+#
+$(cat "${arcHome}/config/keywords/critical.cfg")
+\`\`\`
+EOF
+}
 
 function keyword_raise_not_found {
    # Raise error and return true if the keyword is not found.
@@ -34,14 +58,14 @@ function keyword_does_exist {
 }
 
 function keyword_load {
-   # Loads a group into the current shell.
+   # Returns the strings to load all keyword configuration files in top down order.
    # >>> eval "$(keyword_load 'keyword')"
    ${arcRequireBoundVariables}
    debug3 "keyword_load: $*"
    typeset keyword 
    keyword="${1}"
    keyword_raise_not_found "${keyword}" && ${returnFalse} 
-   echo "$(config_load_object "keywords" "${keyword}.cfg")"
+   echo "$(config_load_all_objects "keywords" "${keyword}.cfg")"
 }
 
 function test_keyword_load {

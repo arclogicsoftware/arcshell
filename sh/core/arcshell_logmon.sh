@@ -343,7 +343,7 @@ function _logmonGrep {
    typeset from_buffer_id regex ignore_case
    ignore_case=${1}
    from_buffer_id=${2}
-   regex="$(echo "${3:-.*}" | utl_remove_blank_lines -stdin | str_to_csv "|")"
+   regex="$(echo "${3:-.*}" | grep -v "^# .*" | utl_remove_blank_lines -stdin | str_to_csv "|")"
    if (( ${ignore_case} )); then
       ignore_case="-i"
    else
@@ -426,7 +426,7 @@ function _logmonRemove {
    debug3 "_logmonRemove: $*"
    ignore_case=${1}
    from_buffer_id=${2}
-   regex="$(echo "${3:-.*}" | utl_remove_blank_lines -stdin | str_to_csv "|")"
+   regex="$(echo "${3:-.*}" | grep -v "^# .*" | utl_remove_blank_lines -stdin | str_to_csv "|")"
    if (( ${ignore_case} )); then
       ignore_case="-i"
    else

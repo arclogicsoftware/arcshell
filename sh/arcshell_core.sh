@@ -25,6 +25,7 @@ fi
 . "${arcHome}/sh/core/debug.sh"
 . "${arcHome}/sh/core/arcshell_doceng.sh"
 # . "${arcHome}/sh/core/arcshell_ext.sh"
+. "${arcHome}/sh/core/arcshell_event_counter.sh"
 . "${arcHome}/sh/core/arcshell_file.sh"
 . "${arcHome}/sh/core/arcshell_flags.sh"
 . "${arcHome}/sh/core/arcshell_gchart.sh"

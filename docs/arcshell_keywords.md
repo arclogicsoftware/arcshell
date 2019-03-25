@@ -1,4 +1,28 @@
-# arcshell_keywords.sh
+Keywords are found in the ```${arcHome}/config/keywords``` folder.
+
+To change the settings for a keyword copy the keyword file to the ```${arcGlobalHome}/config/keywords``` folder or ```${arcUserHome}/config/keywords``` and modify it. 
+
+Keywords can be created by placing new files in one of these two folders. We recommend keeping the number of keywords to a minimum.
+
+When ArcShell loads a keyword it loads all files in top down order. Delivered, global, then user.
+
+**Example of a keyword configuration file.**
+
+Truthy values are allowable. 
+
+Keyword configuration files are shell scripts. You can use shell to conditionally set the values.
+
+```
+# ${arcHome}/config/keywords/critical.cfg
+#
+# Truthy values including ArcShell cron expressions are acceptable.
+send_text=1
+send_email=1
+send_slack=0
+
+# This char is used by the event_module to log each send_message.
+event_counter_char="!"
+```
 
 
 
@@ -18,7 +42,7 @@ Return true if the keyword exists.
 ```
 
 ### keyword_load
-Loads a group into the current shell.
+Returns the strings to load all keyword configuration files in top down order.
 ```bash
 > eval "$(keyword_load 'keyword')"
 ```

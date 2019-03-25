@@ -1,4 +1,17 @@
-# arcshell_cache.sh
+# Caching
+**A simple yet powerful key value data store.**
+
+Use this module to cache values. You can store single values, single lines, or multiple lines.
+
+Values can be stored by group and key. Keys can then be iterated through by group if needed.
+
+Values can be set to terminate automatically from cache after a specified interval (in seconds).
+
+When retrieving values you have the ability to specify a default return value if a value is not found in cache.
+
+Values can be deleted from cache individually or as a group.
+
+All of this makes caching and retrieving values very easy to implement and maintain.
 
 ## Example(s)
 ```bash

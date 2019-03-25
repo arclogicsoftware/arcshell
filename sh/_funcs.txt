@@ -74,6 +74,7 @@ config_edit_object
 config_get_parameter
 config_list_all_objects
 config_list_all_object_types
+config_load_all_objects
 config_load_object
 config_merge_files
 config_object_count
@@ -159,6 +160,7 @@ dt_y_m_d_h
 dt_y_m_d_h_m
 dt_y_m_d_h_m_s
 dt_ymd_hms
+event_counter_add_event
 expression_test
 fail_test
 file_are_files_same

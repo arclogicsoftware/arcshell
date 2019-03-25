@@ -142,7 +142,7 @@ function send_message {
    # subject: Message subject.
    ${arcRequireBoundVariables}
    debug3 "send_message: $*"
-   typeset tmpFile keyword groups group_name subject send_now
+   typeset tmpFile keyword groups group_name subject send_now event_counter_char
    groups=
    subject="ArcShell Message"
    keyword="${arcshell_default_keyword:-"log"}"
@@ -188,6 +188,9 @@ function send_message {
       ${returnFalse} 
    fi
 
+   eval "$(keyword_load "${keyword}")"
+   [[ -n "${event_counter_char:-}" ]] && event_counter_add_event "messaging" "${event_counter_char}"
+   
    _msgReturnMessageBanner "${subject}" "${keyword}" "${groups}" > "${tmpFile}"
    cat "${tmpFile}.1" >> "${tmpFile}" && rm "${tmpFile}.1"
    while read group_name; do
