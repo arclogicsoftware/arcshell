@@ -267,7 +267,7 @@ if boot_is_program_found "arcshell.sh"; then
    fi
 fi
 
-log_setup "Processing modules." 1
+log_setup "Running setup functions." 1
 while read file_name; do
    specialFunction=$(_setup_returns_special_function_from_file "__setup" "${file_name}")
    if [[ -n "${specialFunction}" ]]; then
@@ -281,6 +281,7 @@ log_setup "Loading the ArcShell environment." 1
 arcHome=
 . "${HOME}/.arcshell"
 
+log_setup "Running config functions." 1
 while read file_name; do
    specialFunction=$(_setup_returns_special_function_from_file "__config" "${file_name}")
    if [[ -n "${specialFunction}" ]]; then

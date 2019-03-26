@@ -17,7 +17,7 @@ Watch one or more files or directories for changes.
 # -include: Limit files and directories to those matching this regular expression.
 # -exclude: Exclude files and directories that match this regular expression.
 # -stdin: Read files and directories from standard input.
-# -watch: Name of a "watch_list" object which returns the list of files and directories to watch.
+# -watch: Name of a "file_list" config file which returns the list of files and directories to watch.
 # watch_key: A unique string used to identify this particular watch.
 # file_list: Comma separated list of files and/or directories.
 ```

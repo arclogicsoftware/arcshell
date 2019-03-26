@@ -1,5 +1,4 @@
 
-
 # module_name="Cron"
 # module_about="Make and schedule solutions using cron styled attributes."
 # module_version=1
@@ -8,7 +7,11 @@
 
 function __readmeCron {
 cat <<EOF
-Evaluates cron expressions. The following examples demonstrate the range of cron expressions allowable. See the Unix documentation for basic information on cron expressions. ArcShell supports the following features.
+Evaluates cron expressions.
+
+See the Unix documentation for basic information on cron expressions. 
+
+ArcShell supports the following features.
 
 * Like typical cron entries, asterisks are wild cards.
 * Ranges are allowed. For example, “0,15,30,45 8-17 * * *”, runs jobs at 4 times per hour between 8:00 AM and 5:59 PM.
@@ -19,6 +22,12 @@ Evaluates cron expressions. The following examples demonstrate the range of cron
 
 EOF
 }   
+
+function __exampleCron {
+   if cron_is_true "* 8-16 * * *"; then
+      echo "Hour is between 8AM and 4PM."
+   fi
+}
          
 function cron_is_true {
    # Return true if the provided cron expression is true.

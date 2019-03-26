@@ -91,7 +91,11 @@ function keywords_list {
    # -l: Long list. Include file path to the keyword configuration file.
    # -a: All. List every configuration file for every keyword.
    ${arcRequireBoundVariables}
-   config_list_all_objects $* "keywords"
+   if (( $# == 0 )); then
+      config_list_all_objects $* "keywords"| sed 's/\.cfg//'
+   else 
+      config_list_all_objects $* "keywords"
+   fi
 }
 
 function test_keywords_list {

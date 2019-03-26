@@ -9,6 +9,12 @@
 _timerDir="${arcTmpDir}/_arcshell_timers"
 mkdir -p "${_timerDir}"
 
+function __readmeTimer {
+   cat <<EOF
+:
+EOF
+}
+
 function __exampleTimer {
    # Create the timer and start it.
    timer_create -force -start "foo"

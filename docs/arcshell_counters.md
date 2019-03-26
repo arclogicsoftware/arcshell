@@ -1,58 +1,55 @@
-A fast counter mechanism for instrumenting code and applications.
+# Counters
+**A fast counter management mechanism.**
 
-## Get Started
+Counters provide you with an easy way to instrument your code with a minimal impact on performance.
 
+Counters are "eventually" consistent. A background process runs every minute and tally's the latest sets of values. 
+
+## Example(s)
+```bash
+
+
+   # Deletes a counter group and all associated files.
+   counters_delete_group "foo"
+
+   # Creates a new counter called 'sheep' in the foo group.
+   counters_set "foo,sheep,+1"
+
+   # Increments the counter by 1.
+   counters_set "foo,sheep,+1"
+
+   # This will return 0. The increment in last step is not
+   # available until 'counters_update' is called.
+   counters_get "foo,sheep"
+
+   # For examples to return correct values below we need
+   # to set this to 0. Normally most recent file is not
+   # included in 'counters_update' but when this is 0 it is.
+   _g_counterSafeMode=0
+
+   # Set the counter to ten.
+   counters_set "foo,sheep,=10"
+
+   # Force update and check value. Will return 10.
+   counters_update
+   counters_get "foo,sheep"
+
+   # Let's add an animal to the group.
+   counters_set "foo,cow,=3"
+
+   # Subtract a cow.
+   counters_set "foo,cow,-1"
+
+   # Return all counter values in the group. Returns 10 and 2.
+   counters_update
+   counters_get "foo"
+
+   counters_delete_group "foo"
+   counters_get_group "foo"
+
+   # This returns 0. 0 returned when a counter does not exist.
+   counters_get "animals,horses"
 ```
-# Let's start with a clean slate.
-counters_delete_group "foo"
-
-# Create a new counter called 'sheep' in foo group.
-counters_set "foo,sheep,+1"
-
-# Increment the counter by 1.
-counters_set "foo,sheep,+1"
-
-# Value is not updated until 'counters_update' is called.
-counters_get "foo,sheep"
-0
-
-# Turn off safe mode for the sake of the examples below or we would
-# need to wait up to a minute between commands to ensure the "hot"
-# file is not longer "hot".
-_g_counterSafeMode=0
-
-# This "counts" all counters.  
-# counters_update
-
-# Set the counter to ten.
-counters_set "foo,sheep,=10"
-
-# Force update and check value.
-counters_update
-counters_get "foo,sheep"
-10
-
-# Let's add an animal to the group.
-counters_set "foo,cow,=3"
-
-# Subtract a cow.
-counters_set "foo,cow,-1"
-
-# Return all counter values in the group.
-counters_update
-counters_get "foo"
-sheep=10
-cow=2
-
-counters_delete_group "foo"
-counters_get_group "foo"
-
-# Zero is returned when a counter does not exist.
-counters_get "animals,horses"
-> 0
-```
-
-
 
 ## Reference
 

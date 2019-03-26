@@ -1,4 +1,4 @@
-# arcshell_timer.sh
+:
 
 ## Example(s)
 ```bash

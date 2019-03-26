@@ -1,4 +1,8 @@
-Evaluates cron expressions. The following examples demonstrate the range of cron expressions allowable. See the Unix documentation for basic information on cron expressions. ArcShell supports the following features.
+Evaluates cron expressions.
+
+See the Unix documentation for basic information on cron expressions. 
+
+ArcShell supports the following features.
 
 * Like typical cron entries, asterisks are wild cards.
 * Ranges are allowed. For example, “0,15,30,45 8-17 * * *”, runs jobs at 4 times per hour between 8:00 AM and 5:59 PM.
@@ -7,7 +11,13 @@ Evaluates cron expressions. The following examples demonstrate the range of cron
 * Months can be represented using digits (1-12) or 3-character abbreviations. For example, “0 12 * APR-SEP *” runs jobs at 12:00 AM every day between April and September.
 * Day of week can be represented using digits (0-6 where 0 is Sunday) or three-character abbreviations. For example, “0 2 * * SUN-WED”, runs jobs at 2:00 AM Sunday through Wednesday.
 
+## Example(s)
+```bash
 
+   if cron_is_true "* 8-16 * * *"; then
+      echo "Hour is between 8AM and 4PM."
+   fi
+```
 
 ## Reference
 

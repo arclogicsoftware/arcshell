@@ -9,6 +9,18 @@
 _docengDir="${arcTmpDir}/_arcshell_doceng"
 mkdir -p "${_docengDir}"
 
+function __readmeDocumentationEngine {
+   cat <<EOF
+# Documentation Engine
+**Generate documentation and help commands from source files.**
+
+The documentation engine is used primarily to generate the documentation located in the docs folder from the files in the \`\`\`\${arcHome}/sh/core\`\`\` directory.
+
+It also generates the built in \`\`\`help_*\`\`\` functions which are used to quickly reference the help for a module from the command line.
+
+EOF
+}
+
 function doceng_generate_page_modules_index {
    # Builds the 'README.md' file in the 'docs' folder.
    # >>> doceng_generate_page_modules_index 
@@ -229,7 +241,6 @@ function doceng_get_synopsis {
       fi
    fi
 }
-
 
 function doceng_get_documentation {
    # Returns help for a file.

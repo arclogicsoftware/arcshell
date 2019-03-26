@@ -73,7 +73,6 @@ function __exampleAlerting {
    fi
 }
 
-
 function test_file_setup {
    __setupArcShellAlerting
    alerts_close_all
@@ -236,7 +235,7 @@ function _alertOpenAlert {
    _alertID="${2}"
    _alertTitle="${3}"
    _alertFile="${_alertsDir}/${_alertID}.dat"
-   eval "$(config_load_object "alert_types" "${_alertType}.cfg")"
+   eval "$(config_load_all_objects "alert_types" "${_alertType}.cfg")"
    alert_groups="${_alertGroups:-}"
    alert_date="$(date)"
    alert_title="${_alertTitle:-}"

@@ -34,11 +34,11 @@ function watch_file {
    # -include: Limit files and directories to those matching this regular expression.
    # -exclude: Exclude files and directories that match this regular expression.
    # -stdin: Read files and directories from standard input. 
-   # -watch: Name of a "watch_list" object which returns the list of files and directories to watch.
+   # -watch: Name of a "file_list" config file which returns the list of files and directories to watch.
    # watch_key: A unique string used to identify this particular watch.
    # file_list: Comma separated list of files and/or directories.
    ${arcRequireBoundVariables}
-   debug2 "watch_file: $*"
+   debug3 "watch_file: $*"
    typeset stdin recurse exclude_regex include_regex file_as_key file tags \
       tmpFile total_file_count cache_key do_hash do_look watch_file_error_count \
       deleted_count modified_count require_look arg_count watch_list 
@@ -90,7 +90,7 @@ function watch_file {
    fi
    ) | sort > "${tmpFile}"
 
-   debug2 "*** tmpFile 1 ***"
+   debug3 "*** tmpFile 1 ***"
    cat "${tmpFile}" | debugd2
 
    _watchFileExpandDirsInTmpFile "${tmpFile}" ${recurse} "${include_regex}" "${exclude_regex}"
@@ -362,13 +362,13 @@ function _watchFileExpandDirsInTmpFile {
    # include_regex: Only include objects which match this regular expression.
    # exclude_regex: Exclude objects which match this regular expression.
    ${arcRequireBoundVariables}
-   debug2 "_watchFileExpandDirsInTmpFile: $*"
+   debug3 "_watchFileExpandDirsInTmpFile: $*"
    typeset tmpFile recurse include_regex exclude_regex file_or_dir
    tmpFile="${1}"
    recurse="${2}"
    include_regex="${3}"
    exclude_regex="${4}"
-   debug2 "r=${recurse}"
+   debug3 "r=${recurse}"
    (
    while read -r file_or_dir; do
       if [[ -d "${file_or_dir}" ]]; then
@@ -386,7 +386,7 @@ function _watchFileExpandDirsInTmpFile {
    done < "${tmpFile}"
    ) | egrep "${include_regex}" | egrep -v "${exclude_regex}" > "${tmpFile}2"
    mv "${tmpFile}2" "${tmpFile}"
-   debug2 "*** tmpFile ***"
+   debug3 "*** tmpFile ***"
    cat "${tmpFile}" | debugd2 
 }
 
@@ -466,7 +466,7 @@ function watch_file_delete {
    # Delete all of the cached data assocated with a watch_file key.
    # >>> watch_file_delete "watch_key"
    ${arcRequireBoundVariables}
-   debug2 "watch_file_delete: $*"
+   debug3 "watch_file_delete: $*"
    typeset cache_key
    cache_key="watch_file_${1}"
    cache_delete_group "${cache_key}" 
@@ -477,7 +477,7 @@ function _watchFileAddMetaDataToTmpFile {
    # Updates the tmpFile by adding meta data for each file listed in it.
    # >>> _watchFileAddMetaDataToTmpFile "tmpFile" "do_hash"
    ${arcRequireBoundVariables}
-   debug2 "_watchFileAddMetaDataToTmpFile: $*"
+   debug3 "_watchFileAddMetaDataToTmpFile: $*"
    typeset tmpFile file do_hash 
    tmpFile="${1}"
    do_hash="${2}"
@@ -487,7 +487,7 @@ function _watchFileAddMetaDataToTmpFile {
    done < "${tmpFile}"
    ) > "${tmpFile}2"
    mv "${tmpFile}2" "${tmpFile}"
-   debug2 "_watchFileAddMetaDataToTmpFile: End"
+   debug3 "_watchFileAddMetaDataToTmpFile: End"
    ${returnTrue} 
 }
 
@@ -499,7 +499,7 @@ function _watchReturnModifiedOrNewFiles {
    # Returns the full path to any modified or new files in a directory.
    # >>> _watchFileReturnNewFiles "cache_key" "tmpFile"
    ${arcRequireBoundVariables}
-   debug2 "_watchReturnModifiedOrNewFiles: $*"
+   debug3 "_watchReturnModifiedOrNewFiles: $*"
    typeset cache_key tmpFile 
    cache_key="${1}"
    tmpFile="${2}"
@@ -518,7 +518,7 @@ function _watchFileReturnDeletedFiles {
    # Returns the full path to any deleted files in a directory.
    # >>> _watchFileReturnNewFiles "cache_key" "tmpFile"
    ${arcRequireBoundVariables}
-   debug2 "_watchFileReturnDeletedFiles: $*"
+   debug3 "_watchFileReturnDeletedFiles: $*"
    typeset cache_key tmpFile
    cache_key="${1}"
    sensor_get_last_diff -g "${cache_key}" "${cache_key}" | grep "^< " | \

@@ -1,5 +1,4 @@
 
-
 # module_name="Demo"
 # module_about="Create playable command line demonstrations."
 # module_version=1
@@ -12,6 +11,18 @@ _g_demo_file="${arcTmpDir}/_arcshell_demo.tmp"
 _g_demo_key_press_delay=".00"
 _g_global_wait_seconds=0
 _g_markdown_file="${arcTmpDir}/demo$(dt_y_m_d_h_m).md"
+
+# ToDo: Fix below.
+# Not part of core so docengine can't process since it is expecting to have this function loaded.
+# function __readmeDemo {
+#    cat <<EOF
+# # Demo
+# **Create playable command line demonstrations.**
+
+# This module can be used to script demos. 
+
+# EOF
+# }
 
 function demo_end {
    echo "A Markdown version of the demo and output is here: '${_g_markdown_file}'."

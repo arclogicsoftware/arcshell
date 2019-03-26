@@ -114,7 +114,7 @@ function config_file_set {
    # >>> config_file_set "file"
    ${arcRequireBoundVariables}
    configFile="${1}"
-   file_raise_file_not_found "${file}" && ${returnFalse} 
+   file_raise_file_not_found "${configFile}" && ${returnFalse} 
    _configRaiseConfigFileAlreadySet && ${returnFalse} 
    _configRaiseConfigIsDirty && ${returnFalse} 
    _g_configWorkFile="$(mktempf "configWorkingFile")"

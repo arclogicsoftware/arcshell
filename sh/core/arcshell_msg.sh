@@ -14,7 +14,7 @@ function test_file_setup {
    cat <<EOF
 group_emails='foo@bar.com'
 EOF
-   ) > "${arcHome}/config/contact_groups/foo"
+   ) > "${arcHome}/config/contact_groups/foo.cfg"
    contact_groups_refresh
 }
 
@@ -711,7 +711,7 @@ function test_file_teardown {
    contact_group_delete "foo"
    contact_group_delete "bar"
    arcshell_mail_program="mail"
-   rm "${arcHome}/config/contact_groups/foo" 2> /dev/null
+   rm "${arcHome}/config/contact_groups/foo.cfg" 2> /dev/null
    contact_groups_refresh
 }
 

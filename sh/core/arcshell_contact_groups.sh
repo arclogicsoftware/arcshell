@@ -12,22 +12,35 @@ mkdir -p "${_contactgroupsHome}/default_groups"
 
 function __readmeContactGroups {
    cat <<EOF
-## Contact Groups
+# Contact Groups
+**Manages group membership and the rules used to send messages to the group.**
 
-Use contact groups to...
+Contact groups are used to route messages to the right people, at the right time, using the configured means.
 
-* Get messages and alerts to the right people.
-* At the right time.
-* Using the allowed means.
+In ArcShell messages can be sent to one or more specific contact groups but ArcShell will route messages to any available contact group if one is not specified.
 
-With contact groups you can...
+You can use contact groups to implement automated on-call rotations, message buffering, and define windows in which one contact method is preferred over another.
 
-* Direct messages to particular groups.
-* Define on-call rotations.
-* Implement message queuing and send message digests. 
+Each group is configured using an ArcShell configuration file.
 
-This is all accomplished by setting up a simple configuration file for each group. 
+The delivered configuration files are in \`\`\`\${arcHome}/config/contact_groups\`\`\`.
 
+Configure a contact group by adding a file of the same name to \`\`\`\${arcGlobalHome}/config/contact_groups\`\`\` or \`\`\`\${arcUserHome}/config/contact_groups\`\`\` and modifying the desired values. 
+
+New contact groups can be created by adding a file to one of these directories.
+
+It is important that you run the ```contact_groups_refresh``` procedure when you finish making changes to one or more contact groups.
+
+ArcShell loads contact groups in top down order. Delivered, global, then user. All identified files will be loaded when a contact group is used in the code base.
+
+**Example of a contact group configuration file.** 
+
+Contact groups configuration files are loaded as shell scripts. You can use shell to conditionally set the values in these files.
+
+\`\`\`
+# \${arcHome}/config/contact_groups/admins.cfg
+$(cat ${arcHome}/config/contact_groups/admins.cfg)
+\`\`\`
 EOF
 }
 
@@ -38,16 +51,15 @@ function test_function_setup {
    group_emails="foo@bar.com"
    group_default_group=1
 EOF
-   ) > "${arcHome}/config/contact_groups/foo" 
+   ) > "${arcHome}/config/contact_groups/foo.cfg" 
    (
    cat <<EOF
    group_enabled=0
    group_default_group=0
 EOF
-   ) > "${arcHome}/config/contact_groups/bar" 
+   ) > "${arcHome}/config/contact_groups/bar.cfg" 
    contact_groups_refresh
 }
-
 
 function __setupArcShellContactGroups {
    # Run setup for actions for contact groups.
@@ -63,8 +75,8 @@ function contact_group_load {
    debug3 "contact_group_load: $*"
    typeset group_name 
    group_name="${1}"
-   _configRaiseObjectNotFound "contact_groups" "${group_name}" && ${returnFalse} 
-   echo "$(config_load_object "contact_groups" "${group_name}")"
+   _configRaiseObjectNotFound "contact_groups" "${group_name}.cfg" && ${returnFalse} 
+   echo "$(config_load_all_objects "contact_groups" "${group_name}.cfg")"
 }
 
 function test_contact_group_load {
@@ -78,6 +90,7 @@ function _groupsGenerateDefaultGroupsLookup {
    # Generates the lookup files we need to see which groups are default groups.
    # >>> _groupsGenerateDefaultGroupsLookup
    ${arcRequireBoundVariables}
+   debug3 "_groupsGenerateDefaultGroupsLookup: $*"
    typeset group_name group_default_group
    rm -rf "${_contactgroupsHome}/default_groups"
    mkdir "${_contactgroupsHome}/default_groups"
@@ -101,7 +114,7 @@ function _groupsRaiseGroupNotFound {
    ${arcRequireBoundVariables}
    typeset group_name
    group_name="${1}"
-   if _configRaiseObjectNotFound "contact_groups" "${group_name}"; then
+   if _configRaiseObjectNotFound "contact_groups" "${group_name}.cfg"; then
       ${returnTrue} 
    else 
       ${returnFalse} 
@@ -120,7 +133,7 @@ function contact_group_exists {
    utl_raise_invalid_option "contact_group_exists" "(( $# == 1 ))" "$*" && ${returnFalse} 
    typeset group_name 
    group_name="${1}"
-   if config_does_object_exist "contact_groups" "${group_name}"; then
+   if config_does_object_exist "contact_groups" "${group_name}.cfg"; then
       ${returnTrue}
    else
       ${returnFalse} 
@@ -174,7 +187,11 @@ function contact_groups_list {
    # -l: Long list. Include file path to the groups configuration file.
    # -a: All. List every configuration file for every group.
    ${arcRequireBoundVariables}
-   config_list_all_objects $* "contact_groups" 
+   if (( $# == 0 )); then
+      config_list_all_objects $* "contact_groups" | sed 's/\.cfg$//'
+   else
+      config_list_all_objects $* "contact_groups"
+   fi
 }
 
 function test_contact_groups_list {
@@ -223,7 +240,7 @@ function contact_group_delete {
    typeset group_name 
    utl_raise_invalid_option "contact_group_delete" "(( $# == 1 ))" && ${returnFalse} 
    group_name="${1}"
-   config_delete_object "contact_groups" "${group_name}"
+   config_delete_object "contact_groups" "${group_name}.cfg"
 }
 
 function test_file_teardown {

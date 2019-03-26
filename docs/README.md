@@ -227,7 +227,51 @@ Manages group membership and the rules used to send messages to the group.
 
 A fast counter management mechanism.
 
+## Example(s)
+```bash
 
+
+   # Deletes a counter group and all associated files.
+   counters_delete_group "foo"
+
+   # Creates a new counter called 'sheep' in the foo group.
+   counters_set "foo,sheep,+1"
+
+   # Increments the counter by 1.
+   counters_set "foo,sheep,+1"
+
+   # This will return 0. The increment in last step is not
+   # available until 'counters_update' is called.
+   counters_get "foo,sheep"
+
+   # For examples to return correct values below we need
+   # to set this to 0. Normally most recent file is not
+   # included in 'counters_update' but when this is 0 it is.
+   _g_counterSafeMode=0
+
+   # Set the counter to ten.
+   counters_set "foo,sheep,=10"
+
+   # Force update and check value. Will return 10.
+   counters_update
+   counters_get "foo,sheep"
+
+   # Let's add an animal to the group.
+   counters_set "foo,cow,=3"
+
+   # Subtract a cow.
+   counters_set "foo,cow,-1"
+
+   # Return all counter values in the group. Returns 10 and 2.
+   counters_update
+   counters_get "foo"
+
+   counters_delete_group "foo"
+   counters_get_group "foo"
+
+   # This returns 0. 0 returned when a counter does not exist.
+   counters_get "animals,horses"
+```
 
 ### Links
 
@@ -244,7 +288,13 @@ A fast counter management mechanism.
 
 Make and schedule solutions using cron styled attributes.
 
+## Example(s)
+```bash
 
+   if cron_is_true "* 8-16 * * *"; then
+      echo "Hour is between 8AM and 4PM."
+   fi
+```
 
 ### Links
 
