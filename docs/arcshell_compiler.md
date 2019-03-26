@@ -1,4 +1,7 @@
-# arcshell_compiler.sh
+# Compiler
+**Transforms modules with multiple dependencies into single executable files.**
+
+This module is a prototype/proof of concept.
 
 
 

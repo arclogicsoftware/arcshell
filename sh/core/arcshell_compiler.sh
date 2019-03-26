@@ -15,6 +15,15 @@ _g_compilerIncludeTests=0
 _g_compilerLogFile="${arcLogDir}/compiler.log"
 _g_compilerWorkfile="${_compiler_gDir}/workFile.$$"
 
+function __readmeCompiler {
+   cat <<EOF
+# Compiler
+**Transforms modules with multiple dependencies into single executable files.**
+
+This module is a prototype/proof of concept.
+EOF
+}
+
 function __setupArcShellCompiler {
    objects_register_object_model "compiler_group" "_compilerGroupDef" 
 }

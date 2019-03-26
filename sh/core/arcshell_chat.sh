@@ -7,6 +7,32 @@
 
 # ToDo: Add wget support if curl isn't present.
 
+function __readmeChat {
+  cat <<EOF
+# Chat
+**Supports sending messages to services like Slack.**
+
+This module currently supports Slack. You will need to obtain a web hook from Slack which enables you to post messages to a single channel. You will specify the allowed channel when you create the web hook. 
+
+You will need to set the \`\`\`arcshell_app_slack_webhook\`\`\` value in one of the \`\`\`arcshell.cfg\`\`\` configuration files. Do not modify the delivered file. Instead modify your global or user version. These are located in \`\`\`\${arcGlobalHome}/config/arcshell\`\`\` and \`\`\`\${arcUserHome}/config/arcshell\`\`\` directories.
+
+You can optionally set the value of this parameter in the configuration file for a specific **contact group**.
+EOF
+}
+
+function __exampleChat {
+
+  # Post vmstat data to Slack
+  vmstat 5 5 | send_slack -stdin 
+
+  # Post a simple message to Slack.
+  send_slack "Build is complete."
+
+  # Messages can also be posted to Slack using the messaging system.
+  vmstat 5 5 | send_message -slack "This is a Slack message too."
+
+}
+
 function send_slack {
    # Post a message to the configured slack channel.
    # >>> send_slack [-stdin] ["slack_message"]

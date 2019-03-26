@@ -7,7 +7,7 @@
 | [Caching](#caching) | A simple yet powerful key value data store. |
 | [Chat](#chat) | Supports sending messages to services like Slack. |
 | [Compiler](#compiler) | Transforms modules with multiple dependencies into single executable files. |
-| [Configuration](#configuration) | Manages configuration files and semi-static objects. |
+| [Configuration](#configuration) | Manage configuration files. |
 | [Contact Groups](#contact_groups) | Manages group membership and the rules used to send messages to the group. |
 | [Counters](#counters) | A fast counter management mechanism. |
 | [Cron](#cron) | Make and schedule solutions using cron styled attributes. |
@@ -146,7 +146,20 @@ A simple yet powerful key value data store.
 
 Supports sending messages to services like Slack.
 
+## Example(s)
+```bash
 
+
+  # Post vmstat data to Slack
+  vmstat 5 5 | send_slack -stdin 
+
+  # Post a simple message to Slack.
+  send_slack "Build is complete."
+
+  # Messages can also be posted to Slack using the messaging system.
+  vmstat 5 5 | send_message -slack "This is a Slack message too."
+
+```
 
 ### Links
 
@@ -178,7 +191,7 @@ Transforms modules with multiple dependencies into single executable files.
 
 ## Configuration (arcshell_config.sh)
 
-Manages configuration files and semi-static objects.
+Manage configuration files.
 
 
 

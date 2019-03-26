@@ -1,7 +1,6 @@
 
-
 # module_name="Configuration"
-# module_about="Manages configuration files and semi-static objects."
+# module_about="Manage configuration files."
 # module_version=1
 # module_image="switch-4.png"
 # copyright_notice="Copyright 2019 Arclogic Software"
@@ -13,6 +12,33 @@ mkdir -p "${arcUserHome}/config"
 _g_configConfigFile=
 _g_configWorkFile=
 _g_configIsDirty=0
+
+function __readmeConfig {
+   cat <<EOF
+# Configuration
+**Manage configuration files.**
+
+This module can be used to interact with a configuration files and ArcShell configuration objects.
+
+The \`\`\`config_merge\`\`\` function is used to merge settings assigned in "old_file" to "new_file" without disturbing any other lines or values in "new_file". This function can't merge variable values that span more than one line.
+
+The  \`\`\`config_file_*\`\`\` functions are a bit more sophisticated in that they do work with variable values that span multiple lines. The process of of assigning values is under the control of the programmer.
+
+Finally the other \`\`\`config_*\`\`\` functions are meant to interact specifically with ArcShell configuration objects.
+
+These objects are stored in one or more of the \`\`\`config\`\`\` folders for each of the three ArcShell homes.
+
+\`\`\`
+\${arcHome}/config
+\${arcGlobalHome}/config
+\${arcUserHome}/config
+\`\`\`
+Depending on the design implemented the module may load the first configuration file found or it may all of the configuration files. This can be accomplished in a top-down order, or bottom up.
+
+ArcShell configuration files are often simply shell scripts containing variable assignments. As such you are free to use valid shell commands to determine the settings of these assignments.
+
+EOF
+}
 
 function test_file_setup {
       (
@@ -49,41 +75,9 @@ function __setupArcShellConfig {
    _configPropogateTypesOfObjects
 }
 
-function _configDeleteConfig {
-   # Truncates the named configuration file.
-   # >>> _configDeleteConfig "file_name"
-   # file_name: Should be the file name only, not a path to a file.
-   ${arcRequireBoundVariables}
-   typeset file_name 
-   file_name="${1}"
-   file_raise_is_path "${file_name}" && ${returnFalse} 
-   cp /dev/null "${arcTmpDir}/${file_name}"
-   ${returnTrue} 
-}
-
-function test__configDeleteConfig {
-   _configDeleteConfig "arcshell.config" && pass_test || fail_test 
-   echo "${arcTmpDir}/arcshell.config" | assert ! -s
-}
-
-function config_run_config_function {
-   # Runs the __config* function in a file if it exists.
-   # >>> config_run_config_function "file"
-   ${arcRequireBoundVariables}
-   debug2 "_configRunConfigFunction: $*"
-   typeset func file 
-   file="${1}"
-   func=$(boot_list_functions "${file}" | grep "^__config")
-   if [[ -n "${func:-}" ]]; then
-      debug0 "Loading configuration for '${file}'."
-      eval "${func}"
-   fi
-   ${returnTrue} 
-}
-
-function config_merge_files {
-   # Modify ```new_file``` by merging assignments from ```old_file``` for matching variables.
-   # >>> config_merge_files "new_file" "old_file"
+function config_merge {
+   # Updates new_file by merging assignments from old_file where there are common variables.
+   # >>> config_merge "new_file" "old_file"
    # new_file: Any file containing "parameter=value" assignments.
    # old_file: The configuration file to use existing values from.
    typeset new_file old_file new_line var tmpFile
@@ -115,29 +109,25 @@ function config_merge_files {
    rmtempf "mergeConfigFiles"
 }
 
-function config_set_file {
+function config_file_set {
    # Loads the configuration we want to work with from a file.
-   # >>> config_set_file "file"
+   # >>> config_file_set "file"
    ${arcRequireBoundVariables}
    configFile="${1}"
-   if ! _configRaiseConfigFileAlreadySet && \
-      ! _configRaiseConfigIsDirty && \
-      ! _configRaiseConfigFileNotFound "${configFile}"; then
-      _g_configWorkFile="$(mktempf "configWorkingFile")"
-      cp "${configFile}" "${_g_configWorkFile}"
-      utl_add_missing_newline_to_end_of_file "${_g_configWorkFile}"
-      _g_configConfigFile="${configFile}"
-      debug2 "config_set_file: $*"
-      ${returnTrue}
-   else
-      ${returnFalse}
-   fi
+   file_raise_file_not_found "${file}" && ${returnFalse} 
+   _configRaiseConfigFileAlreadySet && ${returnFalse} 
+   _configRaiseConfigIsDirty && ${returnFalse} 
+   _g_configWorkFile="$(mktempf "configWorkingFile")"
+   cp "${configFile}" "${_g_configWorkFile}"
+   utl_add_missing_newline_to_end_of_file "${_g_configWorkFile}"
+   _g_configConfigFile="${configFile}"
+   ${returnTrue}
 }
 
-function test_config_set_file {
-   config_cancel
+function test_config_file_set {
+   config_file_cancel
    ! _configIsConfigSet && pass_test || fail_test "Config should not be set."
-   config_set_file "/tmp/foo.cfg"
+   config_file_set "/tmp/foo.cfg"
    _configIsConfigSet && pass_test || fail_test "Config should be set."
 }
 
@@ -163,27 +153,6 @@ function test__configRaiseParameterNotFound {
    ! _configRaiseParameterNotFound "${_g_configWorkFile}" "foo" 2> /dev/null && pass_test || fail_test "Valid parm should return false."
 }
 
-function _configRaiseConfigFileNotFound {
-   # Raise error and return true if the configuration file does not exist.
-   # >>> _configRaiseConfigFileNotFound "configFile"
-   ${arcRequireBoundVariables}
-   typeset configFile 
-   configFile="${1}"
-   if ! [[ -f "${configFile}" ]]; then
-      _configThrowError "Config file not found: $*: _configRaiseConfigFileNotFound"
-      ${returnTrue}
-   else  
-      ${returnFalse}
-   fi
-}
-
-function test__configRaiseConfigFileNotFound {
-   _configRaiseConfigFileNotFound "/tmp/bar.cfg" 2>&1 | assert_match "ERROR" "Invalid file should throw an error."
-   _configRaiseConfigFileNotFound "/tmp/bar.cfg" 2> /dev/null && pass_test || fail_test "Invalid file should return true."
-   _configRaiseConfigFileNotFound "/tmp/foo.cfg" 2>&1 | assert -l 0 "Valid config should not raise error or return output."
-   ! _configRaiseConfigFileNotFound "/tmp/foo.cfg" 2> /dev/null && pass_test || fail_test "Valid config should return false."
-}
-
 function _configRaiseConfigFileNotSet {
    # Throw error and return true if config file has not been set.
    # >>> _configRaiseConfigFileNotSet
@@ -199,7 +168,7 @@ function _configRaiseConfigFileNotSet {
 function test__configRaiseConfigFileNotSet {
    _configRaiseConfigFileNotSet 2>&1 | assert -l 0 "Was not expecting output, config should be set."
    ! _configRaiseConfigFileNotSet 2> /dev/null && pass_test || fail_test "Why didn't we return false, config should be set."
-   config_cancel
+   config_file_cancel
    _configRaiseConfigFileNotSet 2>&1 | assert_match "ERROR" "Expected ERROR since config is not set."
    _configRaiseConfigFileNotSet 2> /dev/null && pass_test || fail_test "Expected True since config is not set."
 }
@@ -219,7 +188,7 @@ function _configRaiseConfigFileAlreadySet {
 function test__configRaiseConfigFileAlreadySet {
    _configRaiseConfigFileAlreadySet 2>&1 | assert -l 0 "Didn't expect any output, config should not be set."
    ! _configRaiseConfigFileAlreadySet 2> /dev/null && pass_test || fail_test "Expected false return value."
-   config_set_file "/tmp/foo.cfg"
+   config_file_set "/tmp/foo.cfg"
    _configRaiseConfigFileAlreadySet 2>&1 | assert_match "ERROR" "Expected ERROR, config file should be set."
    _configRaiseConfigFileAlreadySet 2> /dev/null && pass_test || fail_test "Expected true return value."
 }
@@ -240,11 +209,11 @@ function test__configRaiseConfigIsDirty {
    :
 }
 
-function config_set_parameter {
-   # Sets an existing ```parameter``` ```value``` in the working copy of the config file..
-   # >>> config_set_parameter "parameter" "value"
+function config_file_set_parm {
+   # Sets an existing parameter value in the working copy of the config file..
+   # >>> config_file_set_parm "parameter" "value"
    typeset parameter value untilLine fromLine
-   debug2 "config_set_parameter: $*"
+   debug3 "config_file_set_parm: $*"
    parameter="${1}"
    value="${2}"
    if _configRaiseConfigFileNotSet && \
@@ -266,15 +235,14 @@ function config_set_parameter {
             ) > "${_g_configWorkFile}.tmp"
             mv "${_g_configWorkFile}.tmp" "${_g_configWorkFile}"
             _g_configIsDirty=1
-            debug2 "config_set_parameter: $*"
          fi
       else
-          _configThrowError "Parameter line should be greater than 0: ${l}: config_set_parameter"
+          _configThrowError "Parameter line should be greater than 0: ${l}: config_file_set_parm"
       fi
    fi
 }
 
-function test_config_set_parameter {
+function test_config_file_set_parm {
    :
 }
 
@@ -343,9 +311,9 @@ function test__configDoesParameterExist {
    :
 }
 
-function config_get_parameter {
+function config_file_get_parm {
    # Returns the value of a parameter from the working configuration file.
-   # >>> config_get_parameter "parameter"
+   # >>> config_file_get_parm "parameter"
    ${arcRequireBoundVariables}
    typeset parameter startLine endLine tmpFile
    parameter="${1}"
@@ -365,22 +333,22 @@ function config_get_parameter {
    fi
 }
 
-function test_config_get_parameter {
-   config_get_parameter "foo" | assert "x"
-   config_get_parameter "bar" | assert 1
+function test_config_file_get_parm {
+   config_file_get_parm "foo" | assert "x"
+   config_file_get_parm "bar" | assert 1
 }
 
-function config_save {
+function config_file_save {
    # Saves the config by activating the working config file.
-   # >>> config_save
+   # >>> config_file_save
    ${arcRequireBoundVariables}
    if ! _configRaiseConfigFileNotSet; then
       if (( _g_configIsDirty )); then
          cp "${_g_configWorkFile}" "${_g_configConfigFile}"
-         debug2 "config_save: $*"
+         debug2 "config_file_save: $*"
       fi
    fi
-   config_cancel
+   config_file_cancel
 }
 
 # function _config_load_modifications {
@@ -426,17 +394,17 @@ function config_save {
 #    ) > "${_g_configWorkFile}"
 # }
 
-function config_cancel {
+function config_file_cancel {
    # Cancel working with the current configuration file.
-   # >>> config_cancel
+   # >>> config_file_cancel
    ${arcRequireBoundVariables}
    rmtempf "configWorkingFile"
    _g_configConfigFile=
    _g_configWorkFile=
 }
 
-function test_config_cancel {
-   config_cancel
+function test_config_file_cancel {
+   config_file_cancel
    ! _configIsConfigSet && pass_test || fail_test
 }
 
@@ -452,7 +420,7 @@ function _configIsConfigSet {
 }
 
 function test__configIsConfigSet {
-   config_set_file "/tmp/foo.cfg"
+   config_file_set "/tmp/foo.cfg"
    _configIsConfigSet && pass_test || fail_test
 }
 
@@ -823,19 +791,14 @@ function config_does_object_exist  {
    # Return true if the object exists.
    # >>> config_does_object_exist "object_type" "object_name"
    ${arcRequireBoundVariables}
-   typeset object_type object_name
+   typeset object_type object_name object_file
    utl_raise_invalid_option "config_does_object_exist" "(( $# == 2 ))" && ${returnFalse} 
    object_type="${1}"
    object_name="${2}"
-   if [[ -f "${arcHome}/config/${object_type}/${object_name}" ]]; then
+   while read object_file; do
       ${returnTrue} 
-   elif [[ -f "${arcGlobalHome}/config/${object_type}/${object_name}" ]]; then
-      ${returnTrue} 
-   elif [[ -f "${arcUserHome}/config/${object_type}/${object_name}" ]]; then
-      ${returnTrue} 
-   else
-      ${returnFalse} 
-   fi
+   done < <(config_return_all_paths_for_object "${object_type}" "${object_name}")
+   ${returnFalse} 
 }
 
 function test_config_does_object_exist {
@@ -894,23 +857,15 @@ function config_delete_object {
    # Delete an object by name.
    # >>> config_delete_object "object_type" "object_name"
    ${arcRequireBoundVariables}
-   typeset object_type object_name object_deleted
+   typeset object_type object_name object_deleted object_file
    utl_raise_invalid_option "config_delete_object" "(( $# == 2 ))" && ${returnFalse} 
    object_type="${1}"
    object_name="${2}"
    object_deleted=0
-   if [[ -f "${arcHome}/config/${object_type}/${object_name}" ]]; then
-      rm -rf "${arcHome}/config/${object_type}/${object_name}"
+   while read object_file; do
+      rm -f "${object_file}"
       object_deleted=1
-   fi
-   if [[ -f "${arcGlobalHome}/config/${object_type}/${object_name}" ]]; then
-      rm -rf "${arcGlobalHome}/config/${object_type}/${object_name}"
-      object_deleted=1
-   fi
-   if [[ -f "${arcUserHome}/config/${object_type}/${object_name}" ]]; then
-      rm -rf "${arcUserHome}/config/${object_type}/${object_name}"
-      object_deleted=1
-   fi
+   done < <(config_return_all_paths_for_object "${object_type}" "${object_name}")
    if (( ${object_deleted} )); then
       ${returnTrue} 
    else

@@ -1,52 +1,66 @@
-# arcshell_config.sh
+# Configuration
+**Manage configuration files.**
+
+This module can be used to interact with a configuration files and ArcShell configuration objects.
+
+The ```config_merge``` function is used to merge settings assigned in "old_file" to "new_file" without disturbing any other lines or values in "new_file". This function can't merge variable values that span more than one line.
+
+The  ```config_file_*``` functions are a bit more sophisticated in that they do work with variable values that span multiple lines. The process of of assigning values is under the control of the programmer.
+
+Finally the other ```config_*``` functions are meant to interact specifically with ArcShell configuration objects.
+
+These objects are stored in one or more of the ```config``` folders for each of the three ArcShell homes.
+
+```
+${arcHome}/config
+${arcGlobalHome}/config
+${arcUserHome}/config
+```
+Depending on the design implemented the module may load the first configuration file found or it may all of the configuration files. This can be accomplished in a top-down order, or bottom up.
+
+ArcShell configuration files are often simply shell scripts containing variable assignments. As such you are free to use valid shell commands to determine the settings of these assignments.
 
 
 
 ## Reference
 
 
-### config_run_config_function
-Runs the __config* function in a file if it exists.
+### config_merge
+Updates new_file by merging assignments from old_file where there are common variables.
 ```bash
-> config_run_config_function "file"
-```
-
-### config_merge_files
-Modify ```new_file``` by merging assignments from ```old_file``` for matching variables.
-```bash
-> config_merge_files "new_file" "old_file"
+> config_merge "new_file" "old_file"
 # new_file: Any file containing "parameter=value" assignments.
 # old_file: The configuration file to use existing values from.
 ```
 
-### config_set_file
+### config_file_set
 Loads the configuration we want to work with from a file.
 ```bash
-> config_set_file "file"
+> config_file_set "file"
 ```
 
-### config_set_parameter
-Sets an existing ```parameter``` ```value``` in the working copy of the config file..
+### config_file_set_parm
+Sets an existing parameter value in the working copy of the config file..
 ```bash
-> config_set_parameter "parameter" "value"
+> config_file_set_parm "parameter" "value"
 ```
 
-### config_get_parameter
+### config_file_get_parm
 Returns the value of a parameter from the working configuration file.
 ```bash
-> config_get_parameter "parameter"
+> config_file_get_parm "parameter"
 ```
 
-### config_save
+### config_file_save
 Saves the config by activating the working config file.
 ```bash
-> config_save
+> config_file_save
 ```
 
-### config_cancel
+### config_file_cancel
 Cancel working with the current configuration file.
 ```bash
-> config_cancel
+> config_file_cancel
 ```
 
 ### config_show_config

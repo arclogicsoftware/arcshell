@@ -385,7 +385,7 @@ function _alertReturnsAlertText {
    cat <<EOF
 $(cat "${_alertsDir}/${alert_id}.dat")
 
-((( ALERT HISTORY )))
+ALERT HISTORY
 ---------------------
 $(cat "${_alertsDir}/${alert_id}.log" | tail -${__alert_history_line_count:-50})
 EOF
