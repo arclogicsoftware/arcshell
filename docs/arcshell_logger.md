@@ -1,4 +1,20 @@
-# arcshell_logger.sh
+# Logging
+
+**Logs stuff.**
+
+OK, anyone can write a logger, I know. But this one is special. 
+
+First of all there are commands like```log_help```,  ```log_show```, ```log_follow```, ```log_open```, ```log_get```, and  ```log_quit```.  These commands are going to make your life easier. They are documented below.
+
+Most of the entry points here are capable of logging to standard out or standard error in addition to logging to the  specified log file. This is helpful for example when you trap an error and want to both write it to the log and return the same logged entry to standard error. 
+
+```log_terminal``` is capable of determining if the code it operating from a terminal device and provide feedback otherwise simply log the action to the log without returning the entry to standard output. 
+
+You can optionally log details with a log entry by using the ```-stdin``` option. The log entry is only written if data actually exists on standard input. This enables you to write simple conditional log entries using a single line of code. If you want to log the entry anyway just add the ```-force``` option.
+
+The default log file is ```${arcUserHome}/logs/arcshell.log```.
+
+All in all this is a very capable logger. It used throughout ArcShell and you can use it for your solutions too.
 
 
 
@@ -40,7 +56,7 @@ Tail the arcshell application log as a background process. 'fg' to bring to fore
 ```
 
 ### log_quit
-Kills the "log_follow" process if it is running.
+Kills the "log_follow" process if it is running. Doesn't always work but it tries.
 ```bash
 > log_quit
 ```
@@ -63,10 +79,11 @@ Return text to standard out if the call is originating from a terminal.
 ### log_boring
 Log "boring" text to the application log file.
 ```bash
-> log_boring [-stdin] [-1|-2] [-logkey,-l "X"] [-tags,-t "X,x"] "log_text"
-# -stdin: Read standard input.
+> log_boring [-stdin] [-1|-2] [-force,-f] [-logkey,-l "X"] [-tags,-t "X,x"] "log_text"
+# -stdin: Read standard input and log it as a detail entry. Entry is not logged if there is no input.
 # -1: Data is returned to standard out in addition to being logged.
 # -2: Data is returned to standard error in addition to being logged.
+# -force: Forces log write when -stdin is used and no input is found.
 # -logkey: A key to identify the primary source of the log entry.
 # -tags: Tag list.
 # log_text: Text to log.
@@ -75,8 +92,9 @@ Log "boring" text to the application log file.
 ### log_info
 Log informational text to the application log file.
 ```bash
-> log_info [-stdin] [-1|-2] [-logkey,-l "X"] [-tags,-t "X,x"] "log_text"
-# -stdin: Read standard input.
+> log_info [-stdin] [-1|-2] [-force,-f] [-logkey,-l "X"] [-tags,-t "X,x"] "log_text"
+# -stdin: Read standard input and log it as a detail entry. Entry is not logged if there is no input.
+# -force: Forces log write when -stdin is used and no input is found.
 # -1: Data is returned to standard out in addition to being logged.
 # -2: Data is returned to standard error in addition to being logged.
 # -logkey: A key to identify the primary source of the log entry.
@@ -87,10 +105,11 @@ Log informational text to the application log file.
 ### log_notice
 Log a 'NOTICE' to the current log file.
 ```bash
-> log_notice [-stdin] [-1|-2] [-logkey,-l "X"] [-tags,-t "X,x"] "log_text"
-# -stdin: Read standard input.
+> log_notice [-stdin] [-1|-2] [-force,-f] [-logkey,-l "X"] [-tags,-t "X,x"] "log_text"
+# -stdin: Read standard input and log it as a detail entry. Entry is not logged if there is no input.
 # -1: Data is returned to standard out in addition to being logged.
 # -2: Data is returned to standard error in addition to being logged.
+# -force: Forces log write when -stdin is used and no input is found.
 # -logkey: A key to identify the primary source of the log entry.
 # -tags: Tag list.
 # log_text: Text to log.
@@ -99,10 +118,11 @@ Log a 'NOTICE' to the current log file.
 ### log_event
 Log a 'EVENT' record to the current log file.
 ```bash
-> log_event [-stdin] [-1|-2] [-tags,-t "X,x"] "log_text"
-# -stdin: Read standard input.
+> log_event [-stdin] [-1|-2] [-force,-f] [-tags,-t "X,x"] "log_text"
+# -stdin: Read standard input and log it as a detail entry. Entry is not logged if there is no input.
 # -1: Data is returned to standard out in addition to being logged.
 # -2: Data is returned to standard error in addition to being logged.
+# -force: Forces log write when -stdin is used and no input is found.
 # -logkey: A key to identify the primary source of the log entry.
 # -tags: Tag list.
 # log_text: Text to log.
@@ -111,10 +131,11 @@ Log a 'EVENT' record to the current log file.
 ### log_data
 Log a 'DATA' record to the current log file.
 ```bash
-> log_data [-stdin] [-1|-2] [-logkey,-l "X"] [-tags,-t "X,x"] "log_text"
-# -stdin: Read standard input.
+> log_data [-stdin] [-1|-2] [-force,-f] [-logkey,-l "X"] [-tags,-t "X,x"] "log_text"
+# -stdin: Read standard input and log it as a detail entry. Entry is not logged if there is no input.
 # -1: Data is returned to standard out in addition to being logged.
 # -2: Data is returned to standard error in addition to being logged.
+# -force: Forces log write when -stdin is used and no input is found.
 # -logkey: A key to identify the primary source of the log entry.
 # -tags: Tag list.
 # log_text: Text to log.
@@ -123,10 +144,11 @@ Log a 'DATA' record to the current log file.
 ### log_message
 Log a 'MESSAGE' record to the current log file.
 ```bash
-> log_message [-stdin] [-1|-2] [-logkey,-l "X"] [-tags,-t "X,x"] "log_text"
-# -stdin: Read standard input.
+> log_message [-stdin] [-1|-2] [-force,-f] [-logkey,-l "X"] [-tags,-t "X,x"] "log_text"
+# -stdin: Read standard input and log it as a detail entry. Entry is not logged if there is no input.
 # -1: Data is returned to standard out in addition to being logged.
 # -2: Data is returned to standard error in addition to being logged.
+# -force: Forces log write when -stdin is used and no input is found.
 # -logkey: A key to identify the primary source of the log entry.
 # -tags: Tag list.
 # log_text: Text to log.
@@ -135,22 +157,24 @@ Log a 'MESSAGE' record to the current log file.
 ### log_critical
 Log a 'CRITICAL' record to the current log file.
 ```bash
-> log_critical [-stdin] [-1|-2] [-logkey,-l "X"] [-tags,-t "X,x"] "log_text"
-# -stdin: Read standard input.
+> log_critical [-stdin] [-1|-2] [-force,-f] [-logkey,-l "X"] [-tags,-t "X,x"] "log_text"
+# -stdin: Read standard input and log it as a detail entry. Entry is not logged if there is no input.
 # -1: Data is returned to standard out in addition to being logged.
 # -2: Data is returned to standard error in addition to being logged.
+# -force: Forces log write when -stdin is used and no input is found.
 # -logkey: A key to identify the primary source of the log entry.
 # -tags: Tag list.
 # log_text: Text to log.
 ```
 
 ### log_warning
-Log a 'WARNING' record to the current log file.
+Logs a 'WARNING' record to the current log file.
 ```bash
-> log_warning [-stdin] [-1|-2] [-logkey,-l "X"] [-tags,-t "X,x"] "log_text"
-# -stdin: Read standard input.
+> log_warning [-stdin] [-1|-2] [-force,-f] [-logkey,-l "X"] [-tags,-t "X,x"] "log_text"
+# -stdin: Read standard input and log it as a detail entry. Entry is not logged if there is no input.
 # -1: Data is returned to standard out in addition to being logged.
 # -2: Data is returned to standard error in addition to being logged.
+# -force: Forces log write when -stdin is used and no input is found.
 # -logkey: A key to identify the primary source of the log entry.
 # -tags: Tag list.
 # log_text: Text to log.
@@ -159,10 +183,11 @@ Log a 'WARNING' record to the current log file.
 ### log_error
 Log a 'ERROR' record to the current log file.
 ```bash
-> log_error [-stdin] [-1|-2] [-logkey,-l "X"] [-tags,-t "X,x"] "log_text"
-# -stdin: Read standard input.
+> log_error [-stdin] [-1|-2] [-force,-f] [-logkey,-l "X"] [-tags,-t "X,x"] "log_text"
+# -stdin: Read standard input and log it as a detail entry. Entry is not logged if there is no input.
 # -1: Data is returned to standard out in addition to being logged.
 # -2: Data is returned to standard error in addition to being logged.
+# -force: Forces log write when -stdin is used and no input is found.
 # -logkey: A key to identify the primary source of the log entry.
 # -tags: Tag list.
 # log_text: Text to log.
@@ -171,10 +196,11 @@ Log a 'ERROR' record to the current log file.
 ### log_fatal
 Log a 'FATAL' record to the current log file.
 ```bash
-> log_fatal [-stdin] [-1|-2] [-logkey,-l "X"] [-tags,-t "X,x"] "log_text"
-# -stdin: Read standard input.
+> log_fatal [-stdin] [-1|-2] [-force,-f] [-logkey,-l "X"] [-tags,-t "X,x"] "log_text"
+# -stdin: Read standard input and log it as a detail entry. Entry is not logged if there is no input.
 # -1: Data is returned to standard out in addition to being logged.
 # -2: Data is returned to standard error in addition to being logged.
+# -force: Forces log write when -stdin is used and no input is found.
 # -logkey: A key to identify the primary source of the log entry.
 # -tags: Tag list.
 # log_text: Text to log.
@@ -183,10 +209,11 @@ Log a 'FATAL' record to the current log file.
 ### log_audit
 Log a 'AUDIT' record to the current log file.
 ```bash
-> log_audit [-stdin] [-1|-2] [-logkey,-l "X"] [-tags,-t "X,x"] "log_text"
-# -stdin: Read standard input.
+> log_audit [-stdin] [-1|-2] [-force,-f] [-logkey,-l "X"] [-tags,-t "X,x"] "log_text"
+# -stdin: Read standard input and log it as a detail entry. Entry is not logged if there is no input.
 # -1: Data is returned to standard out in addition to being logged.
 # -2: Data is returned to standard error in addition to being logged.
+# -force: Forces log write when -stdin is used and no input is found.
 # -logkey: A key to identify the primary source of the log entry.
 # -tags: Tag list.
 # log_text: Text to log.

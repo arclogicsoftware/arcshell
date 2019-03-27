@@ -1,7 +1,7 @@
 
 
-# module_name="Application Logger"
-# module_about="Logs and keeps track of events."
+# module_name="Logging"
+# module_about="Logs stuff."
 # module_version=1
 # module_image="infinity.png"
 # copyright_notice="Copyright 2019 Arclogic Software"
@@ -24,6 +24,30 @@ _g_log_to_stdout_once=0
 _g_log_to_stderr_once=0
 _g_log_messaging_enabled=0
 _g_log_follow_pid=
+
+# ToDo: Unit tests needed.
+
+function __readmeLogging {
+   cat <<EOF
+# Logging
+
+**Logs stuff.**
+
+OK, anyone can write a logger, I know. But this one is special. 
+
+First of all there are commands like\`\`\`log_help\`\`\`,  \`\`\`log_show\`\`\`, \`\`\`log_follow\`\`\`, \`\`\`log_open\`\`\`, \`\`\`log_get\`\`\`, and  \`\`\`log_quit\`\`\`.  These commands are going to make your life easier. They are documented below.
+
+Most of the entry points here are capable of logging to standard out or standard error in addition to logging to the  specified log file. This is helpful for example when you trap an error and want to both write it to the log and return the same logged entry to standard error. 
+
+\`\`\`log_terminal\`\`\` is capable of determining if the code it operating from a terminal device and provide feedback otherwise simply log the action to the log without returning the entry to standard output. 
+
+You can optionally log details with a log entry by using the \`\`\`-stdin\`\`\` option. The log entry is only written if data actually exists on standard input. This enables you to write simple conditional log entries using a single line of code. If you want to log the entry anyway just add the \`\`\`-force\`\`\` option.
+
+The default log file is \`\`\`\${arcUserHome}/logs/arcshell.log\`\`\`.
+
+All in all this is a very capable logger. It used throughout ArcShell and you can use it for your solutions too.
+EOF
+}
 
 function _logMessagingInterface {
    #
@@ -121,7 +145,7 @@ function log_follow {
 }
 
 function log_quit {
-   # Kills the "log_follow" process if it is running.
+   # Kills the "log_follow" process if it is running. Doesn't always work but it tries.
    # >>> log_quit
    ${arcRequireBoundVariables}
    if num_is_num ${_g_log_follow_pid:-}; then
@@ -199,123 +223,147 @@ function log_terminal {
 
 function log_boring {
    # Log "boring" text to the application log file.
-   # >>> log_boring [-stdin] [-1|-2] [-logkey,-l "X"] [-tags,-t "X,x"] "log_text"
-   # -stdin: Read standard input.
+   # >>> log_boring [-stdin] [-1|-2] [-force,-f] [-logkey,-l "X"] [-tags,-t "X,x"] "log_text"
+   # -stdin: Read standard input and log it as a detail entry. Entry is not logged if there is no input.
    # -1: Data is returned to standard out in addition to being logged.
    # -2: Data is returned to standard error in addition to being logged.
+   # -force: Forces log write when -stdin is used and no input is found.
    # -logkey: A key to identify the primary source of the log entry.
    # -tags: Tag list.
    # log_text: Text to log.
    ${arcRequireBoundVariables}
-   typeset log_key log_text tags stdin
+   typeset log_key log_text tags stdin log_input force_option
+   force_option=0
    log_key=$$
    tags=
    stdin=0
    while (( $# > 0)); do
       case "${1}" in
-         "-1") _g_log_to_stdout_once=1                         ;;
-         "-2") _g_log_to_stderr_once=1                         ;;
-         "-stdin") stdin=1                                     ;;
+         "-1") _g_log_to_stdout_once=1 ;;
+         "-2") _g_log_to_stderr_once=1 ;;
+         "-force"|"-f") force_option=1 ;;
+         "-stdin") stdin=1 ;;
          "-tags"|"-tag"|"-t") shift; tags="$(utl_format_tags "${1}")" ;;
-         "-logkey"|"-l")  shift; log_key="${1}"                   ;;
+         "-logkey"|"-l")  shift; log_key="${1}" ;;
          *) break ;;
       esac
       shift
    done
    utl_raise_invalid_option "log_boring" "(( $# <= 1 ))" "$*" && ${returnFalse} 
-   log_text="${1:-}"
-   _log_log_type "BORING" "${log_key}" "${log_text}" "${tags:-}"
+  log_text="${1:-}"
    if (( ${stdin} )); then
-      cat | log_detail 
+      log_input="$(cat)"
+      [[ -z "${log_input:-}" ]] && (( ! ${force_option} )) && ${returnFalse} 
+   fi
+   _log_log_type "BORING" "${log_key}" "${log_text}" "${tags:-}"
+   if [[ -n "${log_input:-}" ]]; then
+      echo "${log_input}" | log_detail 
    fi
 }
 
 function log_info {
    # Log informational text to the application log file.
-   # >>> log_info [-stdin] [-1|-2] [-logkey,-l "X"] [-tags,-t "X,x"] "log_text"
-   # -stdin: Read standard input.
+   # >>> log_info [-stdin] [-1|-2] [-force,-f] [-logkey,-l "X"] [-tags,-t "X,x"] "log_text"
+   # -stdin: Read standard input and log it as a detail entry. Entry is not logged if there is no input.
+   # -force: Forces log write when -stdin is used and no input is found.
    # -1: Data is returned to standard out in addition to being logged.
    # -2: Data is returned to standard error in addition to being logged.
    # -logkey: A key to identify the primary source of the log entry.
    # -tags: Tag list.
    # log_text: Text to log.
    ${arcRequireBoundVariables}
-   typeset log_key log_text tags stdin
+   typeset log_key log_text tags stdin log_input force_option
+   force_option=0
    log_key=$$
    tags=
    stdin=0
    while (( $# > 0)); do
       case "${1}" in
-         "-1") _g_log_to_stdout_once=1                         ;;
-         "-2") _g_log_to_stderr_once=1                         ;;
-         "-stdin") stdin=1                                     ;;
+         "-1") _g_log_to_stdout_once=1 ;;
+         "-2") _g_log_to_stderr_once=1 ;;
+         "-force"|"-f") force_option=1 ;;
+         "-stdin") stdin=1 ;;
          "-tags"|"-tag"|"-t") shift; tags="$(utl_format_tags "${1}")" ;;
-         "-logkey"|"-l")  shift; log_key="${1}"                   ;;
+         "-logkey"|"-l")  shift; log_key="${1}" ;;
          *) break ;;
       esac
       shift
    done
    utl_raise_invalid_option "log_info" "(( $# <= 1 ))" "$*" && ${returnFalse} 
-   log_text="${1:-}"
-   _log_log_type "INFO" "${log_key}" "${log_text}" "${tags:-}"
+  log_text="${1:-}"
    if (( ${stdin} )); then
-      cat | log_detail 
+      log_input="$(cat)"
+      [[ -z "${log_input:-}" ]] && (( ! ${force_option} )) && ${returnFalse} 
+   fi
+   _log_log_type "INFO" "${log_key}" "${log_text}" "${tags:-}"
+   if [[ -n "${log_input:-}" ]]; then
+      echo "${log_input}" | log_detail 
    fi
 }
 
 function log_notice {
    # Log a 'NOTICE' to the current log file.
-   # >>> log_notice [-stdin] [-1|-2] [-logkey,-l "X"] [-tags,-t "X,x"] "log_text"
-   # -stdin: Read standard input.
+   # >>> log_notice [-stdin] [-1|-2] [-force,-f] [-logkey,-l "X"] [-tags,-t "X,x"] "log_text"
+   # -stdin: Read standard input and log it as a detail entry. Entry is not logged if there is no input.
    # -1: Data is returned to standard out in addition to being logged.
    # -2: Data is returned to standard error in addition to being logged.
+   # -force: Forces log write when -stdin is used and no input is found.
    # -logkey: A key to identify the primary source of the log entry.
    # -tags: Tag list.
    # log_text: Text to log.
    ${arcRequireBoundVariables}
-   typeset log_key log_text tags stdin
+   typeset log_key log_text tags stdin log_input force_option
+   force_option=0
    log_key=$$
    tags=
    stdin=0
    while (( $# > 0)); do
       case "${1}" in
-         "-1") _g_log_to_stdout_once=1                         ;;
-         "-2") _g_log_to_stderr_once=1                         ;;
-         "-stdin") stdin=1                                     ;;
+         "-1") _g_log_to_stdout_once=1 ;;
+         "-2") _g_log_to_stderr_once=1 ;;
+         "-force"|"-f") force_option=1 ;;
+         "-stdin") stdin=1 ;;
          "-tags"|"-tag"|"-t") shift; tags="$(utl_format_tags "${1}")" ;;
-         "-logkey"|"-l")  shift; log_key="${1}"                   ;;
+         "-logkey"|"-l")  shift; log_key="${1}" ;;
          *) break ;;
       esac
       shift
    done
    utl_raise_invalid_option "log_notice" "(( $# <= 1 ))" "$*" && ${returnFalse} 
    log_text="${1:-}"
-   _log_log_type "NOTICE" "${log_key}" "${log_text}" "${tags:-}"
    if (( ${stdin} )); then
-      cat | log_detail 
+      log_input="$(cat)"
+      [[ -z "${log_input:-}" ]] && (( ! ${force_option} )) && ${returnFalse} 
+   fi
+   _log_log_type "NOTICE" "${log_key}" "${log_text}" "${tags:-}"
+   if [[ -n "${log_input:-}" ]]; then
+      echo "${log_input}" | log_detail 
    fi
 }
 
 function log_event {
    # Log a 'EVENT' record to the current log file.
-   # >>> log_event [-stdin] [-1|-2] [-tags,-t "X,x"] "log_text"
-   # -stdin: Read standard input.
+   # >>> log_event [-stdin] [-1|-2] [-force,-f] [-tags,-t "X,x"] "log_text"
+   # -stdin: Read standard input and log it as a detail entry. Entry is not logged if there is no input.
    # -1: Data is returned to standard out in addition to being logged.
    # -2: Data is returned to standard error in addition to being logged.
+   # -force: Forces log write when -stdin is used and no input is found.
    # -logkey: A key to identify the primary source of the log entry.
    # -tags: Tag list.
    # log_text: Text to log.
    ${arcRequireBoundVariables}
-   typeset tags event_name event_text stdin
+   typeset tags event_name event_text stdin log_input force_option
+   force_option=0
    tags="x"
    event_name= 
    event_text=
    stdin=0
    while (( $# > 0)); do
       case "${1}" in
-         "-1") _g_log_to_stdout_once=1                         ;;
-         "-2") _g_log_to_stderr_once=1                         ;;
-         "-stdin") stdin=1                                     ;;
+         "-1") _g_log_to_stdout_once=1 ;;
+         "-2") _g_log_to_stderr_once=1 ;;
+         "-force"|"-f") force_option=1 ;;
+         "-stdin") stdin=1 ;;
          "-tags"|"-tag"|"-t") shift; tags="$(utl_format_tags "${1}")" ;;
          *) break ;;
       esac
@@ -324,84 +372,103 @@ function log_event {
    utl_raise_invalid_option "log_event" "(( $# == 2 ))" "$*" && ${returnFalse} 
    event_name="${1}"
    event_text="${2}"
-   _log_log_type "EVENT" "${event_name}" "${event_text}" "${tags:-}"
    if (( ${stdin} )); then
-      cat | log_detail 
+      log_input="$(cat)"
+      [[ -z "${log_input:-}" ]] && (( ! ${force_option} )) && ${returnFalse} 
+   fi
+   _log_log_type "EVENT" "${event_name}" "${event_text}" "${tags:-}"
+   if [[ -n "${log_input:-}" ]]; then
+      echo "${log_input}" | log_detail 
    fi
 }
 
 function log_data {
    # Log a 'DATA' record to the current log file.
-   # >>> log_data [-stdin] [-1|-2] [-logkey,-l "X"] [-tags,-t "X,x"] "log_text"
-   # -stdin: Read standard input.
+   # >>> log_data [-stdin] [-1|-2] [-force,-f] [-logkey,-l "X"] [-tags,-t "X,x"] "log_text"
+   # -stdin: Read standard input and log it as a detail entry. Entry is not logged if there is no input.
    # -1: Data is returned to standard out in addition to being logged.
    # -2: Data is returned to standard error in addition to being logged.
+   # -force: Forces log write when -stdin is used and no input is found.
    # -logkey: A key to identify the primary source of the log entry.
    # -tags: Tag list.
    # log_text: Text to log.
    ${arcRequireBoundVariables}
-   typeset log_key log_text tags stdin
+   typeset log_key log_text tags stdin log_input force_option
+   force_option=0
    log_key=$$
    tags=
    stdin=0
    while (( $# > 0)); do
       case "${1}" in
-         "-1") _g_log_to_stdout_once=1                         ;;
-         "-2") _g_log_to_stderr_once=1                         ;;
-         "-stdin") stdin=1                                     ;;
+         "-1") _g_log_to_stdout_once=1 ;;
+         "-2") _g_log_to_stderr_once=1 ;;
+         "-force"|"-f") force_option=1 ;;
+         "-stdin") stdin=1 ;;
          "-tags"|"-tag"|"-t") shift; tags="$(utl_format_tags "${1}")" ;;
-         "-logkey"|"-l")  shift; log_key="${1}"                   ;;
+         "-logkey"|"-l")  shift; log_key="${1}" ;;
          *) break ;;
       esac
       shift
    done
    utl_raise_invalid_option "log_data" "(( $# <= 1 ))" "$*" && ${returnFalse} 
    log_text="${1:-}"
-   _log_log_type "DATA" "${log_key}" "${log_text}" "${tags:-}"
    if (( ${stdin} )); then
-      cat | log_detail 
+      log_input="$(cat)"
+      [[ -z "${log_input:-}" ]] && (( ! ${force_option} )) && ${returnFalse} 
+   fi
+   _log_log_type "DATA" "${log_key}" "${log_text}" "${tags:-}"
+   if [[ -n "${log_input:-}" ]]; then
+      echo "${log_input}" | log_detail 
    fi
 }
 
 function log_message {
    # Log a 'MESSAGE' record to the current log file.
-   # >>> log_message [-stdin] [-1|-2] [-logkey,-l "X"] [-tags,-t "X,x"] "log_text"
-   # -stdin: Read standard input.
+   # >>> log_message [-stdin] [-1|-2] [-force,-f] [-logkey,-l "X"] [-tags,-t "X,x"] "log_text"
+   # -stdin: Read standard input and log it as a detail entry. Entry is not logged if there is no input.
    # -1: Data is returned to standard out in addition to being logged.
    # -2: Data is returned to standard error in addition to being logged.
+   # -force: Forces log write when -stdin is used and no input is found.
    # -logkey: A key to identify the primary source of the log entry.
    # -tags: Tag list.
    # log_text: Text to log.
    ${arcRequireBoundVariables}
-   typeset log_key log_text tags stdin
+   typeset log_key log_text tags stdin log_input force_option
+   force_option=0
    log_key=$$
    tags=
    stdin=0
    while (( $# > 0)); do
       case "${1}" in
-         "-1") _g_log_to_stdout_once=1                         ;;
-         "-2") _g_log_to_stderr_once=1                         ;;
-         "-stdin") stdin=1                                     ;;
+         "-1") _g_log_to_stdout_once=1 ;;
+         "-2") _g_log_to_stderr_once=1 ;;
+         "-force"|"-f") force_option=1 ;;
+         "-stdin") stdin=1 ;;
          "-tags"|"-tag"|"-t") shift; tags="$(utl_format_tags "${1}")" ;;
-         "-logkey"|"-l")  shift; log_key="${1}"                   ;;
+         "-logkey"|"-l")  shift; log_key="${1}" ;;
          *) break ;;
       esac
       shift
    done
    utl_raise_invalid_option "log_message" "(( $# <= 1 ))" "$*" && ${returnFalse} 
    log_text="${1:-}"
-   _log_log_type "MESSAGE" "${log_key}" "${log_text}" "${tags:-}"
    if (( ${stdin} )); then
-      cat | log_detail 
+      log_input="$(cat)"
+      [[ -z "${log_input:-}" ]] && (( ! ${force_option} )) && ${returnFalse} 
+   fi
+   _log_log_type "MESSAGE" "${log_key}" "${log_text}" "${tags:-}"
+   if [[ -n "${log_input:-}" ]]; then
+      echo "${log_input}" | log_detail 
    fi
 }
 
 function log_critical {
    # Log a 'CRITICAL' record to the current log file.
-   # >>> log_critical [-stdin] [-1|-2] [-logkey,-l "X"] [-tags,-t "X,x"] "log_text"
-   # -stdin: Read standard input.
+   # >>> log_critical [-stdin] [-1|-2] [-force,-f] [-logkey,-l "X"] [-tags,-t "X,x"] "log_text"
+   # -stdin: Read standard input and log it as a detail entry. Entry is not logged if there is no input.
    # -1: Data is returned to standard out in addition to being logged.
    # -2: Data is returned to standard error in addition to being logged.
+   # -force: Forces log write when -stdin is used and no input is found.
    # -logkey: A key to identify the primary source of the log entry.
    # -tags: Tag list.
    # log_text: Text to log.
@@ -412,11 +479,12 @@ function log_critical {
    stdin=0
    while (( $# > 0)); do
       case "${1}" in
-         "-1") _g_log_to_stdout_once=1                         ;;
-         "-2") _g_log_to_stderr_once=1                         ;;
-         "-stdin") stdin=1                                     ;;
+         "-1") _g_log_to_stdout_once=1 ;;
+         "-2") _g_log_to_stderr_once=1 ;;
+         "-force"|"-f") force_option=1 ;;
+         "-stdin") stdin=1 ;;
          "-tags"|"-tag"|"-t") shift; tags="$(utl_format_tags "${1}")" ;;
-         "-logkey"|"-l")  shift; log_key="${1}"                   ;;
+         "-logkey"|"-l")  shift; log_key="${1}" ;;
          *) break ;;
       esac
       shift
@@ -430,35 +498,38 @@ function log_critical {
 }
 
 function log_warning {
-   # Log a 'WARNING' record to the current log file.
-   # >>> log_warning [-stdin] [-1|-2] [-logkey,-l "X"] [-tags,-t "X,x"] "log_text"
-   # -stdin: Read standard input.
+   # Logs a 'WARNING' record to the current log file.
+   # >>> log_warning [-stdin] [-1|-2] [-force,-f] [-logkey,-l "X"] [-tags,-t "X,x"] "log_text"
+   # -stdin: Read standard input and log it as a detail entry. Entry is not logged if there is no input.
    # -1: Data is returned to standard out in addition to being logged.
    # -2: Data is returned to standard error in addition to being logged.
+   # -force: Forces log write when -stdin is used and no input is found.
    # -logkey: A key to identify the primary source of the log entry.
    # -tags: Tag list.
    # log_text: Text to log.
    ${arcRequireBoundVariables}
-   typeset log_key log_text tags stdin
+   typeset log_key log_text tags stdin log_input force_option
+   force_option=0
    log_key=$$
    tags=
    stdin=0
    while (( $# > 0)); do
       case "${1}" in
-         "-1") _g_log_to_stdout_once=1                         ;;
-         "-2") _g_log_to_stderr_once=1                         ;;
-         "-stdin") stdin=1                                     ;;
+         "-1") _g_log_to_stdout_once=1 ;;
+         "-2") _g_log_to_stderr_once=1 ;;
+         "-force"|"-f") force_option=1 ;;
+         "-stdin") stdin=1 ;;
          "-tags"|"-tag"|"-t") shift; tags="$(utl_format_tags "${1}")" ;;
-         "-logkey"|"-l")  shift; log_key="${1}"                   ;;
+         "-logkey"|"-l")  shift; log_key="${1}" ;;
          *) break ;;
       esac
       shift
    done
    utl_raise_invalid_option "log_warning" "(( $# == 1 ))" "$*" && ${returnFalse} 
-   log_text="${1}"
+   log_text="${1:-}"
    if (( ${stdin} )); then
       log_input="$(cat)"
-      [[ -z "${log_input:-}" ]] && ${returnFalse} 
+      [[ -z "${log_input:-}" ]] && (( ! ${force_option} )) && ${returnFalse} 
    fi
    _log_log_type "WARNING" "${log_key}" "${log_text}" "${tags:-}"
    if [[ -n "${log_input:-}" ]]; then
@@ -468,100 +539,120 @@ function log_warning {
 
 function log_error {
    # Log a 'ERROR' record to the current log file.
-   # >>> log_error [-stdin] [-1|-2] [-logkey,-l "X"] [-tags,-t "X,x"] "log_text"
-   # -stdin: Read standard input.
+   # >>> log_error [-stdin] [-1|-2] [-force,-f] [-logkey,-l "X"] [-tags,-t "X,x"] "log_text"
+   # -stdin: Read standard input and log it as a detail entry. Entry is not logged if there is no input.
    # -1: Data is returned to standard out in addition to being logged.
    # -2: Data is returned to standard error in addition to being logged.
+   # -force: Forces log write when -stdin is used and no input is found.
    # -logkey: A key to identify the primary source of the log entry.
    # -tags: Tag list.
    # log_text: Text to log.
    ${arcRequireBoundVariables}
-   typeset log_key log_text tags stdin
+   typeset log_key log_text tags stdin log_input force_option
+   force_option=0
    log_key=$$
    tags=
    stdin=0
    while (( $# > 0)); do
       case "${1}" in
-         "-1") _g_log_to_stdout_once=1                             ;;
-         "-2") _g_log_to_stderr_once=1                             ;;
-         "-stdin") stdin=1                                         ;;
+         "-1") _g_log_to_stdout_once=1     ;;
+         "-2") _g_log_to_stderr_once=1     ;;
+         "-stdin") stdin=1     ;;
          "-tags"|"-tag"|"-t") shift; tags="$(utl_format_tags "${1}")" ;;
-         "-logkey"|"-l")  shift; log_key="${1}"                       ;;
+         "-logkey"|"-l")  shift; log_key="${1}"     ;;
          *) break ;;
       esac
       shift
    done
    utl_raise_invalid_option "log_error" "(( $# <= 1 ))" "$*" && ${returnFalse} 
    log_text="${1:-}"
-   _log_log_type "ERROR" "${log_key}" "${log_text}" "${tags:-}"
    if (( ${stdin} )); then
-      cat | log_detail 
+      log_input="$(cat)"
+      [[ -z "${log_input:-}" ]] && (( ! ${force_option} )) && ${returnFalse} 
+   fi
+   _log_log_type "ERROR" "${log_key}" "${log_text}" "${tags:-}"
+   if [[ -n "${log_input:-}" ]]; then
+      echo "${log_input}" | log_detail 
    fi
 }
 
 function log_fatal {
    # Log a 'FATAL' record to the current log file.
-   # >>> log_fatal [-stdin] [-1|-2] [-logkey,-l "X"] [-tags,-t "X,x"] "log_text"
-   # -stdin: Read standard input.
+   # >>> log_fatal [-stdin] [-1|-2] [-force,-f] [-logkey,-l "X"] [-tags,-t "X,x"] "log_text"
+   # -stdin: Read standard input and log it as a detail entry. Entry is not logged if there is no input.
    # -1: Data is returned to standard out in addition to being logged.
    # -2: Data is returned to standard error in addition to being logged.
+   # -force: Forces log write when -stdin is used and no input is found.
    # -logkey: A key to identify the primary source of the log entry.
    # -tags: Tag list.
    # log_text: Text to log.
    ${arcRequireBoundVariables}
-   typeset log_key log_text tags stdin
+   typeset log_key log_text tags stdin log_input force_option
+   force_option=0
    log_key=$$
    tags=
    stdin=0
    while (( $# > 0)); do
       case "${1}" in
-         "-1") _g_log_to_stdout_once=1                         ;;
-         "-2") _g_log_to_stderr_once=1                         ;;
-         "-stdin") stdin=1                                     ;;
+         "-1") _g_log_to_stdout_once=1 ;;
+         "-2") _g_log_to_stderr_once=1 ;;
+         "-force"|"-f") force_option=1 ;;
+         "-stdin") stdin=1 ;;
          "-tags"|"-tag"|"-t") shift; tags="$(utl_format_tags "${1}")" ;;
-         "-logkey"|"-l")  shift; log_key="${1}"                   ;;
+         "-logkey"|"-l")  shift; log_key="${1}" ;;
          *) break ;;
       esac
       shift
    done
    utl_raise_invalid_option "log_fatal" "(( $# <= 1 ))" "$*" && ${returnFalse} 
    log_text="${1:-}"
-   _log_log_type "FATAL" "${log_key}" "${log_text}" "${tags:-}"
    if (( ${stdin} )); then
-      cat | log_detail 
+      log_input="$(cat)"
+      [[ -z "${log_input:-}" ]] && (( ! ${force_option} )) && ${returnFalse} 
+   fi
+   _log_log_type "FATAL" "${log_key}" "${log_text}" "${tags:-}"
+   if [[ -n "${log_input:-}" ]]; then
+      echo "${log_input}" | log_detail 
    fi
 }
 
 function log_audit {
    # Log a 'AUDIT' record to the current log file.
-   # >>> log_audit [-stdin] [-1|-2] [-logkey,-l "X"] [-tags,-t "X,x"] "log_text"
-   # -stdin: Read standard input.
+   # >>> log_audit [-stdin] [-1|-2] [-force,-f] [-logkey,-l "X"] [-tags,-t "X,x"] "log_text"
+   # -stdin: Read standard input and log it as a detail entry. Entry is not logged if there is no input.
    # -1: Data is returned to standard out in addition to being logged.
    # -2: Data is returned to standard error in addition to being logged.
+   # -force: Forces log write when -stdin is used and no input is found.
    # -logkey: A key to identify the primary source of the log entry.
    # -tags: Tag list.
    # log_text: Text to log.
    ${arcRequireBoundVariables}
-   typeset log_key log_text tags stdin
+   typeset log_key log_text tags stdin log_input force_option
+   force_option=0
    log_key=$$
    tags=
    stdin=0
    while (( $# > 0)); do
       case "${1}" in
-         "-1") _g_log_to_stdout_once=1                         ;;
-         "-2") _g_log_to_stderr_once=1                         ;;
-         "-stdin") stdin=1                                     ;;
+         "-1") _g_log_to_stdout_once=1 ;;
+         "-2") _g_log_to_stderr_once=1 ;;
+         "-force"|"-f") force_option=1 ;;
+         "-stdin") stdin=1 ;;
          "-tags"|"-tag"|"-t") shift; tags="$(utl_format_tags "${1}")" ;;
-         "-logkey"|"-l")  shift; log_key="${1}"                   ;;
+         "-logkey"|"-l")  shift; log_key="${1}" ;;
          *) break ;;
       esac
       shift
    done
    utl_raise_invalid_option "log_audit" "(( $# <= 1 ))" "$*" && ${returnFalse} 
    log_text="${1:-}"
-   _log_log_type "AUDIT" "${log_key}" "${log_text}" "${tags:-}"
    if (( ${stdin} )); then
-      cat | log_detail 
+      log_input="$(cat)"
+      [[ -z "${log_input:-}" ]] && (( ! ${force_option} )) && ${returnFalse} 
+   fi
+   _log_log_type "AUDIT" "${log_key}" "${log_text}" "${tags:-}"
+   if [[ -n "${log_input:-}" ]]; then
+      echo "${log_input}" | log_detail 
    fi
 }
 
@@ -576,8 +667,9 @@ function log_detail {
    tags=
    while (( $# > 0)); do
       case "${1}" in
-         "-1") _g_log_to_stdout_once=1                         ;;
-         "-2") _g_log_to_stderr_once=1                         ;;
+         "-1") _g_log_to_stdout_once=1 ;;
+         "-2") _g_log_to_stderr_once=1 ;;
+         "-force"|"-f") force_option=1 ;;
          *) break ;;
       esac
       shift

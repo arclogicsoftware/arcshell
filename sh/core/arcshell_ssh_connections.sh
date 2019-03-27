@@ -22,9 +22,10 @@ SSHPASSPROG=
 SSHPASSNODE=
 _g_use_sshpass=0
 
+# ToDo: Automatically run ssh_refresh in background using delivered task when needed.
+# ToDo: Need some sort of group reporting. Groups can be dynamic. So this won't guarantee the same results each time.
 # ToDo: Ability to update all ssh keys by 'ssh_connection'.
 # ToDo: Detect tag, group, and alias conflicts.
-# ToDo: Automatically run ssh_refresh in background using delivered task when needed.
 
 function __readmeSSHConnections {
    cat <<EOF
@@ -40,7 +41,7 @@ You can save time navigating hosts with SSH and running commands by using this m
 * Dynamic Node Groups 
 * Run commands or scripts against one or multiple hosts using aliases, tags, and groups.
 * Supports **sshpass** 
-* Corrects Common SSH Key Authentication Issues
+* Corrects common SSH key authentication configuration issues.
 * Supports use of unique keys.
 * Runs on any Unix or Linux host using either the Bash or Korn shell.
 
@@ -71,7 +72,7 @@ SSH groups are created using an SSH group configuration file.
 
 SSH groups are shell scripts ending in \`\`\`.cfg\`\`\` which do the following:
 * Return a list of nodes, aliases, and tags which comprise the group when executed.
-* Does not return group names.
+* Does not return group names! You can end up with a recursive operation very easily!
 * Returns members of other groups by using the \`\`\`ssh_return_nodes_in_group\`\`\` function as a work around.
 
 EOF
@@ -173,7 +174,6 @@ function ssh_refresh {
       fi
    done < <(_sshListNodes)
    rm "${tmpFile}"*
-   _sshRebuildSSHGroups
    log_terminal "SSH connections have been refreshed."
    ${returnTrue} 
 }
@@ -402,37 +402,6 @@ function test__sshLogGlobalConnectionChange {
    _sshLogGlobalConnectionChange "bar" 2>&1 | assert_match "ERROR"
 }
 
-function _sshRebuildSSHGroups {
-   # Refreshes the ssh connection groups.
-   # >>> _sshRebuildSSHGroups
-   ${arcRequireBoundVariables}
-   debug3 "_sshRebuildSSHGroups: $*"
-   typeset ssh_group file_path group_member error_flag
-   _sshDeleteSSHConnectionGroupLookups
-   error_flag=0
-   while read ssh_group; do
-      file_path="$(config_return_object_path "ssh_groups" "${ssh_group}.cfg")"
-      chmod 700 "${file_path}"
-      (
-      while read group_member; do
-         # Groups can't return a group or we can get recursion. However, you 
-         # can include a group within a group by including a call to 
-         # ssh_return_nodes_in_group which returns the group members.
-         _sshRaiseIsGroup "${group_member}" && continue
-         # group_member can now be a ssh_connection, alias, or a tag.
-         if ! _sshListMembers "${group_member}"; then
-            _sshThrowError "An error occured trying to rebuild the  SSH groups."
-         fi 
-      done < <(. "${file_path}")
-      ) | sort -u > "${_sshDir}/groups/${ssh_group}"
-   done < <(ssh_return_groups)
-   ${returnTrue} 
-}
-
-function test__sshRebuildSSHGroups {
-   _sshRebuildSSHGroups && pass_test || fail_test 
-}
-
 function ssh_return_groups {
    # List the ssh groups.
    # >>> ssh_return_groups
@@ -452,8 +421,7 @@ function ssh_return_nodes_in_group {
    debug3 "ssh_return_nodes_in_group: $*"
    typeset ssh_group file_path ssh_connection
    ssh_group="${1}"
-   _sshRaiseIsNotGroup "${ssh_group}" && ${returnFalse} 
-   cat "${_sshDir}/groups/${ssh_group}" | sort -u
+   eval "$(config_load_object "ssh_groups" "${ssh_group}.cfg")"
    ${returnTrue} 
 }
 

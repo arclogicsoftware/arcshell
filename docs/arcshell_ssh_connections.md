@@ -10,7 +10,7 @@ You can save time navigating hosts with SSH and running commands by using this m
 * Dynamic Node Groups 
 * Run commands or scripts against one or multiple hosts using aliases, tags, and groups.
 * Supports **sshpass** 
-* Corrects Common SSH Key Authentication Issues
+* Corrects common SSH key authentication configuration issues.
 * Supports use of unique keys.
 * Runs on any Unix or Linux host using either the Bash or Korn shell.
 
@@ -60,7 +60,7 @@ SSH groups are created using an SSH group configuration file.
 
 SSH groups are shell scripts ending in ```.cfg``` which do the following:
 * Return a list of nodes, aliases, and tags which comprise the group when executed.
-* Does not return group names.
+* Does not return group names! You can end up with a recursive operation very easily!
 * Returns members of other groups by using the ```ssh_return_nodes_in_group``` function as a work around.
 
 

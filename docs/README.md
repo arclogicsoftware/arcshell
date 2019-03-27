@@ -20,7 +20,7 @@
 | [Google Charts](#google_charts) | A module for generating charts using Google Charts. |
 | [Keywords](#keywords) | Manages ArcShell keywords. |
 | [Locking](#locking) | Creates and manages locks for you. |
-| [Application Logger](#application_logger) | Logs and keeps track of events. |
+| [Logging](#logging) | Logs stuff. |
 | [Log Monitoring](#log_monitoring) | Monitor log files. Trigger alerts, notifications, and log entries using flexible log file handlers. |
 | [Menus](#menus) | Builds rich command line menu systems that are dynamic. |
 | [Messaging](#messaging) | Manages the routing and sending of messages. |
@@ -471,13 +471,13 @@ Creates and manages locks for you.
 
 ----
 
-<a name="application_logger"/>
+<a name="logging"/>
 
 ![infinity.png](./images/infinity.png)
 
-## Application Logger (arcshell_logger.sh)
+## Logging (arcshell_logger.sh)
 
-Logs and keeps track of events.
+Logs stuff.
 
 
 
