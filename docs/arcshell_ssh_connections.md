@@ -1,14 +1,27 @@
 # SSH Connections
 
-**SSH Connection Manager.**
+**An SSH connection management module.**
 
-Each SSH connection is equated with a single configuration file.
+You can save time navigating hosts with SSH and running commands by using this module.
 
-Those files can be stored in ```${arcGlobalHome}/config/ssh_connections``` or ```${arcUserHome}/config/ssh_connections```. They can be created manually or by using the ```ssh_add``` procedure. Files in the user home will take precedence of those the global home. 
+**Features**
+* Nodes can be assigned an easy to remember aliases and multiple tags.
+* Global connections are available on all ArcShell nodes automatically.
+* Dynamic Node Groups 
+* Run commands or scripts against one or multiple hosts using aliases, tags, and groups.
+* Supports **sshpass** 
+* Corrects Common SSH Key Authentication Issues
+* Supports use of unique keys.
+* Runs on any Unix or Linux host using either the Bash or Korn shell.
 
-Global files are distributed to remote nodes when you deploy ArcShell. Files in the user home are not.
+ Each connection is created using a simple configuration file in one of these two locations.
 
-This is an example of an SSH connection configuration file.
+```${arcGlobalHome}/config/ssh_connections```
+```${arcUserHome}/config/ssh_connections```
+
+If there are two files only one is loaded. The file in the **user** home has precedence. Files in the **global** home are distributed to the other nodes in your network when you deploy ArcShell. 
+
+This is an example of a configuration file.
 ```
 # ${arcHome}/global/config/ssh_connections/ethan@devgame.cfg
 
@@ -32,13 +45,23 @@ node_ssh_key=""
 # Optionally supply ths SSHPASS value to avoid having to provide it the first time.
 node_sshpass=""
 ```
-```ssh_refresh``` needs to be run anytime you make changes to your SSH connections. This procedure rebuilds the indexes that contain information about the defined tags, aliases, and SSH groups.
+```ssh_add``` can be used to create connections from the command line or the files can be created manually. Some configuration settings always need to be modified by editing the file directly.
 
-```ssh_set``` can be used to set the current SSH connection. It can be set to a specific node, an alias, a tag, or a group. If it is set you will not need to provide it when running commands.
+```ssh_refresh``` needs to be executed when a group of changes are complete. This procedure rebuilds the indexes that contain information about the defined tags, aliases, and SSH groups.
 
-ArcShell supports SSHPASS if you are on a Linux OS and unable to configure SSH keys. You can set the ```node_sshpass``` value in the configuration file for the node to enable this capability when connecting to the node.
+```ssh_set``` can be used to set the current SSH connection. It can be set to a specific node, alias, tag, or group. When set you will not need to provide it when running commands.
 
-SSH groups are defined using an SSH group configuration file. These files can be found in one of the ```./config/ssh_groups``` directories. The file should return the list of nodes in the group when executed. The file can return node names, aliases, or tags. You cannot return another group, but you can make a call to list the members of another group as a work around.
+ArcShell supports SSHPASS if you are on a Linux OS and unable to configure SSH keys. You can set the ```node_sshpass``` value in the configuration file for the node to enable this capability when connecting to the node. The ```sshpass``` program needs to be installed.
+
+SSH groups are created using an SSH group configuration file. 
+
+```${arcGlobalHome}/config/ssh_groups```
+```${arcUserHome}/config/ssh_groups```
+
+SSH groups are shell scripts ending in ```.cfg``` which do the following:
+* Return a list of nodes, aliases, and tags which comprise the group when executed.
+* Does not return group names.
+* Returns members of other groups by using the ```ssh_return_nodes_in_group``` function as a work around.
 
 
 
@@ -47,7 +70,6 @@ SSH groups are defined using an SSH group configuration file. These files can be
 
 ### ssh_add
 Add or updates an SSH connection.
-> This is probably the first thing you are going to want to do.
 ```bash
 > ssh_add [-port,-p X] [-alias,-a "X"] [-ssh_key,-s "X"] [-tags,-t "X,"] "user@address"
 # -port: SSH port number. Defaults to 22.

@@ -33,7 +33,7 @@
 | [SendGrid](#sendgrid) | SendGrid interface. |
 | [Sensors](#sensors) | Detects changes or things that have not changed. |
 | [SSH Connection Manager](#ssh_connection_manager) | SSH connection manager. |
-| [SSH](#ssh) | Manage ssh connections and execute remote scripts or commands. |
+| [SSH](#ssh) | Connect using SSH and execute remote scripts or commands. |
 | [Data Stacks](#data_stacks) | Create and manage small data stacks which operate a little like arrays. |
 | [Statistics Extended](#statistics_extended) | Extends the statistics interface. |
 | [Statistics](#statistics) | Stores statistics. Performs aggregation, analysis, and anomaly detection. |
@@ -698,7 +698,7 @@ SSH connection manager.
 
 ## SSH (arcshell_ssh.sh)
 
-Manage ssh connections and execute remote scripts or commands.
+Connect using SSH and execute remote scripts or commands.
 
 
 

@@ -1,6 +1,6 @@
 
 # module_name="SSH"
-# module_about="Manage ssh connections and execute remote scripts or commands."
+# module_about="Connect using SSH and execute remote scripts or commands."
 # module_version=1
 # module_image="cloud-computing-1.png"
 # copyright_notice="Copyright 2019 Arclogic Software"
@@ -12,6 +12,216 @@
 # ToDo: Need option to quit on first failure.
 # ToDo: Need option to run last command against failed nodes only.
 # ToDo: Add "-ssh 'foo,bar'"" support.
+
+function __sshReadme {
+   cat <<EOF
+# SSH
+**Connect using SSH and execute remote scripts or commands.**
+
+Use this module to quickly connect to any of your configured SSH connections. 
+
+You can also do the following:
+* Set up authentication using SSH keys.
+* Copy a file from one to one or more nodes using a single command.
+* Run a command or script against one or more nodes using a single command.
+* Determine if a directory exists on one or more nodes using a single command.
+EOF
+}
+
+function ssh_connect {
+   # Connect to a node using SSH.
+   # >>> ssh_connect [-ssh "X"|"regex"|?]
+   # -ssh: SSH user@hostname, alias, tag, or group.
+   # regex: Returns a menu of matching SSH connections.
+   # ?: Returns a menu of all SSH connections.
+   ${arcRequireBoundVariables}
+   debug3 "ssh_connect: $*"
+         
+   typeset ssh_connection use_sshpass regex ssh_node
+   ssh_connection="${_g_sshConnection:-}"
+   use_sshpass=0
+   regex=
+   while (( $# > 0)); do
+      case "${1}" in
+         "-ssh"|"-s") shift; ssh_connection="${1}" ;;
+         *) break ;;
+      esac
+      shift
+   done
+   utl_raise_invalid_option "ssh_connect" "(( $# <= 1 ))" "$*" && ${returnFalse} 
+   (( $# == 1 )) && ssh_connection="${1}"
+   if [[ "${ssh_connection}" == "?" ]]; then
+      _sshConnectMenu -regex ".*"
+   elif _sshDoesTagExist "${ssh_connection}" || _sshDoesGroupExist "${ssh_connection}"; then
+      _sshConnectMenu -ssh "${ssh_connection}"
+   elif ! _sshDoesNodeExist "${ssh_connection}" && ! _sshDoesAliasExistStrict "${ssh_connection}"; then
+      _sshConnectMenu -regex "${ssh_connection}"
+   else
+      ssh_node="$(_sshXREF "${ssh_connection}")"
+      ssh_set "${ssh_node:-}" || ${returnFalse} 
+      _sshRaiseIsNotANodeOrNodeAlias "${ssh_node}" && ${returnFalse} 
+      _sshRaiseIsLocalHost "${ssh_node}" && ${returnFalse}
+      eval "$(ssh_load "${ssh_node}")"
+      _sshSetSSHPASS "${ssh_node}"
+      tmpFile="$(mktempf)"
+      if [[ -f "${node_ssh_key}" ]]; then
+         ${SSHPASSPROG:-} ssh -i "${node_ssh_key}" "${ssh_node}" -p ${node_port} #2> "${tmpFile}.err"
+      else
+         ${SSHPASSPROG:-} ssh "${ssh_node}" -p ${node_port} #2> "${tmpFile}.err"
+      fi
+      #_ssh_raise_ssh_error "${tmpFile}.err" 
+      rm "${tmpFile}"
+   fi
+}
+
+function ssh_check {
+   # Validate the health of the current ssh connection.
+   # >>> ssh_check [-ssh,-s "X"] [-fix,-f] ["ssh_connection"]
+   # -fix: Automatically fixes issues.
+   # ssh_connection: Same as '-ssh'.
+   ${arcRequireBoundVariables}
+   debug3 "ssh_check: $*"
+   typeset autofix_option ssh_connection ssh_node
+   autofix_option=0
+   ssh_connection="${_g_sshConnection:-}"
+   while (( $# > 0)); do
+      case "${1}" in
+         "-ssh"|"-s") shift; ssh_connection="${1}" ;;
+         "-fix"|"-f") autofix_option=1 ;;
+         *) break ;;
+      esac
+      shift
+   done
+   utl_raise_invalid_option "ssh_check" "(( $# <= 1 ))" "$*" && ${returnFalse} 
+   (( $# == 1 )) && ssh_connection="${1}" 
+   ssh_connection="$(_sshXREF "${ssh_connection}")"
+   while read ssh_node; do
+      _sshIsNodeLocalHost "${ssh_node}" && continue
+      _sshCheckConnection ${autofix_option} "${ssh_node}" 
+   done < <(_sshListMembers "${ssh_connection:-}")
+   ${returnTrue} 
+}
+
+function ssh_send_key {
+   # Copy contents of ~/.ssh/id_rsa.pub to the current connection's authorized keys file.
+   # Note: Function can be run multiple times, key is only added if it is not there.
+   # >>> ssh_send_key [-ssh "X"] [-force] ["ssh_connection"]
+   # -force: Update authorized_keys entry even if key is already in file.
+   # ssh_connection: Same as '-ssh'.
+   ${arcRequireBoundVariables}
+   debug3 "ssh_send_key: $*"
+   typeset x tmpFile _ssh_force_key ssh_connection errors
+   _ssh_force_key=0
+   ssh_connection="${_g_sshConnection:-}"
+   errors=0
+   while (( $# > 0)); do
+      case "${1}" in
+         "-ssh"|"-s") shift; ssh_connection="${1}" ;;
+         "-force"|"-f") _ssh_force_key=1 ;;
+         *) break ;;
+      esac
+      shift
+   done
+   utl_raise_invalid_option "ssh_send_key" "(( $# <= 1 ))" "$*" && ${returnFalse} 
+   (( $# == 1 )) && ssh_connection="${1}"
+   while read ssh_node; do
+      _sshIsNodeLocalHost "${ssh_node}" && continue
+      _sshRaiseIdRsaPubFileNotFound && continue
+      tmpFile="$(mktempf)"
+      x="$(cat "${HOME}/.ssh/id_rsa.pub")"
+      (
+      echo "_ssh_public_key=\"${x}\"" 
+      echo "_ssh_force_key=${_ssh_force_key}"
+      cat "${arcHome}/sh/core/_ssh_add_key.sh"
+      ) >> "${tmpFile}"
+       if ! _sshRunFile ${allow_local:-0} "${ssh_connection}" "${tmpFile}"; then
+         ((errors=errors+1))
+      fi
+      rm "${tmpFile}"
+   done < <(_sshListMembers "${ssh_connection}")
+   if (( ${errors} )); then
+      ${returnFalse} 
+   else
+      ${returnTrue} 
+   fi
+}
+
+function ssh_get_key {
+   # Get contents from remote ~/.ssh/id_rsa.pub and add it to local authorized_keys file.
+   # >>> ssh_get_key [-force,-f] [-ssh "X"] ["ssh_connection"]
+   # -force: Update authorized_keys entry even if key is already in file.
+   # -ssh: SSH user@hostname, alias, tag, or group.
+   # ssh_connection: SSH user@hostname, alias, tag, or group.
+   ${arcRequireBoundVariables}
+   debug3 "ssh_get_key: $*"
+   typeset ssh_connection ssh_node errors
+   # Don't scope this locally! Must be exported to the _ssh_add_key.sh script.
+   _ssh_force_key=0
+   ssh_connection="${_g_sshConnection:-}"
+   errors=0
+   while (( $# > 0)); do
+      case "${1}" in
+         "-ssh"|"-s") shift; ssh_connection="${1}" ;;
+         "-f"|"-force") _ssh_force_key=1 ;;
+         *) break ;;
+      esac
+      shift
+   done
+   utl_raise_invalid_option "ssh_get_key" "(( $# <= 1 ))" "$*" && ${returnFalse} 
+   (( $# == 1 )) && ssh_connection="${1}"
+   while read ssh_node; do
+      _sshIsNodeLocalHost "${ssh_node}" && continue
+      _ssh_public_key="$(_sshRunCommandOnTarget 0 "${ssh_node}" "cat \${HOME}/.ssh/id_rsa.pub" | grep "^ssh-")"
+      utl_raise_empty_var "Failed to get a public key from remote id_rsa.pub file." "${_ssh_public_key}" && continue
+      export _ssh_public_key
+      export _ssh_force_key
+      . "${arcHome}/sh/core/_ssh_add_key.sh"
+      if (( $? )); then
+         ((errors=errors+1))
+      fi
+   done < <(_sshListMembers "${ssh_connection}")
+   if (( ${errors} )); then
+      ${returnFalse} 
+   else
+      ${returnTrue} 
+   fi
+}
+
+function ssh_swap_keys {
+   # Run both ssh_send_key and ssh_get_key.
+   # >>> ssh_swap_keys [-force,-f] [-ssh,-s "X"] ["ssh_connection"]
+   # -force: Update authorized_keys entry even if key is already in files.
+   # -ssh: SSH user@hostname, alias, tag, or group.
+   # ssh_connection: SSH user@hostname, alias, tag, or group.
+   ${arcRequireBoundVariables}
+   typeset force_option ssh_connection ssh_node errors 
+   force_option=
+   ssh_connection="${_g_sshConnection:-}"
+   errors=0
+   while (( $# > 0)); do
+      case "${1}" in
+         "-ssh"|"-s") shift; ssh_connection="${1}" ;;
+         "-f"|"-force") force_option="-f" ;;
+         *) break ;;
+      esac
+      shift
+   done
+   utl_raise_invalid_option "ssh_swap_keys" "(( $# <= 1 ))" "$*" && ${returnFalse} 
+   (( $# == 1 )) && ssh_connection="${1}"
+   while read ssh_node; do
+      if ! ssh_send_key ${force_option} "${ssh_node}"; then
+         ((errors=errors+1))
+      fi
+      if ! ssh_get_key ${force_option} "${ssh_node}"; then
+         ((errors=errors+1))
+      fi
+   done < <(_sshListMembers "${ssh_connection}")
+   if (( ${errors} )); then
+      ${returnFalse} 
+   else
+      ${returnTrue} 
+   fi
+}
 
 function ssh_copy {
    # Copy a file or directory to one or more nodes.
@@ -367,52 +577,6 @@ function _sshRunFileAtNode {
    fi
 }
 
-function ssh_connect {
-   # Connect to a node using SSH.
-   # >>> ssh_connect [-ssh "X"|"regex"|?]
-   # -ssh: SSH user@hostname, alias, tag, or group.
-   # regex: Returns a menu of matching SSH connections.
-   # ?: Returns a menu of all SSH connections.
-   ${arcRequireBoundVariables}
-   debug3 "ssh_connect: $*"
-         
-   typeset ssh_connection use_sshpass regex ssh_node
-   ssh_connection="${_g_sshConnection:-}"
-   use_sshpass=0
-   regex=
-   while (( $# > 0)); do
-      case "${1}" in
-         "-ssh"|"-s") shift; ssh_connection="${1}" ;;
-         *) break ;;
-      esac
-      shift
-   done
-   utl_raise_invalid_option "ssh_connect" "(( $# <= 1 ))" "$*" && ${returnFalse} 
-   (( $# == 1 )) && ssh_connection="${1}"
-   if [[ "${ssh_connection}" == "?" ]]; then
-      _sshConnectMenu -regex ".*"
-   elif _sshDoesTagExist "${ssh_connection}" || _sshDoesGroupExist "${ssh_connection}"; then
-      _sshConnectMenu -ssh "${ssh_connection}"
-   elif ! _sshDoesNodeExist "${ssh_connection}" && ! _sshDoesAliasExistStrict "${ssh_connection}"; then
-      _sshConnectMenu -regex "${ssh_connection}"
-   else
-      ssh_node="$(_sshXREF "${ssh_connection}")"
-      ssh_set "${ssh_node:-}" || ${returnFalse} 
-      _sshRaiseIsNotANodeOrNodeAlias "${ssh_node}" && ${returnFalse} 
-      _sshRaiseIsLocalHost "${ssh_node}" && ${returnFalse}
-      eval "$(ssh_load "${ssh_node}")"
-      _sshSetSSHPASS "${ssh_node}"
-      tmpFile="$(mktempf)"
-      if [[ -f "${node_ssh_key}" ]]; then
-         ${SSHPASSPROG:-} ssh -i "${node_ssh_key}" "${ssh_node}" -p ${node_port} #2> "${tmpFile}.err"
-      else
-         ${SSHPASSPROG:-} ssh "${ssh_node}" -p ${node_port} #2> "${tmpFile}.err"
-      fi
-      #_ssh_raise_ssh_error "${tmpFile}.err" 
-      rm "${tmpFile}"
-   fi
-}
-
 function _sshConnectMenu {
    # Returns a menu of available ssh connections.
    # >>> _sshConnectMenu [-regex "X"|-ssh "ssh_connection"]
@@ -450,34 +614,6 @@ function _sshConnectMenu {
       ssh_connect -ssh "${ssh_connection}"
    fi
    menu_delete "ssh_connect$$"
-}
-
-function ssh_check {
-   # Validate the health of the current ssh connection.
-   # >>> ssh_check [-ssh,-s "X"] [-fix,-f] ["ssh_connection"]
-   # -fix: Automatically fixes issues.
-   # ssh_connection: Same as '-ssh'.
-   ${arcRequireBoundVariables}
-   debug3 "ssh_check: $*"
-   typeset autofix_option ssh_connection ssh_node
-   autofix_option=0
-   ssh_connection="${_g_sshConnection:-}"
-   while (( $# > 0)); do
-      case "${1}" in
-         "-ssh"|"-s") shift; ssh_connection="${1}" ;;
-         "-fix"|"-f") autofix_option=1 ;;
-         *) break ;;
-      esac
-      shift
-   done
-   utl_raise_invalid_option "ssh_check" "(( $# <= 1 ))" "$*" && ${returnFalse} 
-   (( $# == 1 )) && ssh_connection="${1}" 
-   ssh_connection="$(_sshXREF "${ssh_connection}")"
-   while read ssh_node; do
-      _sshIsNodeLocalHost "${ssh_node}" && continue
-      _sshCheckConnection ${autofix_option} "${ssh_node}" 
-   done < <(_sshListMembers "${ssh_connection:-}")
-   ${returnTrue} 
 }
 
 function _sshReturnSSHKeyFilePath {
@@ -538,50 +674,6 @@ function _sshCheckConnection {
    fi
 }
 
-function ssh_send_key {
-   # Copy contents of ~/.ssh/id_rsa.pub to the current connection's authorized keys file.
-   # Note: Function can be run multiple times, key is only added if it is not there.
-   # >>> ssh_send_key [-ssh "X"] [-force] ["ssh_connection"]
-   # -force: Update authorized_keys entry even if key is already in file.
-   # ssh_connection: Same as '-ssh'.
-   ${arcRequireBoundVariables}
-   debug3 "ssh_send_key: $*"
-   typeset x tmpFile _ssh_force_key ssh_connection errors
-   _ssh_force_key=0
-   ssh_connection="${_g_sshConnection:-}"
-   errors=0
-   while (( $# > 0)); do
-      case "${1}" in
-         "-ssh"|"-s") shift; ssh_connection="${1}" ;;
-         "-force"|"-f") _ssh_force_key=1 ;;
-         *) break ;;
-      esac
-      shift
-   done
-   utl_raise_invalid_option "ssh_send_key" "(( $# <= 1 ))" "$*" && ${returnFalse} 
-   (( $# == 1 )) && ssh_connection="${1}"
-   while read ssh_node; do
-      _sshIsNodeLocalHost "${ssh_node}" && continue
-      _sshRaiseIdRsaPubFileNotFound && continue
-      tmpFile="$(mktempf)"
-      x="$(cat "${HOME}/.ssh/id_rsa.pub")"
-      (
-      echo "_ssh_public_key=\"${x}\"" 
-      echo "_ssh_force_key=${_ssh_force_key}"
-      cat "${arcHome}/sh/core/_ssh_add_key.sh"
-      ) >> "${tmpFile}"
-       if ! _sshRunFile ${allow_local:-0} "${ssh_connection}" "${tmpFile}"; then
-         ((errors=errors+1))
-      fi
-      rm "${tmpFile}"
-   done < <(_sshListMembers "${ssh_connection}")
-   if (( ${errors} )); then
-      ${returnFalse} 
-   else
-      ${returnTrue} 
-   fi
-}
-
 function _sshListMembers {
    # Return member list for current connection (works for node, alias, group, or tag).
    # >>> _sshListMembers "ssh_connection"
@@ -606,83 +698,6 @@ function _sshListMembers {
    else
       _sshThrowError "Connection not found: '$*': _sshListMembers"
       ${returnFalse} 
-   fi
-}
-
-function ssh_get_key {
-   # Get contents from remote ~/.ssh/id_rsa.pub and add it to local authorized_keys file.
-   # >>> ssh_get_key [-force,-f] [-ssh "X"] ["ssh_connection"]
-   # -force: Update authorized_keys entry even if key is already in file.
-   # -ssh: SSH user@hostname, alias, tag, or group.
-   # ssh_connection: SSH user@hostname, alias, tag, or group.
-   ${arcRequireBoundVariables}
-   debug3 "ssh_get_key: $*"
-   typeset ssh_connection ssh_node errors
-   # Don't scope this locally! Must be exported to the _ssh_add_key.sh script.
-   _ssh_force_key=0
-   ssh_connection="${_g_sshConnection:-}"
-   errors=0
-   while (( $# > 0)); do
-      case "${1}" in
-         "-ssh"|"-s") shift; ssh_connection="${1}" ;;
-         "-f"|"-force") _ssh_force_key=1 ;;
-         *) break ;;
-      esac
-      shift
-   done
-   utl_raise_invalid_option "ssh_get_key" "(( $# <= 1 ))" "$*" && ${returnFalse} 
-   (( $# == 1 )) && ssh_connection="${1}"
-   while read ssh_node; do
-      _sshIsNodeLocalHost "${ssh_node}" && continue
-      _ssh_public_key="$(_sshRunCommandOnTarget 0 "${ssh_node}" "cat \${HOME}/.ssh/id_rsa.pub" | grep "^ssh-")"
-      utl_raise_empty_var "Failed to get a public key from remote id_rsa.pub file." "${_ssh_public_key}" && continue
-      export _ssh_public_key
-      export _ssh_force_key
-      . "${arcHome}/sh/core/_ssh_add_key.sh"
-      if (( $? )); then
-         ((errors=errors+1))
-      fi
-   done < <(_sshListMembers "${ssh_connection}")
-   if (( ${errors} )); then
-      ${returnFalse} 
-   else
-      ${returnTrue} 
-   fi
-}
-
-function ssh_swap_keys {
-   # Run both ssh_send_key and ssh_get_key.
-   # >>> ssh_swap_keys [-force,-f] [-ssh,-s "X"] ["ssh_connection"]
-   # -force: Update authorized_keys entry even if key is already in files.
-   # -ssh: SSH user@hostname, alias, tag, or group.
-   # ssh_connection: SSH user@hostname, alias, tag, or group.
-   ${arcRequireBoundVariables}
-   typeset force_option ssh_connection ssh_node errors 
-   force_option=
-   ssh_connection="${_g_sshConnection:-}"
-   errors=0
-   while (( $# > 0)); do
-      case "${1}" in
-         "-ssh"|"-s") shift; ssh_connection="${1}" ;;
-         "-f"|"-force") force_option="-f" ;;
-         *) break ;;
-      esac
-      shift
-   done
-   utl_raise_invalid_option "ssh_swap_keys" "(( $# <= 1 ))" "$*" && ${returnFalse} 
-   (( $# == 1 )) && ssh_connection="${1}"
-   while read ssh_node; do
-      if ! ssh_send_key ${force_option} "${ssh_node}"; then
-         ((errors=errors+1))
-      fi
-      if ! ssh_get_key ${force_option} "${ssh_node}"; then
-         ((errors=errors+1))
-      fi
-   done < <(_sshListMembers "${ssh_connection}")
-   if (( ${errors} )); then
-      ${returnFalse} 
-   else
-      ${returnTrue} 
    fi
 }
 

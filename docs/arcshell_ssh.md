@@ -5,34 +5,6 @@
 ## Reference
 
 
-### ssh_copy
-Copy a file or directory to one or more nodes.
-```bash
-> ssh_copy [-local,-l] [-ssh,-s "X"] "source_path" ["target_path"]
-# -local: Action can be applied locally if it is an included node.
-# -ssh: SSH user@hostname, alias, tag, or group.
-# source_path: Path to local file or directory to copy.
-# target_path: File or directory to copy source_path to. Defaults to user's home.
-```
-
-### ssh_run_cmd
-Run a command on the targeted nodes.
-```bash
-> ssh_run_cmd [-local,-l] [-ssh,-s "X"] "command"
-# -local: Action can be applied locally if it is an included node.
-# -ssh: SSH user@hostname, alias, tag, or group.
-# command: The command to run.
-```
-
-### ssh_run_file
-Run a file on all of the targeted nodes.
-```bash
-> ssh_run_file [-local,-l] [-ssh,-s "X"] "file_path"
-# -local: Action can be applied locally if it is an included node.
-# -ssh: SSH user@hostname, alias, tag, or group.
-# file_path: Path to local file which will be run against selected nodes.
-```
-
 ### ssh_connect
 Connect to a node using SSH.
 ```bash
@@ -75,6 +47,34 @@ Run both ssh_send_key and ssh_get_key.
 # -force: Update authorized_keys entry even if key is already in files.
 # -ssh: SSH user@hostname, alias, tag, or group.
 # ssh_connection: SSH user@hostname, alias, tag, or group.
+```
+
+### ssh_copy
+Copy a file or directory to one or more nodes.
+```bash
+> ssh_copy [-local,-l] [-ssh,-s "X"] "source_path" ["target_path"]
+# -local: Action can be applied locally if it is an included node.
+# -ssh: SSH user@hostname, alias, tag, or group.
+# source_path: Path to local file or directory to copy.
+# target_path: File or directory to copy source_path to. Defaults to user's home.
+```
+
+### ssh_run_cmd
+Run a command on the targeted nodes.
+```bash
+> ssh_run_cmd [-local,-l] [-ssh,-s "X"] "command"
+# -local: Action can be applied locally if it is an included node.
+# -ssh: SSH user@hostname, alias, tag, or group.
+# command: The command to run.
+```
+
+### ssh_run_file
+Run a file on all of the targeted nodes.
+```bash
+> ssh_run_file [-local,-l] [-ssh,-s "X"] "file_path"
+# -local: Action can be applied locally if it is an included node.
+# -ssh: SSH user@hostname, alias, tag, or group.
+# file_path: Path to local file which will be run against selected nodes.
 ```
 
 ### ssh_does_dir_exist
