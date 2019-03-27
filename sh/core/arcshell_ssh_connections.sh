@@ -1,6 +1,6 @@
 
 # module_name="SSH Connection Manager"
-# module_about="Manages ssh connections."
+# module_about="SSH connection manager."
 # module_version=1
 # module_image="id-card-2.png"
 # copyright_notice="Copyright 2019 Arclogic Software"
@@ -26,6 +26,34 @@ _g_use_sshpass=0
 # ToDo: Detect tag, group, and alias conflicts.
 # ToDo: Automatically run ssh_refresh in background using delivered task when needed.
 
+function __readmeSSHConnections {
+   cat <<EOF
+# SSH Connections
+
+**SSH Connection Manager.**
+
+Each SSH connection is equated with a single configuration file.
+
+Those files can be stored in \`\`\`\${arcGlobalHome}/config/ssh_connections\`\`\` or \`\`\`\${arcUserHome}/config/ssh_connections\`\`\`. They can be created manually or by using the \`\`\`ssh_add\`\`\` procedure. Files in the user home will take precedence of those the global home. 
+
+Global files are distributed to remote nodes when you deploy ArcShell. Files in the user home are not.
+
+This is an example of an SSH connection configuration file.
+\`\`\`
+# \${arcHome}/global/config/ssh_connections/${arcNode}.cfg
+$(cat ${arcHome}/global/config/ssh_connections/${arcNode}.cfg)
+\`\`\`
+\`\`\`ssh_refresh\`\`\` needs to be run anytime you make changes to your SSH connections. This procedure rebuilds the indexes that contain information about the defined tags, aliases, and SSH groups.
+
+\`\`\`ssh_set\`\`\` can be used to set the current SSH connection. It can be set to a specific node, an alias, a tag, or a group. If it is set you will not need to provide it when running commands.
+
+ArcShell supports SSHPASS if you are on a Linux OS and unable to configure SSH keys. You can set the \`\`\`node_sshpass\`\`\` value in the configuration file for the node to enable this capability when connecting to the node.
+
+SSH groups are defined using an SSH group configuration file. These files can be found in one of the \`\`\`./config/ssh_groups\`\`\` directories. The file should return the list of nodes in the group when executed. The file can return node names, aliases, or tags. You cannot return another group, but you can make a call to list the members of another group as a work around.
+
+EOF
+}
+
 function __setupSSHConnections {
    # Setup function.
    # >>> __setupSSHConnections
@@ -33,102 +61,9 @@ function __setupSSHConnections {
    ${returnTrue} 
 }
 
-function ssh_show {
-   # Returns the name of the current connection if it has been set..
-   # >>> ssh_show 
-   ${arcRequireBoundVariables}
-   if _sshIsConnectionSet; then
-      if _sshDoesGroupExist "${_g_sshConnection}"; then
-         log_terminal "SSH connection group is set to '${_g_sshConnection}'"
-      elif _sshDoesTagExist "${_g_sshConnection}"; then
-         log_terminal "SSH connection tag is set to '${_g_sshConnection}'"
-      else
-         log_terminal "SSH connection is set to '${_g_sshConnection}'"
-      fi
-   else
-      log_terminal "SSH connection is not set."
-   fi
-}
-
-function test_ssh_show {
-   # Note, ssh_show does not return output in testing because tty will be 0 
-   # and log_terminal calls will only go to the log file.
-   :
-}
-
-function ssh_delete_all_connections {
-   # Deletes all connections and rebuilds the local connection.
-   # >>> ssh_delete_all_connections
-   log_terminal "Are you sure you want to delete all registered SSH connections?"
-   utl_confirm || ${returnFalse} 
-   find "${arcUserHome}/config/ssh_connections" -type f -exec rm {} \;
-   find "${arcGlobalHome}/config/ssh_connections" -type f -exec rm {} \;
-}
-
-function ssh_refresh {
-   # Refreshes the ssh connection database. Should be run after modifcations are made.
-   # >>> ssh_refresh
-   ${arcRequireBoundVariables}
-   debug3 "ssh_refresh: $*"
-   typeset ssh_node  
-   _sshDeleteSSHConnectionLookups
-   _sshAddLocalHost
-   tmpFile="$(mktempf)"
-   while read ssh_node; do
-      eval "$(config_load_object "ssh_connections" "${ssh_node}")"
-      echo "${ssh_node}" > "${_sshDir}/nodes/${ssh_node}"
-      [[ -z "${node_alias:-}" ]] && node_alias="${ssh_node}"
-      if _sshRaiseDuplicateAlias "${node_alias}"; then
-         node_alias="${ssh_node}"
-      fi
-      echo "${ssh_node}" > "${_sshDir}/aliases/${node_alias}"
-      if [[ -n "${node_tags:-}" ]]; then
-         while read tag_name; do
-            echo "${ssh_node}" >> "${_sshDir}/tags/${tag_name}"
-         done < <(echo "${node_tags:-}" | str_split_line -stdin "," | utl_remove_blank_lines -stdin)
-      fi
-   done < <(_sshListNodes)
-   rm "${tmpFile}"*
-   _sshRebuildSSHGroups
-   log_terminal "SSH connections have been refreshed."
-   ${returnTrue} 
-}
-
-function test_ssh_refresh {
-   ssh_refresh && pass_test || fail_test 
-}
-
-function ssh_list {
-   # Returns the list of ssh connections.
-   # >>> ssh_list [-l]
-   # -l: Long list.
-   ${arcRequireBoundVariables}
-   debug3 "ssh_list: $*"
-   case "${1:-}" in 
-      "-l") _sshListPretty ;;
-      *) config_list_all_objects "ssh_connections" ;;
-   esac
-}
-
-function test_ssh_list {
-   ssh_list | assert -l ">=5"
-}
-
-function _sshListPretty {
-   # List ssh nodes. Pretty format: user@host, (alias), and [tags].
-   # >>> _sshListPretty
-   ${arcRequireBoundVariables}
-   typeset ssh_node 
-   utl_raise_invalid_option "ssh_list" "(( $# == 0 ))" "$*" && ${returnFalse} 
-   echo "node ------------------------- alias -------------- tags ---------------------------"
-   while read ssh_node; do
-      eval "$(ssh_load "${ssh_node}")"
-      printf "%-30s %-20s %-28s\n" "${ssh_node}" "(${node_alias})" "$(_sshBracketizeList "${node_tags:-}")"
-   done < <(_sshListNodes)
-}
-
 function ssh_add {
-   # Adds or updates an ssh connection.
+   # Add or updates an SSH connection.
+   # > This is probably the first thing you are going to want to do. 
    # >>> ssh_add [-port,-p X] [-alias,-a "X"] [-ssh_key,-s "X"] [-tags,-t "X,"] "user@address"
    # -port: SSH port number. Defaults to 22.
    # -alias: An alternative and usually easy name to recall for this connection.
@@ -155,7 +90,7 @@ function ssh_add {
    #_sshRaiseInvalidTags "${tags:-}" && ${returnFalse} 
    #_sshRaiseInvalidAlias "${alias:-}" && ${returnFalse} 
    ssh_node="${1}"
-   target_file="${arcGlobalHome}/config/ssh_connections/${ssh_node}"
+   target_file="${arcGlobalHome}/config/ssh_connections/${ssh_node}.cfg"
    echo "" > "${target_file}"
    (
    cat <<EOF
@@ -191,11 +126,60 @@ function test_ssh_add {
    ssh_list | assert_match "foo@bar"
 }
 
+function ssh_refresh {
+   # Refreshes the SSH connection database. Should be run after modifications are made.
+   # > This will eventually get set up as an automated background task but for now you either need to run setup or ssh_refresh after adding/modifying connections.
+   # >>> ssh_refresh
+   ${arcRequireBoundVariables}
+   debug3 "ssh_refresh: $*"
+   typeset ssh_node  
+   _sshDeleteSSHConnectionLookups
+   _sshAddLocalHost
+   tmpFile="$(mktempf)"
+   while read ssh_node; do
+      eval "$(config_load_object "ssh_connections" "${ssh_node}.cfg")"
+      echo "${ssh_node}" > "${_sshDir}/nodes/${ssh_node}"
+      [[ -z "${node_alias:-}" ]] && node_alias="${ssh_node}"
+      if _sshRaiseDuplicateAlias "${node_alias}"; then
+         node_alias="${ssh_node}"
+      fi
+      echo "${ssh_node}" > "${_sshDir}/aliases/${node_alias}"
+      if [[ -n "${node_tags:-}" ]]; then
+         while read tag_name; do
+            echo "${ssh_node}" >> "${_sshDir}/tags/${tag_name}"
+         done < <(echo "${node_tags:-}" | str_split_line -stdin "," | utl_remove_blank_lines -stdin)
+      fi
+   done < <(_sshListNodes)
+   rm "${tmpFile}"*
+   _sshRebuildSSHGroups
+   log_terminal "SSH connections have been refreshed."
+   ${returnTrue} 
+}
+
+function test_ssh_refresh {
+   ssh_refresh && pass_test || fail_test 
+}
+
+function ssh_list {
+   # Returns the list of SSH connections.
+   # >>> ssh_list [-l]
+   # -l: Long list.
+   ${arcRequireBoundVariables}
+   debug3 "ssh_list: $*"
+   case "${1:-}" in 
+      "-l") _sshListLong ;;
+      *) config_list_all_objects "ssh_connections" | sed 's/\.cfg//';;
+   esac
+}
+
+function test_ssh_list {
+   ssh_list | assert -l ">=5"
+}
+
 function ssh_edit {
    # Edit the specified ssh connection config file. Defaults to local node.
    # >>> ssh_edit ["ssh_connection"]
-   ${arcRequireBoundVariables}
-   typeset ssh_node file_path 
+    typeset ssh_node file_path 
    if (( $# )); then
       ssh_node="$(_sshXREF "${1}")"
    else
@@ -210,29 +194,8 @@ function ssh_edit {
    fi
 }
 
-function ssh_delete {
-   # Deletes an ssh connection.
-   # >>> ssh_delete "ssh_connection"
-   ${arcRequireBoundVariables}
-   typeset ssh_node file_path 
-   ssh_node="$(_sshXREF "${1}")"
-   if config_delete_object "ssh_connections" "${ssh_node}"; then
-      log_terminal "Deleted connection '${ssh_node}'."
-      ${returnTrue} 
-   else
-      ${returnFalse} 
-   fi
-}
-
-function test_ssh_delete {
-   _sshDoesNodeExist "foo@bar" && pass_test || fail_test 
-   ssh_delete "foo@bar"
-   ssh_refresh 
-   ! _sshDoesNodeExist "foo@bar" && pass_test || fail_test 
-}
-
 function ssh_set {
-   # Sets the current connection.
+   # Sets the current SSH connection. It can be a node, alias, tag, or group.
    # >>> ssh_set "ssh_connection"
    # ssh_connection: SSH user@hostname, alias, tag, or group.
    ${arcRequireBoundVariables}
@@ -268,6 +231,89 @@ function test_ssh_set {
    ssh_set "bar" 2>&1 | assert_match "ERROR" "'bar' is not a valid connection."
 }
 
+function ssh_show {
+   # Returns the name of the current connection if it has been set. It can be set using ssh_set procedure.
+   # >>> ssh_show 
+   ${arcRequireBoundVariables}
+   if _sshIsConnectionSet; then
+      if _sshDoesGroupExist "${_g_sshConnection}"; then
+         log_terminal "SSH connection group is set to '${_g_sshConnection}'"
+      elif _sshDoesTagExist "${_g_sshConnection}"; then
+         log_terminal "SSH connection tag is set to '${_g_sshConnection}'"
+      else
+         log_terminal "SSH connection is set to '${_g_sshConnection}'"
+      fi
+   else
+      log_terminal "SSH connection is not set."
+   fi
+}
+
+function test_ssh_show {
+   # Note, ssh_show does not return output in testing because tty will be 0 
+   # and log_terminal calls will only go to the log file.
+   :
+}
+
+function ssh_delete {
+   # Deletes an SSH connection.
+   # >>> ssh_delete "ssh_connection"
+   ${arcRequireBoundVariables}
+   typeset ssh_node file_path 
+   ssh_node="$(_sshXREF "${1}")"
+   if config_delete_object "ssh_connections" "${ssh_node}.cfg"; then
+      log_terminal "Deleted connection '${ssh_node}'."
+      ${returnTrue} 
+   else
+      ${returnFalse} 
+   fi
+}
+
+function test_ssh_delete {
+   _sshDoesNodeExist "foo@bar" && pass_test || fail_test 
+   ssh_delete "foo@bar"
+   ssh_refresh 
+   ! _sshDoesNodeExist "foo@bar" && pass_test || fail_test 
+}
+
+function ssh_delete_all_connections {
+   # Deletes all connections and rebuilds the local connection.
+   # > This can be used if you are rebuilding all of your connections from another source.
+   # >>> ssh_delete_all_connections
+   log_terminal "Are you sure you want to delete all registered SSH connections?"
+   utl_confirm || ${returnFalse} 
+   find "${arcUserHome}/config/ssh_connections" -type f -exec rm {} \;
+   find "${arcGlobalHome}/config/ssh_connections" -type f -exec rm {} \;
+}
+
+function _sshListLong {
+   # List SSH nodes. Pretty format: user@host, (alias), and [tags].
+   # >>> _sshListLong
+   ${arcRequireBoundVariables}
+   typeset ssh_node 
+   utl_raise_invalid_option "ssh_list" "(( $# == 0 ))" "$*" && ${returnFalse} 
+   echo "node ------------------------- alias -------------- tags ---------------------------"
+   while read ssh_node; do
+      eval "$(ssh_load "${ssh_node}")"
+      printf "%-30s %-20s %-28s\n" "${ssh_node}" "(${node_alias})" "$(_sshBracketizeList "${node_tags:-}")"
+   done < <(_sshListNodes)
+}
+
+function ssh_unset {
+   # Unset the current SSH connection.
+   # >>> ssh_unset   
+   _g_sshConnection=
+   SSHPASS=
+   SSHPASSPROG=
+   log_terminal "Unsetting ssh connection."
+   ${returnTrue} 
+}
+
+function test_ssh_unset {
+   ! _sshRaiseConnectionNotSet && pass_test || fail_test 
+   ssh_unset 
+   _sshRaiseConnectionNotSet 2>&1 | assert_match "ERROR"
+}
+
 function ssh_pass_reset {
    # Used to reset the SSHPASS variables.
    # >>> ssh_pass_reset
@@ -289,7 +335,7 @@ function _sshSetSSHPASS {
    SSHPASSPROG=
    eval "$(ssh_load "${ssh_node}")"
    SSHPASSNODE="${ssh_node}"
-   if [[ -n "${node_sshpass}" ]]; then
+   if [[ -n "${node_sshpass:-}" ]]; then
       log_terminal "Using 'sshpass' to connect or perform actions."
       SSHPASS="${node_sshpass}"
       SSHPASSPROG="sshpass -e "
@@ -299,22 +345,6 @@ function _sshSetSSHPASS {
 
 function test_sshSetSSHPASS {
    :
-}
-
-function ssh_unset {
-   # Unset the current ssh connection.
-   # >>> ssh_unset   
-   _g_sshConnection=
-   SSHPASS=
-   SSHPASSPROG=
-   log_terminal "Unsetting ssh connection."
-   ${returnTrue} 
-}
-
-function test_ssh_unset {
-   ! _sshRaiseConnectionNotSet && pass_test || fail_test 
-   ssh_unset 
-   _sshRaiseConnectionNotSet 2>&1 | assert_match "ERROR"
 }
 
 function _sshLogGlobalConnectionChange {
@@ -365,7 +395,7 @@ function _sshRebuildSSHGroups {
       while read group_member; do
          # Groups can't return a group or we can get recursion. However, you 
          # can include a group within a group by including a call to 
-         # ssh_list_group which returns the group members.
+         # ssh_return_nodes_in_group which returns the group members.
          _sshRaiseIsGroup "${group_member}" && continue
          # group_member can now be a ssh_connection, alias, or a tag.
          if ! _sshListMembers "${group_member}"; then
@@ -373,7 +403,7 @@ function _sshRebuildSSHGroups {
          fi 
       done < <(. "${file_path}")
       ) | sort -u > "${_sshDir}/groups/${ssh_group}"
-   done < <(ssh_list_groups)
+   done < <(ssh_return_groups)
    ${returnTrue} 
 }
 
@@ -381,75 +411,23 @@ function test__sshRebuildSSHGroups {
    _sshRebuildSSHGroups && pass_test || fail_test 
 }
 
-function ssh_list_groups {
+function ssh_return_groups {
    # List the ssh groups.
-   # >>> ssh_list_groups
+   # >>> ssh_return_groups
    ${arcRequireBoundVariables}
-   config_list_all_objects "ssh_groups" | egrep -v "example"
+   config_list_all_objects "ssh_groups" | egrep -v "example" | sed 's/\.cfg/'
    ${returnTrue} 
 }
 
-function test_ssh_list_groups {
-   ssh_list_groups | assert -l ">0"
+function test_ssh_return_groups {
+   ssh_return_groups | assert -l ">0"
 }
 
-function ssh_list_all_tags {
-   # List the ssh tags.
-   # >>> ssh_list_all_tags
-   ${arcRequireBoundVariables}
-   file_list_files "${_sshDir}/tags"
-   ${returnTrue} 
-}
-
-function test_ssh_list_all_tags {
-   ssh_add -port 22 -alias "foo" -tags "moo" "foo@bar"
-   ssh_add -port 22 -alias "fa" -tags "moo" "fa@bin"
-   ssh_refresh 
-   ssh_list_all_tags | assert_match "moo"
-   ssh_delete "fa"
-}
-
-function ssh_list_assigned_tags {
-   # Return the list of tags associated with the local node.
-   # >>> ssh_list_assigned_tags
-   ${arcRequireBoundVariables}
-   eval "$(ssh_load "${arcNode}")"
-   echo "${node_tags:-}" | str_split_line -stdin "," | utl_remove_blank_lines -stdin
-}
-
-function ssh_is_tag_assigned {
-   # Return true if the local node is associated with the given tag. 
-   # >>> ssh_is_tag_assigned "tag"
-   ${arcRequireBoundVariables}
-   typeset tag 
-   tag="${1}"
-   eval "$(ssh_load "${arcNode}")"
-   if (( $(ssh_list_assigned_tags | grep "^${tag}$" | wc -l) )); then
-      ${returnTrue} 
-   else
-      ${returnFalse} 
-   fi
-}
-
-function test_ssh_is_tag_assigned {
-   ssh_delete "${arcNode}"
-   ssh_add "${arcNode}" 
-   ssh_refresh 
-   ! ssh_is_tag_assigned "foo" && pass_test || fail_test "Node should not have any tags associated with it."
-   ssh_add -tags "foo,bar" "${arcNode}"
-   ssh_refresh 
-   ssh_is_tag_assigned "foo" && pass_test || fail_test "'foo' tag exists, returns true."
-   ssh_is_tag_assigned "bar" && pass_test || fail_test "'bar' tag exists, returns true."
-   ! ssh_is_tag_assigned "b" && pass_test || fail_test "Partial tag returns false."
-   ssh_delete "${arcNode}"
-   _sshAddLocalHost
-}
-
-function ssh_list_group {
+function ssh_return_nodes_in_group {
    # Return the list of node names in a group.
-   # >>> ssh_list_group "ssh_group"
+   # >>> ssh_return_nodes_in_group "ssh_group"
    ${arcRequireBoundVariables}
-   debug3 "ssh_list_group: $*"
+   debug3 "ssh_return_nodes_in_group: $*"
    typeset ssh_group file_path ssh_connection
    ssh_group="${1}"
    _sshRaiseIsNotGroup "${ssh_group}" && ${returnFalse} 
@@ -457,11 +435,63 @@ function ssh_list_group {
    ${returnTrue} 
 }
 
-function ssh_list_tag {
-   # Return the list of nodes associated with a tag.
-   # >>> ssh_list_tag "ssh_tag"
+function ssh_return_tags {
+   # List the ssh tags.
+   # >>> ssh_return_tags
    ${arcRequireBoundVariables}
-   debug3 "ssh_list_tag: $*"
+   file_list_files "${_sshDir}/tags"
+   ${returnTrue} 
+}
+
+function test_ssh_return_tags {
+   ssh_add -port 22 -alias "foo" -tags "moo" "foo@bar"
+   ssh_add -port 22 -alias "fa" -tags "moo" "fa@bin"
+   ssh_refresh 
+   ssh_return_tags | assert_match "moo"
+   ssh_delete "fa"
+}
+
+function ssh_return_tags_for_this_node {
+   # Return the list of tags associated with the local node.
+   # >>> ssh_return_tags_for_this_node
+   ${arcRequireBoundVariables}
+   eval "$(ssh_load "${arcNode}")"
+   echo "${node_tags:-}" | str_split_line -stdin "," | utl_remove_blank_lines -stdin
+}
+
+function ssh_is_tag_assigned_to_this_node {
+   # Return true if the local node is associated with the given tag. 
+   # >>> ssh_is_tag_assigned_to_this_node "tag"
+   ${arcRequireBoundVariables}
+   typeset tag 
+   tag="${1}"
+   eval "$(ssh_load "${arcNode}")"
+   if (( $(ssh_return_tags_for_this_node | grep "^${tag}$" | wc -l) )); then
+      ${returnTrue} 
+   else
+      ${returnFalse} 
+   fi
+}
+
+function test_ssh_is_tag_assigned_to_this_node {
+   ssh_delete "${arcNode}"
+   ssh_add "${arcNode}" 
+   ssh_refresh 
+   ! ssh_is_tag_assigned_to_this_node "foo" && pass_test || fail_test "Node should not have any tags associated with it."
+   ssh_add -tags "foo,bar" "${arcNode}"
+   ssh_refresh 
+   ssh_is_tag_assigned_to_this_node "foo" && pass_test || fail_test "'foo' tag exists, returns true."
+   ssh_is_tag_assigned_to_this_node "bar" && pass_test || fail_test "'bar' tag exists, returns true."
+   ! ssh_is_tag_assigned_to_this_node "b" && pass_test || fail_test "Partial tag returns false."
+   ssh_delete "${arcNode}"
+   _sshAddLocalHost
+}
+
+function ssh_return_nodes_with_tag {
+   # Return the list of nodes associated with a tag.
+   # >>> ssh_return_nodes_with_tag "ssh_tag"
+   ${arcRequireBoundVariables}
+   debug3 "ssh_return_nodes_with_tag: $*"
    typeset ssh_tag file_path ssh_connection
    ssh_tag="${1}"
    if [[ -f "${_sshDir}/tags/${ssh_tag}" ]]; then
@@ -470,11 +500,11 @@ function ssh_list_tag {
    ${returnTrue} 
 }
 
-function test_ssh_list_tag {
+function test_ssh_return_nodes_with_tag {
    ssh_add -port 22 -alias "foo" -tags "moo" "foo@bar"
    ssh_add -port 22 -alias "fa" -tags "moo" "fa@bin"
    ssh_refresh 
-   ssh_list_tag "moo" | egrep "foo@bar|fa@bin" | assert -l 2
+   ssh_return_nodes_with_tag "moo" | egrep "foo@bar|fa@bin" | assert -l 2
    ssh_delete "foo"
    ssh_delete "fa"
    ssh_refresh 
@@ -527,9 +557,9 @@ function _sshAddLocalHost {
 }
 
 function test__sshAddLocalHost {
-   rm "${arcGlobalHome}/config/ssh_connections/${arcNode}" && pass_test || fail_test 
+   rm "${arcGlobalHome}/config/ssh_connections/${arcNode}.cfg" && pass_test || fail_test 
    _sshAddLocalHost && pass_test || fail_test 
-   echo "${arcGlobalHome}/config/ssh_connections/${arcNode}" | assert -f
+   echo "${arcGlobalHome}/config/ssh_connections/${arcNode}.cfg" | assert -f
    ssh_refresh && pass_test || fail_test 
 }
 
@@ -540,7 +570,7 @@ function _sshDoesNodeExist {
    debug3 "_sshDoesNodeExist: $*"
    typeset node_name
    node_name="${1}"
-   if config_does_object_exist "ssh_connections" "${node_name}"; then
+   if config_does_object_exist "ssh_connections" "${node_name}.cfg"; then
       ${returnTrue} 
    else
       ${returnFalse} 
@@ -643,7 +673,7 @@ function _sshListNodes {
    # Return a list of the ssh nodes found in the "ssh_connections" directory.
    # >>> _sshListNodes
    ${arcRequireBoundVariables}
-   config_list_all_objects "ssh_connections" | egrep -v "example"
+   config_list_all_objects "ssh_connections" | egrep -v "example" | sed 's/\.cfg//'
    ${returnTrue} 
 }
 
@@ -658,7 +688,7 @@ function ssh_load {
    ${arcRequireBoundVariables}
    typeset node
    node="$(_sshXREF "${1}")" || ${returnFalse} 
-   echo "$(config_load_object "ssh_connections" "${node}")"
+   echo "$(config_load_object "ssh_connections" "${node}.cfg")"
    ${returnTrue} 
 }
 

@@ -595,13 +595,13 @@ function _sshListMembers {
       ssh_connection="$(_sshXREF "${_g_sshConnection:-}")"
    fi
    if _sshDoesGroupExist "${ssh_connection}"; then
-      ssh_list_group "${ssh_connection}" 
+      ssh_return_nodes_in_group "${ssh_connection}" 
       ${returnTrue} 
    elif _sshDoesNodeExist "${ssh_connection}"; then
       echo "${ssh_connection}" 
       ${returnTrue} 
    elif _sshDoesTagExist "${ssh_connection}"; then
-      ssh_list_tag "${ssh_connection}"
+      ssh_return_nodes_with_tag "${ssh_connection}"
       ${returnTrue} 
    else
       _sshThrowError "Connection not found: '$*': _sshListMembers"

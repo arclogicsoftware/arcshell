@@ -32,7 +32,7 @@
 | [Scheduler](#scheduler) | Easily create scheduled tasks. |
 | [SendGrid](#sendgrid) | SendGrid interface. |
 | [Sensors](#sensors) | Detects changes or things that have not changed. |
-| [SSH Connection Manager](#ssh_connection_manager) | Manages ssh connections. |
+| [SSH Connection Manager](#ssh_connection_manager) | SSH connection manager. |
 | [SSH](#ssh) | Manage ssh connections and execute remote scripts or commands. |
 | [Data Stacks](#data_stacks) | Create and manage small data stacks which operate a little like arrays. |
 | [Statistics Extended](#statistics_extended) | Extends the statistics interface. |
@@ -681,7 +681,7 @@ Detects changes or things that have not changed.
 
 ## SSH Connection Manager (arcshell_ssh_connections.sh)
 
-Manages ssh connections.
+SSH connection manager.
 
 
 
