@@ -5,6 +5,8 @@
 # module_image="smartphone-1.png"
 # copyright_notice="Copyright 2019 Arclogic Software"
 
+#ToDo: Instead of keeping redundant messages in the queue have option to keep first and last and count them perhaps?
+
 _msgDir="${arcTmpDir}/_arcshell_msg"
 mkdir -p "${_msgDir}/queues"
 

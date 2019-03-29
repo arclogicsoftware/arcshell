@@ -45,6 +45,7 @@ boot_list_functions
 boot_raise_program_not_found
 boot_return_shell_type
 boot_return_tty_device
+boot_return_with_shbang
 cache_delete
 cache_delete_group
 cache_exists

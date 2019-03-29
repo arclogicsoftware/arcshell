@@ -25,6 +25,7 @@ _g_log_to_stderr_once=0
 _g_log_messaging_enabled=0
 _g_log_follow_pid=
 
+# ToDo: Add a log_slack or log_chat command.
 # ToDo: Unit tests needed.
 
 function __readmeLogging {
@@ -39,7 +40,7 @@ First of all there are commands like\`\`\`log_help\`\`\`,  \`\`\`log_show\`\`\`,
 
 Most of the entry points here are capable of logging to standard out or standard error in addition to logging to the  specified log file. This is helpful for example when you trap an error and want to both write it to the log and return the same logged entry to standard error. 
 
-\`\`\`log_terminal\`\`\` is capable of determining if the code it operating from a terminal device and provide feedback otherwise simply log the action to the log without returning the entry to standard output. 
+\`\`\`log_terminal\`\`\` is capable of determining if the call is originating from a terminal device and provide feedback otherwise simply log the action to the log without returning the entry to standard output. 
 
 You can optionally log details with a log entry by using the \`\`\`-stdin\`\`\` option. The log entry is only written if data actually exists on standard input. This enables you to write simple conditional log entries using a single line of code. If you want to log the entry anyway just add the \`\`\`-force\`\`\` option.
 

@@ -309,14 +309,7 @@ grep "^function " "${arcHome}/sh/core/"*.sh | egrep -v "function test_|function 
 grep "^function " "${arcHome}/sh/"*.sh 2>/dev/null | egrep -v "function test_|function _" | cut -d" " -f2 
 ) | sort > "${arcHome}/sh/_funcs.txt"
 
-(
-if boot_is_valid_bash; then
-   echo "#!$(which bash)"
-elif boot_is_valid_ksh; then
-   echo "#!$(which ksh)"
-fi
-sed '1d' "${arcHome}/resource/arcshell_daemon.sh"
-) > "${arcUserHome}/arcshell.sh"
+boot_return_with_shbang "${arcHome}/resource/arcshell_daemon.sh" > "${arcUserHome}/arcshell.sh"
 chmod 700 "${arcUserHome}/arcshell.sh"
 
 log_setup "Securing ArcShell files and directories." 1
@@ -327,6 +320,11 @@ while read f; do
    chmod 700 "${f}"
    log_setup "${f}" 1
    . "${f}"
+   # Copy cron_check.sh file to target folder if defined in the setup.config.
+   if [[ -d "${arcshell_cron_check_dir:-}" ]]; then
+      boot_return_with_shbang "${arcHome}/sh/core/cron_check.sh" "${arcshell_cron_check_dir}/cron_check.sh"
+      chmod 700 "${arcshell_cron_check_dir}/cron_check.sh"
+   fi
 done < <(config_return_all_paths_for_object "arcshell" "setup.config" )
 
 log_setup "Logging ssh details..." 

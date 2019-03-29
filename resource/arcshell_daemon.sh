@@ -12,7 +12,7 @@ arcHome=
 # ToDo: Add suspend time limit.
 # ToDo: Add -force option where needed (no idea what I was thinking here).
 
-typeset _g_arcshellStartDaemon x process_count total_line_count last_line_count number_of_new_lines c
+typeset _g_arcshellStartDaemon x process_count total_line_count last_line_count number_of_new_lines c 
 
 _g_arcshellStartDaemon=0
 

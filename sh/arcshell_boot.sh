@@ -13,6 +13,21 @@ if alias cp 1>/dev/null 2> /dev/null; then
   unalias cp
 fi
 
+function boot_return_with_shbang {
+  # Return the file contents with a shbang added for Bash or Korn shell.
+  # >>> boot_return_with_shbang "file"
+  ${arcRequireBoundVariables}
+  typeset file
+  file="${1}"
+  file_raise_file_not_found "${file}" && ${returnFalse} 
+  if boot_is_valid_bash; then
+     echo "#!$(which bash)"
+  elif boot_is_valid_ksh; then
+     echo "#!$(which ksh)"
+  fi
+  grep -v "^#!" "${file}"
+}
+
 function _bootSetsUpRuntime {
   #
   # >>> _bootSetsUpRuntime

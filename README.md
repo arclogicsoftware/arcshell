@@ -1,17 +1,10 @@
-
 # ArcShell
 
-ArcShell is a Bash (and Korn) shell scripting framework. It is especially good at **automating** and **monitoring**.
+ArcShell is a Bash scripting, automation, and monitoring framework created by [Ethan Post](https://www.linkedin.com/in/ethanraypost/). It contains more than [30 modules](https://github.com/arclogicsoftware/arcshell/tree/master/docs). If you install ArcShell (and you should) please join the [announcements](https://groups.google.com/forum/#!forum/arcshell-announcements) and [support](https://groups.google.com/forum/#!forum/arcshell) email lists. I am on  [Twitter](https://twitter.com/poststop). Email me here Ethan@ArclogicSoftware.com.
 
-| Item or Link | Description |
-| --- | --- |
-| [Arclogic Software](https://www.arclogicsoftware.com/) | **Consulting, training, commercial support, and other services available.** |
-| [Modules](https://github.com/arclogicsoftware/arcshell/tree/master/docs) | Make sure you check out the list of modules available with ArcShell. Plenty of training down below in the README and more on the way. |
-| **Ethan Ray Post** [LinkedIn](https://www.linkedin.com/in/ethanraypost/), [Twitter](https://twitter.com/poststop), [GitHub](https://github.com/ethanpost) | Founder of Arclogic Software. Creator of ArcShell. **Connections and follows are appreciated.** |
-| [ArcShell Announcements](https://groups.google.com/forum/#!forum/arcshell-announcements) email list. | ArcShell **announcements only** email list. |
-| [ArcShell](https://groups.google.com/forum/#!forum/arcshell) email list. | Email list for ArcShell discussions, bugs, questions, and development. **ASK YOUR QUESTIONS HERE!**|
-| **Contact Us** | **Email** Ethan@ArclogicSoftware.com. Call **931-450-8899** (please email or text before calling). [LinkedIn](https://www.linkedin.com/in/ethanraypost/) messaging also works. |
-| Credits | [Icons designed by SmashIcons from Flaticon](https://www.flaticon.com/packs/essential-collection) |
+![arcshell_checklist_banner.jpg](./docs/images/arcshell_checklist_banner.jpg)
+
+> Any icons you find in the documentation are designed by SmashIcons and available from [Flaticon](https://www.flaticon.com/packs/essential-collection).
 
 # Training & Documentation
 

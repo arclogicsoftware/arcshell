@@ -36,9 +36,7 @@ function cron_is_true {
    typeset cronExpression nMinutes nHour nDate nMonth nDay fieldNum
    typeset cMinutes cHour cDate cMonth cDay
    cronExpression="$(echo "${1}" | sed 's/\*/X/g')"
-   gDebugLevel=3
-   gDebugOutput=2
-   debug3 "cron_is_true: $*"
+   # debug3 "cron_is_true: $*"
    if ! _cronIsValidCronExpression "${cronExpression}"; then
       ${returnFalse}
    fi
@@ -65,12 +63,12 @@ function cron_is_true {
          5) nowTime=${nDay}; cronTime=$(_cronReturnDayOfWeekInt "${cDay}") ;;
       esac
       if ! _cronIsCronFieldTrue "${cronTime}" ${nowTime}; then
-         debug3 "Not True: fieldNum=${fieldNum}, cronTime=${cronTime}, nowTime=${nowTime}"
+         # debug3 "Not True: fieldNum=${fieldNum}, cronTime=${cronTime}, nowTime=${nowTime}"
          ${returnFalse}
       fi
-      debug3 "True: cronTime=${cronTime} nowTime=${nowTime}"
+      # debug3 "True: cronTime=${cronTime} nowTime=${nowTime}"
    done < <(num_range 1 5)
-   debug3 "True: $*: cron_is_true"
+   # debug3 "True: $*: cron_is_true"
    ${returnTrue}
 }
 
@@ -124,11 +122,11 @@ function _cronIsCronFieldTrue {
    [[ "${cronField}" == "X" ]] && ${returnTrue}  
    while IFS=, read cronPartOfField; do
       if _cronIsPartOfFieldTrue "${cronPartOfField}" ${timeInteger}; then
-         debug3 "True: _cronIsCronFieldTrue"
+         # debug3 "True: _cronIsCronFieldTrue"
          ${returnTrue}
       fi
    done <<< "${cronField}"
-   debug3 "False: _cronIsCronFieldTrue"
+   # debug3 "False: _cronIsCronFieldTrue"
    ${returnFalse}
 }
 
@@ -139,34 +137,34 @@ function _cronIsPartOfFieldTrue {
    typeset cronFieldPart timeInteger
    cronFieldPart="${1}"
    timeInteger=${2}
-   debug3 "_cronIsPartOfFieldTrue: $*"
+   # debug3 "_cronIsPartOfFieldTrue: $*"
    if [[ "${cronFieldPart}" == "X" ]]; then
-      debug3 "_cronIsPartOfFieldTrue: True"
+      # debug3 "_cronIsPartOfFieldTrue: True"
       ${returnTrue}
    elif (( $(echo "${cronFieldPart}" | grep "\/" | wc -l) )); then
       if _cronIsIntMultiple "${cronFieldPart}" "${timeInteger}"; then
-         debug3 "_cronIsPartOfFieldTrue: True"
+         # debug3 "_cronIsPartOfFieldTrue: True"
          ${returnTrue}
       fi
    elif (( $(echo "${cronFieldPart}" | grep "-" | wc -l) )); then
       if _cronIsIntWithinRange "${cronFieldPart}" "${timeInteger}"; then
-         debug3 "_cronIsPartOfFieldTrue: True"
+         # debug3 "_cronIsPartOfFieldTrue: True"
          ${returnTrue}
       fi
    elif (( $(echo "${cronFieldPart}" | grep "," | wc -l) )); then
       if _cronIsIntWithinList "${cronFieldPart}" "${timeInteger}"; then 
-         debug3 "_cronIsPartOfFieldTrue: True"
+         # debug3 "_cronIsPartOfFieldTrue: True"
          ${returnTrue}
       fi
    elif num_is_num "${cronFieldPart}"; then
       if (( ${cronFieldPart} == ${timeInteger} )); then 
-         debug3 "_cronIsPartOfFieldTrue: True"
+         # debug3 "_cronIsPartOfFieldTrue: True"
          ${returnTrue}
       fi
    else
       _throwCronError "_cronIsPartOfFieldTrue: Unable to parse.: $*"
    fi
-   debug3 "_cronIsPartOfFieldTrue: False"
+   # debug3 "_cronIsPartOfFieldTrue: False"
    ${returnFalse}
 }
 
@@ -175,7 +173,7 @@ function _cronIsIntWithinRange {
    # >>> _cronIsIntWithinRange "cronFieldPart" "timeInteger"
    ${arcRequireBoundVariables}
    typeset leftX rightX integerX
-   debug3 "_cronIsIntWithinRange: $*"
+   # debug3 "_cronIsIntWithinRange: $*"
    leftX=$(echo ${1}  | awk -F"-" '{ print $1 }')
    rightX=$(echo ${1} | awk -F"-" '{ print $2 }')
    integerX="${2}"
@@ -184,7 +182,7 @@ function _cronIsIntWithinRange {
    elif (( ${leftX} > ${rightX} )); then
       (( ${integerX} >= ${leftX} || ${integerX} <= ${rightX} )) && ${returnTrue}
    fi
-   debug3 "_cronIsIntWithinRange: False"
+   # debug3 "_cronIsIntWithinRange: False"
    ${returnFalse}
 }
 
@@ -195,7 +193,7 @@ function _cronIsIntWithinList {
    # integerX:
    ${arcRequireBoundVariables}
    typeset integerX integerList x
-   debug3 "_cronIsIntWithinList: $*"
+   # debug3 "_cronIsIntWithinList: $*"
    integerList="${1}"
    integerX=${2}
    while read x; do
@@ -203,7 +201,7 @@ function _cronIsIntWithinList {
          ${returnTrue}
       fi
    done < <(echo "${integerList}" | str_split_line -stdin ",")
-   debug3 "_cronIsIntWithinList: False"
+   # debug3 "_cronIsIntWithinList: False"
    ${returnFalse}
 }
 
@@ -212,13 +210,13 @@ function _cronIsIntMultiple {
    # >>> _cronIsIntMultiple "cronFieldPart" "timeInteger"
    ${arcRequireBoundVariables}
    typeset divisorX integerX
-   debug3 "_cronIsIntMultiple: $*"
+   # debug3 "_cronIsIntMultiple: $*"
    divisorX=$(echo "${1}" | _cronRemovesForwardSlashes)
    integerX=${2}
    if (( $(expr ${integerX} % ${divisorX}) == 0 )); then
       ${returnTrue}
    fi
-   debug3 "_cronIsIntMultiple: False"
+   # debug3 "_cronIsIntMultiple: False"
    ${returnFalse}
 }
 

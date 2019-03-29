@@ -5,6 +5,12 @@
 ## Reference
 
 
+### boot_return_with_shbang
+Return the file contents with a shbang added for Bash or Korn shell.
+```bash
+> boot_return_with_shbang "file"
+```
+
 ### stdout_banner
 Returns a simple unix commented banner to ```stdout```.
 ```bash
