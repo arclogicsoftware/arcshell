@@ -13,5 +13,7 @@ fi
 wget https://github.com/arclogicsoftware/arcshell/archive/master.zip
 unzip master.zip
 mv arcshell-master arcshell
-cd arcshell
+find "./arcshell" -type f -name "*.sh" -exec chmod 700 {} \;
+cd arcshell || exit 1
+
 ./arcshell_setup.sh
