@@ -8,12 +8,12 @@ function __readmeCronWatch {
 
 \`\`\`
 # Monitors the exit status each time the job runs.
-* * * * * ${HOME}/cron_test.sh 50 1> /dev/null 2>/dev/null ; ${HOME}/cron_check.sh $? "cron_test.sh"
+* * * * * ${HOME}/cron_test.sh 50 ; ${HOME}/cron_check.sh $? "cron_test.sh"
 \`\`\`
 
 \`\`\`
-# The above can be modified to take advantage of ArcShell built in cron log file monitoring.
-* * * * * ${HOME}/cron_test.sh 50 1> /dev/null 2>/dev/null ; ${HOME}/cron_check.sh $? "cron_test.sh"
+# The above can be improved and take advantage of ArcShell built in cron log file monitoring.
+* * * * * ${HOME}/cron_test.sh 50 1>> ${HOME}/cron.out 2>> ${HOME}/cron.err ; ${HOME}/cron_check.sh $? "cron_test.sh"
 \`\`\`
 
 EOF
