@@ -10,7 +10,7 @@ Please join the [announcements](https://groups.google.com/forum/#!forum/arcshell
 
 Documentation and updates uploaded every week. Most of it will be available before the end of May 2019. 
 
-![arcshell_checklist_banner.jpg](./docs/images/arcshell_checklist_banner.jpg)
+![arcshell_checklist_banner.PNG](./docs/images/arcshell_checklist_banner.PNG)
 
 Icons designs by SmashIcons and available from [Flaticon](https://www.flaticon.com/packs/essential-collection).
 
