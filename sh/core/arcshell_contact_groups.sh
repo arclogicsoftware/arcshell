@@ -8,7 +8,6 @@
 mkdir -p "${arcGlobalHome}/config/contact_groups"
 
 _contactgroupsHome="${arcTmpDir}/_arcshell_contact_groups"
-mkdir -p "${_contactgroupsHome}/default_groups"
 
 function __readmeContactGroups {
    cat <<EOF
@@ -29,8 +28,6 @@ Configure a contact group by adding a file of the same name to \`\`\`\${arcGloba
 
 New contact groups can be created by adding a file to one of these directories.
 
-It is important that you run the ```contact_groups_refresh``` procedure when you finish making changes to one or more contact groups.
-
 ArcShell loads contact groups in top down order. Delivered, global, then user. All identified files will be loaded when a contact group is used in the code base.
 
 **Example of a contact group configuration file.** 
@@ -42,6 +39,14 @@ Contact groups configuration files are loaded as shell scripts. You can use shel
 $(cat ${arcHome}/config/contact_groups/admins.cfg)
 \`\`\`
 EOF
+}
+
+function __setupContactGroups {
+   # Run setup for contact groups.
+   # >>> __setupContactGroups 
+   if ! [[ -f "${arcGlobalHome}/config/contact_groups/admins.cfg" ]]; then
+      cp "${arcHome}/config/contact_groups/"
+   fi
 }
 
 function test_function_setup {
@@ -58,13 +63,6 @@ EOF
    group_default_group=0
 EOF
    ) > "${arcHome}/config/contact_groups/bar.cfg" 
-   contact_groups_refresh
-}
-
-function __setupArcShellContactGroups {
-   # Run setup for actions for contact groups.
-   # >>> __setupArcShellContactGroups
-   contact_groups_refresh
 }
 
 function contact_group_load {
@@ -84,28 +82,6 @@ function test_contact_group_load {
    group_emails= 
    eval "$(contact_group_load "foo")"
    echo "${group_emails}" | assert "foo@bar.com"
-}
-
-function _groupsGenerateDefaultGroupsLookup {
-   # Generates the lookup files we need to see which groups are default groups.
-   # >>> _groupsGenerateDefaultGroupsLookup
-   ${arcRequireBoundVariables}
-   debug3 "_groupsGenerateDefaultGroupsLookup: $*"
-   typeset group_name group_default_group
-   rm -rf "${_contactgroupsHome}/default_groups"
-   mkdir "${_contactgroupsHome}/default_groups"
-   while read group_name; do
-      group_default_group=
-      eval "$(contact_group_load "${group_name}")"
-      if is_truthy "${group_default_group:-1}"; then
-         touch "${_contactgroupsHome}/default_groups/${group_name}"
-      fi
-   done < <(contact_groups_list)
-   ${returnTrue} 
-}
-
-function test__groupsGenerateDefaultGroupsLookup {
-   _groupsGenerateDefaultGroupsLookup && pass_test || fail_test 
 }
 
 function _groupsRaiseGroupNotFound {
@@ -214,22 +190,18 @@ function contact_groups_list_default {
    # >>> contact_groups_list_default
    ${arcRequireBoundVariables}
    debug3 "contact_groups_list_default: $*"
-   typeset group_name
+   typeset group_name group_default_group
    while read group_name; do
-      # Need to check exists in the event refresh has not been run after a change.
-      contact_group_exists "${group_name}" && echo "${group_name}"
-   done < <(file_list_files "${_contactgroupsHome}/default_groups")
+      group_default_group=
+      eval "$(contact_group_load "${group_name}")"
+      if is_truthy "${group_default_group:-1}"; then
+         echo "${group_name}"
+      fi
+   done < <(contact_groups_list)
 }
 
 function test_contact_groups_list_default {
    contact_groups_list_default | assert -l ">=2"
-}
-
-function contact_groups_refresh {
-   # Rebuilds objects when a contact group config file has been changed.
-   # >>> contact_groups_refresh
-   _groupsGenerateDefaultGroupsLookup
-   log_terminal "Contact groups have been refreshed."
 }
 
 function contact_group_delete {
@@ -246,5 +218,4 @@ function contact_group_delete {
 function test_file_teardown {
    contact_group_delete "foo"
    contact_group_delete "bar"
-   contact_groups_refresh
 }

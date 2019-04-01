@@ -17,15 +17,15 @@ function __setupArcShell {
 }
 
 function __configArcShell {
-   # Create an empty global arcshell.config file if it does not exist.
-   if [[ ! -f "${arcGlobalHome}/config/arcshell/arcshell.config" ]]; then
-      touch "${arcGlobalHome}/config/arcshell/arcshell.config"
-      chmod 600 "${arcGlobalHome}/config/arcshell/arcshell.config"
+   # Create an empty global arcshell.cfg file if it does not exist.
+   if [[ ! -f "${arcGlobalHome}/config/arcshell/arcshell.cfg" ]]; then
+      touch "${arcGlobalHome}/config/arcshell/arcshell.cfg"
+      chmod 600 "${arcGlobalHome}/config/arcshell/arcshell.cfg"
    fi
-   # Create an empty global setup.config file if it does not exist.
-   if [[ ! -f "${arcGlobalHome}/config/arcshell/setup.config" ]]; then
-      touch "${arcGlobalHome}/config/arcshell/setup.config"
-      chmod 600 "${arcGlobalHome}/config/arcshell/setup.config"
+   # Create an empty global setup.cfg file if it does not exist.
+   if [[ ! -f "${arcGlobalHome}/config/arcshell/setup.cfg" ]]; then
+      touch "${arcGlobalHome}/config/arcshell/setup.cfg"
+      chmod 600 "${arcGlobalHome}/config/arcshell/setup.cfg"
    fi
 }
 

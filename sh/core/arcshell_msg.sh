@@ -49,7 +49,7 @@ function msg_check {
    # >>> msg_check
    ${arcRequireBoundVariables}
    log_terminal "Checking messaging configuration..."
-   log_terminal "Note: Use '\${arcGlobalHome}/config/arcshell.config' to modify most settings."
+   log_terminal "Note: Use '\${arcGlobalHome}/config/arcshell.cfg' to modify most settings."
    if [[ -n "${arcshell_admin_emails:-}" ]]; then
       log_terminal "'arcshell_admin_emails' is set to '${arcshell_admin_emails}'."
    else

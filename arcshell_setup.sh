@@ -161,7 +161,7 @@ mkdir -p "${arcGlobalHome}"
 mkdir -p "${arcUserHome}"
 export arcTmpDir="${arcUserHome}/tmp"
 mkdir -p "${arcTmpDir}"
-touch "${arcTmpDir}/arcshell.config"
+touch "${arcTmpDir}/arcshell.cfg"
 export arcLogDir="${arcUserHome}/log"
 mkdir -p "${arcLogDir}"
 export arcLogFile="${arcLogDir}/arcshell.log"
@@ -239,9 +239,9 @@ if [[ -z "\${arcHome:-}" ]]; then
    arcEditor="${EDITOR:-"vi"}"
    ARC_EDITOR="${EDITOR:-"vi"}"
    export PATH="\${PATH}:\${arcUserHome}:\${arcUserHome}/sh:\${arcGlobalHome}:\${arcGlobalHome}/sh:\${arcHome}:\${arcHome}/sh"
-   [[ -f "\${arcHome}/config/arcshell/arcshell.config" ]] && . "\${arcHome}/config/arcshell/arcshell.config"
-   [[ -f "\${arcGlobalHome}/config/arcshell/arcshell.config" ]] && . "\${arcGlobalHome}/config/arcshell/arcshell.config"
-   [[ -f "\${arcUserHome}/config/arcshell/arcshell.config" ]] && . "\${arcUserHome}/config/arcshell/arcshell.config"
+   [[ -f "\${arcHome}/config/arcshell/arcshell.cfg" ]] && . "\${arcHome}/config/arcshell/arcshell.cfg"
+   [[ -f "\${arcGlobalHome}/config/arcshell/arcshell.cfg" ]] && . "\${arcGlobalHome}/config/arcshell/arcshell.cfg"
+   [[ -f "\${arcUserHome}/config/arcshell/arcshell.cfg" ]] && . "\${arcUserHome}/config/arcshell/arcshell.cfg"
    . "\${arcHome}/sh/arcshell_core.sh"
    [[ -f "\${arcTmpDir}/_.Help" ]] && . "\${arcTmpDir}/_.Help"
 fi
@@ -315,17 +315,17 @@ chmod 700 "${arcUserHome}/arcshell.sh"
 log_setup "Securing ArcShell files and directories." 1
 #arc_secure_home
 
-log_setup "Running setup.config files..." 1
+log_setup "Running setup.cfg files..." 1
 while read f; do
    chmod 700 "${f}"
    log_setup "${f}" 1
    . "${f}"
-   # Copy cron_check.sh file to target folder if defined in the setup.config.
+   # Copy cron_check.sh file to target folder if defined in the setup.cfg.
    if [[ -d "${arcshell_cron_check_dir:-}" ]]; then
       boot_return_with_shbang "${arcHome}/sh/core/cron_check.sh" "${arcshell_cron_check_dir}/cron_check.sh"
       chmod 700 "${arcshell_cron_check_dir}/cron_check.sh"
    fi
-done < <(config_return_all_paths_for_object "arcshell" "setup.config" )
+done < <(config_return_all_paths_for_object "arcshell" "setup.cfg" )
 
 log_setup "Logging ssh details..." 
 if os_get_process_count "sshd" 1>/dev/null ; then

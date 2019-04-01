@@ -15,8 +15,6 @@ Configure a contact group by adding a file of the same name to ```${arcGlobalHom
 
 New contact groups can be created by adding a file to one of these directories.
 
-It is important that you run the  procedure when you finish making changes to one or more contact groups.
-
 ArcShell loads contact groups in top down order. Delivered, global, then user. All identified files will be loaded when a contact group is used in the code base.
 
 **Example of a contact group configuration file.** 
@@ -81,7 +79,7 @@ Contact groups configuration files are loaded as shell scripts. You can use shel
 # arcshell_app_slack_webhook=
 
 # Over-rides keyword configuration setting.
-send_slack=1
+# send_slack=0
 ```
 
 
@@ -131,12 +129,6 @@ Return the list of groups which are currently enabled.
 Return a list of the default groups, they are not necessarily enabled.
 ```bash
 > contact_groups_list_default
-```
-
-### contact_groups_refresh
-Rebuilds objects when a contact group config file has been changed.
-```bash
-> contact_groups_refresh
 ```
 
 ### contact_group_delete

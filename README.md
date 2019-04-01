@@ -7,7 +7,7 @@ It supports both Bash and Korn shells and contains more than [30 modules](https:
 
 ArcShell is unique and unlike other Bash frameworks. It is designed to be used as a flexible distributed automation and monitoring development platform. It is suitable for both individuals and companies of any size.
 
-Please join the [announcements](https://groups.google.com/forum/#!forum/arcshell-announcements) and [support](https://groups.google.com/forum/#!forum/arcshell) email lists for updates. I am on  [Twitter](https://twitter.com/poststop). Email me here Ethan@ArclogicSoftware.com. Chat channels will be created when needed.
+Please join the [announcements](https://groups.google.com/forum/#!forum/arcshell-announcements) and [support](https://groups.google.com/forum/#!forum/arcshell) email lists for updates. I am on  [Twitter](https://twitter.com/poststop). You can also email me at Ethan@ArclogicSoftware.com. Chat channels will be created when needed.
 
 Documentation and updates uploaded every week. Most of it will be available before the end of May 2019. 
 
@@ -17,17 +17,17 @@ Icons designs by SmashIcons and available from [Flaticon](https://www.flaticon.c
 
 ## BEFORE YOU START
 
-Please read this. These points will get you oriented with the product and reduce stress levels.
+Please read this. These points will get you oriented with the product before installing.
 
 **My Development Environment:** ArcShell is developed in Bash using [Sublime Text](https://www.sublimetext.com/) on Windows. The Window's file system is shared to a [VirtualBox](https://www.virtualbox.org/) [Ubuntu](https://www.ubuntu.com/) host. You will see this often in my videos.
 
-**Prerequisites:**  ArcShell should have very few if any prerequisites to get up and running. Depending on your environment you may need to install programs like awk or nawk, sed, bc, and perl. ArcShell does not and need to be installed as root in most cases.
+**Prerequisites:**  ArcShell has few, if any, prerequisites. You may need to install missing programs like awk or nawk, sed, bc, and perl. ArcShell does not and need to be installed as root in most cases.
 
-**Email:** It is recommended that your servers have outbound email capability. If native email support is not already configured I suggest you try SendGrid which is easy to configure in ArcShell. If you require support for other options let us know what they are.
+**Email:** Ideally your servers have outbound email capability. If native email support is not already configured I suggest you try SendGrid which is easy to configure in ArcShell. If you require support for other options let us know what they are.
 
-**SSH:** It is also recommended that the servers you are working with support SSH. ArcShell can help you manage these connections. 
+**SSH:** Your servers should support SSH. ArcShell can help you manage these connections. However, ArcShell is able to operate without it.
 
-**Primary vs. Remote Nodes:** ArcShell is typically maintained on a single node and then deployed to your remote nodes. ArcShell deploys a copy of itself. There are a lot of ways to manage deployments. 
+**Primary vs. Remote Nodes:** ArcShell is typically maintained on a single node and then deployed to your remote nodes. ArcShell deploys a copy of itself. There are many ways to manage deployments. 
 
 **Loading ArcShell:** After you install ArcShell you will need to load the framework into your command line environment or into your script. This is done using the .arcshell profile file which is in your ${HOME} directory.
 ```
@@ -53,9 +53,9 @@ Look at the arcshell_cron.sh module for all of the options.
 
 | Name| Path| About | 
 | ---- | ---- | ---- |
-| Delivered | ${arcHome} | This is the directory ArcShell is installed in.
-| Global | ${arcHome}/global or ${arcGlobalHome} | This is the directory where you will make 99% of your changes and where your files go. This directory is included when you deploy ArcShell to the other nodes.
-| User | ${arcHome}/user or ${arcUserHome} | This directory is not deployed to other nodes. If you need a file which is part of ArcShell but stays on a single node, this is where it should go.
+| Delivered | ${arcHome} | This is the directory ArcShell is installed in. |
+| Global | ${arcHome}/global or ${arcGlobalHome} | This is the directory where you will make 99% of your changes and where your files go. |
+| User | ${arcHome}/user or ${arcUserHome} | This directory is not deployed to other nodes. |
 
 We will see how these can be used later.
 
@@ -65,14 +65,16 @@ We will see how these can be used later.
 
 | File| About| 
 | ---- | ---- |
-| ./config/arcshell/arcshell.cfg | Can be present in any of the three ArcShell homes. Is loaded (and run) whenever you source in ArcShell. All files are loaded in top-down order. Delivered, Global, then user.|
-| ./config/arcshell/setup.cfg | Can be present in any of the three ArcShell homes. Is loaded (and run) whenever you run setup. All files are loaded in top-down order. Delivered, Global, then user. |
+| ./config/arcshell/arcshell.cfg | Can be present in any of the three ArcShell homes. Is loaded (and run) whenever you source in ArcShell. |
+| ./config/arcshell/setup.cfg | Can be present in any of the three ArcShell homes. Is loaded (and run) whenever you run setup. |
 
-**The Daemon:** The script which acts as the daemon is ```${arcUserHome}/arcshell.sh```. This file also gets rebuilt each time you run setup. Run ```arcshell.sh -help``` for some help on starting and stopping the daemon process. 
+In both cases all files found are loaded and they are loaded in the following order: delivered, global, then user.
 
-Add a cronjob calling  ```arcshell.sh -autostart``` to make sure the daemon is restarted between server reboots if it was running prior to that event.
+**ArcShell Daemon:** The script which acts as the daemon is ```${arcUserHome}/arcshell.sh```. This file also gets rebuilt each time you run setup. Run ```arcshell.sh -help``` for some help on starting and stopping the daemon process. 
 
-**Configuration Objects:** ArcShell has a powerful configuration file structure. These are just a some of most common configuration objects.
+After you install ArcShell you can add a single cronjob calling  ```arcshell.sh -autostart``` to make sure the daemon is restarted between server reboots if it was running prior to that event.
+
+**Configuration Objects:** ArcShell has a powerful and flexible configuration file structure. You will want to take a close look at the following once you get ArcShell installed.
 
 | Location| About| 
 | ---- | ---- |
@@ -86,131 +88,141 @@ In each of the cases above the configuration can exist in one or more of the thr
 
 ## INSTALL
 
-| # | Title | Length |
-| --- | --- | --- |
-| 2.1 | How To Install ArcShell | [7 min](https://www.screencast.com/t/ZMM3atkq7) |
-| 2.2 | Configure The 'arcshell.config' File | [5 min](https://www.screencast.com/t/IqedSmtRemG) |
-| 2.3 | Configure The 'admins' Contact Group | [6 min](https://www.screencast.com/t/whnDCn4dA) |
-| 2.4 | Test Email Services | [3 min](https://www.screencast.com/t/lHlV6BqQ) |
-| 2.5 | Register An SSH Connection | [6 min](https://www.screencast.com/t/NPROCrXqu7) |
-| 2.6 | Install ArcShell On A Remote Node Over SSH| [6 min](https://www.screencast.com/t/NZlbs28tJ) |
-| 2.7 | Sync Changes To A Remote Node Over SSH | [4 min](https://www.screencast.com/t/CFD6lxQ2p4t) |
-| 2.8 | Start And Stop ArcShell Services |[4 min](https://www.screencast.com/t/QhxhrKyMSc) |
-| 2.9 | The ArcShell Menu | [4 min](https://www.screencast.com/t/VrW7Tvh9PfX) |
+**The following example is the simplest method of installing ArcShell.**
+```
+# Make sure you are in the bash shell.
+$ echo $0
+bash
 
-**Also Watch**
+# You can put ArcShell anywhere you want.
+$ mkdir -p "${HOME}/app" && cd "${HOME}/app"
+# ArcShell home will be in ${HOME}/app/arcshell when this completes.
+$ bash < <(curl -Ss https://raw.githubusercontent.com/arclogicsoftware/arcshell/master/install.sh)
+```
 
-Install, Update, And Deploy From GitHub [10 min](https://www.screencast.com/t/clsSBkpp6Tt)
+To install ArcShell manually step by step follow these instructions.
+```
+# If you want to see what the install.sh file looks like run this.
+curl -Ss https://raw.githubusercontent.com/arclogicsoftware/arcshell/master/install.sh 
 
-### SSH Connection Management With ArcShell
+# Run the commands on the screen one by one manually.
 
-| # | Item| Description | Length |
-| --- | --- | --- | --- |
-| 0.0 | - | - | 0 min |
+```
 
-### Using ArcShell SSH Commands
+The install log is written to your "${HOME}" directory.
 
-| # | Item| Description | Length |
-| --- | --- | --- | --- |
-| 0.0 | - | - | 0 min |
+**Try sourcing in the .arcshell file.**
+```
+# This sources ArcShell into your command line environment. 
+. "${HOME}/.arcshell"
+# You shouldn't see any errors! It might take a second or two to load.
+```
 
-### Scheduling Tasks With ArcShell
+## CONFIGURE
 
-| # | Item| Description | Length |
-| --- | --- | --- | --- |
-| 0.0 | - | - | 0 min |
+**Configure the arcshell.cfg file.**
+```
+# Copy the delivered .cfg file to your global configuration directory.
+cp "${arcHome}/config/arcshell/arcshell.cfg" "${arcGlobalHome}/config/arcshell/"
 
-### Configuring ArcShell Keywords
+# Edit the file. Instructions for each parameter are in the file.
+vi "${arcGlobalHome}/config/arcshell/arcshell.cfg"
 
-| # | Item| Description | Length |
-| --- | --- | --- | --- |
-| 0.0 | - | - | 0 min |
+# Delete the lines you didn't explicity set. Not required but a good idea.
 
-### Adding Logging To Scripts
+# Global config takes precedence over delivered config.
+# User config takes precedence over global config.
+# Avoid user level config at all costs!
+```
 
-| # | Item| Description | Length |
-| --- | --- | --- | --- |
-| 0.0 | - | - | 0 min |
+**Configure the 'admins' contact group.**
+```
+# ArcShell has already copied the default 'admins.cfg' file to your global home.
 
-### Adding Debug To Scripts
+# You probably only need to set 'group_emails' at this point. The other values can be set later.
+vi "${arcHome}/config/contact_groups/admins.cfg" 
 
-| # | Item| Description | Length |
-| --- | --- | --- | --- |
-| 0.0 | - | - | 0 min |s
+# You can add other groups by adding other files to this directory.
+```
 
-### Adding Counters To Scripts
+**Test send_message.**
+```
+# This returns a lot of information about your current settings related to messaging.
+msg_show
 
-| # | Item| Description | Length |
-| --- | --- | --- | --- |
-| 0.0 | - | - | 0 min |
+# If outbound email is working this should result in an email message.
+echo "ArcShell Test Email" | send_message -email "My First Test Email"
+```
 
-### Using ArcShell Sensors
+## DEPLOY 
 
-| # | Item| Description | Length |
-| --- | --- | --- | --- |
-| 0.0 | - | - | 0 min |
+**Create an SSH connection.**
+The SSH Connection module is used to register SSH connections with ArcShell. 
+```
+# This creates a new connection. If the connection already exists it updates it.
+ssh_add -alias "foo" -tags "dev,web" foo@server.com
 
-### Sending Messages
+# The result of running the above is a new configuration file for the connection.
+vi "${arcGlobalHome}/config/ssh_connections/foo@server.cfg"
 
-| # | Item| Description | Length |
-| --- | --- | --- | --- |
-| 0.0 | - | - | 0 min |
+# You can optionally create more connections by creating the .cfg file directly.
+```
+Read more about the SSH Connection module [here](https://github.com/arclogicsoftware/arcshell/blob/master/docs/arcshell_ssh_connections.md).
 
-### Writing Alerts
+**Deploy ArcShell to the new remote node over SSH.**
+```
+# Creates a deployment package from the local copy of ArcShell.
+arc_pkg
 
-| # | Item| Description | Length |
-| --- | --- | --- | --- |
+# Uses the package we just created to install ArcShell on the remote node.
+arc_install -ssh "foo" -arcshell_home "/home/foo/app/arcshell"
+```
 
-| 0.0 | - | - | 0 min |
+**Sync changes to the remote node over SSH.**
+```
+# Uses rsync to sync the local ArcShell home to the remote ArcShell home.
+# The local ArcShell user home is not included in the sync.
+arc_sync -ssh "foo"
+```
 
-### Building Menus
+**Stop and start the ArcShell daemon.**
+```
+# Starts the daemon.
+nohup arcshell.sh start &
 
-| # | Item| Description | Length |
-| --- | --- | --- | --- |
-| 0.0 | - | - | 0 min |
+# Stops the daemon.
+arcshell.sh stop
+```
 
-### Collecting Statistics
+**Open the ArcShell menu.**
+```
+arc_menu
+```
 
-| # | Item| Description | Length |
-| --- | --- | --- | --- |
-| 0.0 | - | - | 0 min |
+## WHAT'S NEXT
 
-### Creating Charts
+Spend some time looking at the two SSH related modules. One is used to [manage your SSH connections](https://github.com/arclogicsoftware/arcshell/blob/master/docs/arcshell_ssh_connections.md). The other is used to [run SSH commands against one or more nodes](https://github.com/arclogicsoftware/arcshell/blob/master/docs/arcshell_ssh.md).
 
-| # | Item| Description | Length |
-| --- | --- | --- | --- |
-| 0.0 | - | - | 0 min |
+Now is a also good time to review [keywords](https://github.com/arclogicsoftware/arcshell/blob/master/docs/arcshell_keywords.md), [contact groups](https://github.com/arclogicsoftware/arcshell/blob/master/docs/arcshell_contact_groups.md), and [alert types](https://github.com/arclogicsoftware/arcshell/blob/master/docs/arcshell_alerts.md).
 
-### Packaging And Distribution Strategies
+The ArcShell [task scheduler](https://github.com/arclogicsoftware/arcshell/blob/master/docs/arcshell_sch.md) can be used to schedule tasks and deploy those scheduled tasks to your remote nodes. Review the list of delivered scheduled tasks [here](https://github.com/arclogicsoftware/arcshell/blob/master/docs/schedules.md). These scripts can be used a quick model to begin building your own custom solutions.
 
-| # | Item| Description | Length |
-| --- | --- | --- | --- |
-| 0.0 | - | - | 0 min |
+ArcShell makes it easy to:
+* Add [logging](https://github.com/arclogicsoftware/arcshell/blob/master/docs/arcshell_logger.md), [debug](https://github.com/arclogicsoftware/arcshell/blob/master/docs/debug.md), and [counters](https://github.com/arclogicsoftware/arcshell/blob/master/docs/arcshell_counters.md) to your scripts.
+* [Monitor log files.](https://github.com/arclogicsoftware/arcshell/blob/master/docs/arcshell_logmon.md)
+* [Send messages](https://github.com/arclogicsoftware/arcshell/blob/master/docs/arcshell_msg.md) via email, SMS, or chat.
+* Build [sensors](https://github.com/arclogicsoftware/arcshell/blob/master/docs/arcshell_sensor.md) are write  [alerts](https://github.com/arclogicsoftware/arcshell/blob/master/docs/arcshell_alerts.md).
+* [Collect statistics.](https://github.com/arclogicsoftware/arcshell/blob/master/docs/arcshell_stats.md)
+* [Build menus.](https://github.com/arclogicsoftware/arcshell/blob/master/docs/arcshell_menu.md)
+* [Create charts.](https://github.com/arclogicsoftware/arcshell/blob/master/docs/arcshell_gchart.md)
+* [Watch files and directories for changes.](https://github.com/arclogicsoftware/arcshell/blob/master/docs/arcshell_watch.md)
+* Please review the list of all [modules](https://github.com/arclogicsoftware/arcshell/tree/master/docs) for more capabilities.
 
-### Monitoring Log Files
 
-| # | Item| Description | Length |
-| --- | --- | --- | --- |
-| 0.0 | - | - | 0 min |
 
-### Watching Files And Directories
 
-| # | Item| Description | Length |
-| --- | --- | --- | --- |
-| 0.0 | - | - | 0 min |
 
-### How To...
 
-| # | Item| Description | Length |
-| --- | --- | --- | --- |
-| 0.0 | How To Move The Delivered (Installed) Home | - | 0 min |
-| 0.0 | How To Move The User Home | - | 0 min |
 
-### Developing Scripts and Modules With ArcShell
 
-| # | Item| Description | Length |
-| --- | --- | --- | --- |
-| 0.0 | Special Functions | - | 0 min |
-| 0.0 | "Clean Code" Overview | - | 0 min |
-| 0.0 | Instrumenting Code | - | 0 min |
-| 0.0 | Writing And Running Unit Tests | - | 0 min |
+

@@ -93,7 +93,6 @@ contact_groups_enabled_count
 contact_groups_list
 contact_groups_list_default
 contact_groups_list_enabled
-contact_groups_refresh
 counters_delete_group
 counters_does_group_exist
 counters_force_update
