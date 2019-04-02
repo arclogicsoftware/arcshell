@@ -45,7 +45,7 @@ function __setupContactGroups {
    # Run setup for contact groups.
    # >>> __setupContactGroups 
    if ! [[ -f "${arcGlobalHome}/config/contact_groups/admins.cfg" ]]; then
-      cp "${arcHome}/config/contact_groups/"
+      cp "${arcHome}/config/contact_groups/admins.cfg" "${arcGlobalHome}/config/contact_groups/"
    fi
 }
 

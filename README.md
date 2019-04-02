@@ -15,9 +15,42 @@ Documentation and updates uploaded every week. Most of it will be available befo
 
 Icons designs by SmashIcons and available from [Flaticon](https://www.flaticon.com/packs/essential-collection).
 
-## BEFORE YOU START
+## INSTALL
 
-Please read this. These points will get you oriented with the product before installing.
+**The following example is the simplest method of installing ArcShell.**
+```
+# Make sure you are in the bash shell.
+$ echo $0
+bash
+
+# You can put ArcShell anywhere you want.
+$ mkdir -p "${HOME}/app" && cd "${HOME}/app"
+
+# ArcShell home will be in ${HOME}/app/arcshell when this completes.
+$ bash < <(curl -Ss https://raw.githubusercontent.com/arclogicsoftware/arcshell/master/install.sh)
+```
+
+ArcShell can also be installed manually.
+```
+# Instead of running the install.sh script return the contents to the terminal.
+curl -Ss https://raw.githubusercontent.com/arclogicsoftware/arcshell/master/install.sh 
+
+# Now run each command to install ArcShell.
+
+```
+
+The install log is written to your "${HOME}" directory.
+
+**Try sourcing in the .arcshell file.**
+```
+# This sources ArcShell into your command line environment. 
+. "${HOME}/.arcshell"
+# You shouldn't see any errors! It might take a second or two to load.
+```
+
+## IMPORTANT
+
+Please read this. These points will get you oriented with the product before getting into configuration.
 
 **My Development Environment:** ArcShell is developed in Bash using [Sublime Text](https://www.sublimetext.com/) on Windows. The Window's file system is shared to a [VirtualBox](https://www.virtualbox.org/) [Ubuntu](https://www.ubuntu.com/) host. You will see this often in my videos.
 
@@ -86,56 +119,26 @@ After you install ArcShell you can add a single cronjob calling  ```arcshell.sh 
 
 In each of the cases above the configuration can exist in one or more of the three ArcShell homes. In some cases only the first file found is loaded or run and in others all three files are loaded and run in order. This is dependent on the code making use of the item. 
 
-## INSTALL
-
-**The following example is the simplest method of installing ArcShell.**
-```
-# Make sure you are in the bash shell.
-$ echo $0
-bash
-
-# You can put ArcShell anywhere you want.
-$ mkdir -p "${HOME}/app" && cd "${HOME}/app"
-# ArcShell home will be in ${HOME}/app/arcshell when this completes.
-$ bash < <(curl -Ss https://raw.githubusercontent.com/arclogicsoftware/arcshell/master/install.sh)
-```
-
-To install ArcShell manually step by step follow these instructions.
-```
-# If you want to see what the install.sh file looks like run this.
-curl -Ss https://raw.githubusercontent.com/arclogicsoftware/arcshell/master/install.sh 
-
-# Run the commands on the screen one by one manually.
-
-```
-
-The install log is written to your "${HOME}" directory.
-
-**Try sourcing in the .arcshell file.**
-```
-# This sources ArcShell into your command line environment. 
-. "${HOME}/.arcshell"
-# You shouldn't see any errors! It might take a second or two to load.
-```
-
 ## CONFIGURE
 
-**Configure the arcshell.cfg file.**
+### Configure the arcshell.cfg file.
 ```
-# Copy the delivered .cfg file to your global configuration directory.
+# Copy the delivered .cfg file to the global configuration directory.
 cp "${arcHome}/config/arcshell/arcshell.cfg" "${arcGlobalHome}/config/arcshell/"
 
 # Edit the file. Instructions for each parameter are in the file.
 vi "${arcGlobalHome}/config/arcshell/arcshell.cfg"
 
-# Delete the lines you didn't explicity set. Not required but a good idea.
-
-# Global config takes precedence over delivered config.
-# User config takes precedence over global config.
-# Avoid user level config at all costs!
+# Comment or delete any lines you didn't explicity set. Not required but a good idea.
 ```
 
-**Configure the 'admins' contact group.**
+Note:
+* The arcshell.cfg files are loaded in the following order: delivered, global, user.
+* Any values defined in the globlal file take precedence over the delivered file.
+* Any values defined in the user file take precedence over the global and delivered file.
+* If user config changes are needed, try to use code to make those changes at the global level.
+
+### Configure the 'admins' contact group.
 ```
 # ArcShell has already copied the default 'admins.cfg' file to your global home.
 
@@ -145,56 +148,92 @@ vi "${arcHome}/config/contact_groups/admins.cfg"
 # You can add other groups by adding other files to this directory.
 ```
 
-**Test send_message.**
+Note:
+* ArcShell loads the first file found for each contact group.
+* ArcShell looks for files in the following order: user, global, delivered.
+
+### Try sending a message using send_message.
 ```
 # This returns a lot of information about your current settings related to messaging.
 msg_show
 
+# This command tails the ArcShell application log file. This should help you determine if an email is sent.
+log_follow
+
 # If outbound email is working this should result in an email message.
 echo "ArcShell Test Email" | send_message -email "My First Test Email"
+
+# Quit following the log.
+log_quit
 ```
+
+There are a number of conditions which will prevent the immediate delivery of a message.
+* No default groups.
+* Default groups are not enabled.
+* Message queuing is enabled.
+* Groups are on hold.
+* Delivery option for keyword does not allow email.
+* Outbound email is not configured for the server.
+
 
 ## DEPLOY 
 
-**Create an SSH connection.**
-The SSH Connection module is used to register SSH connections with ArcShell. 
+### Create an SSH connection.
+The [SSH connection](https://github.com/arclogicsoftware/arcshell/blob/master/docs/arcshell_ssh_connections.md) module is used to register SSH connections with ArcShell. 
 ```
 # This creates a new connection. If the connection already exists it updates it.
 ssh_add -alias "foo" -tags "dev,web" foo@server.com
 
-# The result of running the above is a new configuration file for the connection.
+# The result of running the above is a new global configuration file for the connection.
 vi "${arcGlobalHome}/config/ssh_connections/foo@server.cfg"
 
 # You can optionally create more connections by creating the .cfg file directly.
-```
-Read more about the SSH Connection module [here](https://github.com/arclogicsoftware/arcshell/blob/master/docs/arcshell_ssh_connections.md).
 
-**Deploy ArcShell to the new remote node over SSH.**
+# Run ssh_connections_help for more infomation about the SSH connections package.
+ssh_connections_help
+```
+Note:
+* You can create the .cfg files manually instead of using ssh_add.
+* If a configuration file exists within more than one scope (global and user for example), ArcShell loads the user file.
+* Try to keep most of your configuration within the global scope.
+
+### Install ArcShell on the remote node using SSH.
 ```
 # Creates a deployment package from the local copy of ArcShell.
 arc_pkg
 
 # Uses the package we just created to install ArcShell on the remote node.
 arc_install -ssh "foo" -arcshell_home "/home/foo/app/arcshell"
+
+# Run arc_help for more information about this module.
+arc_help
 ```
 
-**Sync changes to the remote node over SSH.**
+### Sync changes to the remote node using SSH.
 ```
 # Uses rsync to sync the local ArcShell home to the remote ArcShell home.
 # The local ArcShell user home is not included in the sync.
 arc_sync -ssh "foo"
 ```
+Note:
+* arc_sync uses rsync to sync the current ArcShell home to one or more remote nodes.
+* arc_update uses an ArcShell package (created with arc_pkg) to do the same but uses the specified package instead.
+* You can also use source control systems to deploy changes provided you ignore changes to the ArcShell **user** home.
 
-**Stop and start the ArcShell daemon.**
+### Stop and start the ArcShell daemon.
 ```
 # Starts the daemon.
 nohup arcshell.sh start &
 
 # Stops the daemon.
 arcshell.sh stop
+
+# Use this command to see the other options.
+arcshell.sh -help
 ```
 
-**Open the ArcShell menu.**
+### Try the ArcShell menu.
+This menu provides some basic options to explore ArcShell.
 ```
 arc_menu
 ```
