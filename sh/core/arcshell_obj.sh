@@ -514,7 +514,7 @@ function objects_delete_object {
    if objects_delete_delivered_object "${modelName}" "${objectName}" || \
       objects_delete_global_object "${modelName}" "${objectName}" || \
       objects_delete_user_object "${modelName}" "${objectName}" || \
-      objects_delete_temporary_object "${modelName}" "${objectName}"
+      objects_delete_temporary_object "${modelName}" "${objectName}"; then
       ${returnTrue} 
    else
       ${returnFalse} 
