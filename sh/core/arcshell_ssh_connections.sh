@@ -592,9 +592,8 @@ function _sshDoesGroupExist {
    ${arcRequireBoundVariables}
    typeset ssh_group
    debug3 "_sshDoesGroupExist: $*"
-   utl_raise_invalid_option "_sshDoesGroupExist" "(( $# == 1))" && ${returnFalse} 
    ssh_group="${1}"
-   if [[ -f "${_sshDir}/groups/${ssh_group}" ]]; then
+   if config_does_object_exist "ssh_groups" "${ssh_group}.cfg"; then
       ${returnTrue}
    else
       ${returnFalse}

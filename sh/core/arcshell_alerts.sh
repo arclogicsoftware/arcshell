@@ -10,6 +10,7 @@ _g_alertTesting=0
 
 mkdir -p "${_alertsDir}"
 
+# ToDo: Stop using "critical" global alert type in testing and use something no one else would use.
 # ToDo: Add alerts_report function.
 
 function __readmeAlerting {
@@ -80,6 +81,7 @@ function test_file_setup {
 }
 
 function test_function_setup {
+   __setupArcShellAlerting
    (
    cat <<EOF
 alert_keyword="critical"
@@ -93,32 +95,7 @@ EOF
 }
 
 function __setupArcShellAlerting {
-   objects_register_object_model "arcshell_alert" "_alertObject" 
-}
-
-function _alertObject {
-   # Returns the alert object model.
-   # >>> _alertObject
-   cat <<EOF
-alert_groups="${alert_groups:-}"
-alert_date="${alert_date:-}"
-alert_title="${alert_title:-}"
-alert_type="${alert_type:-}"
-
-alert_opened=${alert_opened:-0}
-alert_last_sent=${alert_last_sent:-0}
-alert_closed=${alert_closed:-}
-
-alert_keyword="${alert_keyword:-}"
-alert_count=${alert_count:-0}
-alert_sent_count=${alert_sent_count:-0}
-alert_interval=${alert_interval:-0}
-
-alert_reminder_keyword="${alert_reminder_keyword:-}"
-alert_reminder_count=${alert_reminder_count:-0}
-alert_reminder_sent_count=${alert_reminder_sent_count:-0}
-alert_reminder_interval=${alert_reminder_interval:-0}
-EOF
+   :
 }
 
 function _alertsReturnElapsedTime {

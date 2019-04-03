@@ -624,8 +624,8 @@ function config_return_all_paths_for_object {
 function config_return_object_path {
    # Return the full path to the file which defines the "object".
    # >>> config_return_object_path "object_type" "object_name"
-   # -a: Return all object paths in narrowing order of scope.
    ${arcRequireBoundVariables}
+   debug3 "config_return_object_path: $*"
    typeset object_type object_name 
    utl_raise_invalid_option "config_return_object_path" "(( $# == 2 ))" && ${returnFalse} 
    object_type="${1}"
@@ -690,6 +690,7 @@ function config_list_all_objects {
    object_type="${1}"
    if (( ${list_all} )); then
       _configListEveryObject "${object_type}"
+      ${returnTrue} 
    elif (( ${list_long} )); then
       _configListAllObjectsLong "${object_type}" && ${returnTrue} 
    else

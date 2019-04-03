@@ -1,14 +1,57 @@
-# arcshell_obj.sh
+# Objects
+**Manages object styled data structures.**
 
+Object models are defined using an ArcShell configuration item. You can review existing definitions here. Do not modify any of the delivered items unless you know what you are doing.
+```
+ls "${arcHome}/config/object_models/"
+```
+Your custom object models belong in the Global or User configuration file locations.
 
+* "${arcGlobalHome}/config/object_models/"
+* "${arcuUserHome}/config/object_models/"
+
+You can then load, modify, and save records based upon the object models you create using this module.
+
+## Example(s)
+```bash
+
+   echo "Returning the contents of the persons.cfg file..."
+   cat "${arcHome}/config/object_models/persons.cfg"
+   echo ""
+
+   echo "Saving record 'Ethan'..."
+   eval "$(objects_init_object "persons")"
+   name="Ethan"
+   birthdate="19010101"
+   objects_save_object "persons" "Ethan"
+
+   echo "Saving record 'Tucker'..."
+   eval "$(objects_init_object "persons")"
+   name="Tucker"
+   objects_save_object "persons" "Tucker"
+
+   echo "Listing all objects or type 'persons'..."
+   objects_list_objects "persons"
+
+   echo "Loading 'Ethan' and returning values..."
+   eval "$(objects_load_object "persons" "Ethan")"
+   echo "${name}:${birthdate}"
+
+   echo "Loading 'Tucker' and returning values..."
+   eval "$(objects_load_object "persons" "Tucker")"
+   echo "${name}:${birthdate}"
+
+   objects_delete_object "persons" "Ethan"
+   objects_delete_object "persons" "Tucker"
+```
 
 ## Reference
 
 
-### objects_register_object_model
-Links a function which defines the object model with the model name.
+### objects_register_object_model_file
+Registers an object model using a file instead of a function.
 ```bash
-> objects_register_object_model "modelName" "functionName"
+> objects_register_object_model_file "modelName" "filePath"
 ```
 
 ### objects_init_object

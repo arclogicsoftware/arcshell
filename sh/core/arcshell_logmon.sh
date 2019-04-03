@@ -40,7 +40,6 @@ function test_file_setup {
 
 function __setupLogmon {
    # This special function is run during setup.
-   objects_register_object_model "logmon" "_logmonRecord" 
    # ToDo: This could be abstracted away to use any check sum program available.
    if boot_raise_program_not_found "cksum"; then
       log_error -2 -logkey "logmon" "'cksum' not found. This program is required for some logmon actions."
@@ -106,20 +105,20 @@ function logmon_append {
    ${returnTrue} 
 }
 
-function _logmonRecord {
-   # Returns the default record which stores data about a monitored log file.
-   # >>> _logmonRecord
-   cat <<EOF
-_logmonFileBytes=${_logmonFileBytes:-0}
-_logmonSizePlusMinusEqual=${_logmonSizePlusMinusEqual:-"="}
-_logmonHeaderHash=${_logmonHeaderHash:-0}
-_logmonHeaderModifiedFlag=${_logmonHeaderModifiedFlag:-0}
-_logmonFileMaxSizeInBytes=${_logmonFileMaxSizeInBytes:-0}
-_logmonMaxReadBytes=${_logmonMaxReadBytes:-0}
-_logmonFileUpdateTime=${_logmonFileUpdateTime:-0}
-_logmonStartingByte=${_logmonStartingByte:-0}
-EOF
-}
+# function _logmonRecord {
+#    # Returns the default record which stores data about a monitored log file.
+#    # >>> _logmonRecord
+#    cat <<EOF
+# _logmonFileBytes=${_logmonFileBytes:-0}
+# _logmonSizePlusMinusEqual=${_logmonSizePlusMinusEqual:-"="}
+# _logmonHeaderHash=${_logmonHeaderHash:-0}
+# _logmonHeaderModifiedFlag=${_logmonHeaderModifiedFlag:-0}
+# _logmonFileMaxSizeInBytes=${_logmonFileMaxSizeInBytes:-0}
+# _logmonMaxReadBytes=${_logmonMaxReadBytes:-0}
+# _logmonFileUpdateTime=${_logmonFileUpdateTime:-0}
+# _logmonStartingByte=${_logmonStartingByte:-0}
+# EOF
+# }
 
 function logmon_reset {
    # Removes all buffer files and resets a couple of global variables.
@@ -331,7 +330,9 @@ function logmon_grep {
 function test_logmon_grep {
    ls "${arcHome}/sh/core" > "${_g_logmonBufferFile}0"
    logmon_grep | assert -l ">30" "Buffer0 should contain the list of all files."
-   logmon_grep -from "1" | assert -l 0 "Buffer 1 does not exist and should return zero lines."
+   # Error is expected here.
+   logmon_grep -from "1" 2>/dev/null | assert -l 0 "Buffer 1 does not exist and should return zero lines."
+   logmon_grep -from "1" 2>&1 | assert_match "ERROR" "Buffer missing should throw an error."
    logmon_grep "arcshell_str.sh" | assert -l 1 "regex expression limits buffer return to one line."
 }
 

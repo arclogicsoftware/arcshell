@@ -1,5 +1,4 @@
 
-
 # module_name="Objects"
 # module_about="Manages object styled data structures."
 # module_version=1
@@ -21,38 +20,100 @@ mkdir -p "${dirUserObjects}"
 dirTemporaryObjects="${arcTmpDir}/_arcshell_objs"
 mkdir -p "${dirTemporaryObjects}"
 
-function objects_register_object_model {
-   # Links a function which defines the object model with the model name.
-   # >>> objects_register_object_model "modelName" "functionName"
-   ${arcRequireBoundVariables}
-   debug2 "objects_register_object_model: $*"
-   utl_raise_invalid_option "objects_register_object_model" "(( $# == 2 ))" "$*" && ${returnFalse} 
-   typeset modelName functionName
-   modelName="${1}"
-   functionName="${2}"
-   str_raise_not_a_key_str "objects_register_object_model" "${modelName}" && ${returnFalse}
-   _objectsSaveExistingDef "${modelName}"
-   echo "${functionName}" > "${dirObjectModels}/${modelName}.def"
-   _objectsCreateObjectInitFile "${modelName}" "${functionName}"
-   _objectsDidModelJustChange "${modelName}" $$ objects_update_objects "${modelName}"
+function __configArcShellObjects {
+   _objectsRegisterConfiguredObjectModels
 }
 
-function _objectsCreateObjectInitFile {
-   # Generates the file which is used to init all model values to null.
-   # _objectsCreateObjectInitFile "modelName" "functionName"
-   ${arcRequireBoundVariables}
-   typeset modelName functionName v x
-   modelName="${1}"
-   functionName="${2}"
-   (
-   while read x; do
-      v="$(echo "${x}" | awk -F"=" '{print $1}')"
-      if [[ "${v:0:1}" != "#" ]] && [[ -n "${v}" ]]; then
-         echo "${v}=" 
-      fi
-   done < <(${functionName})
-   ) > "${dirObjectModels}/${modelName}"
+function __readmeArcShellObjects {
+   cat <<EOF
+# Objects
+**Manages object styled data structures.**
+
+Object models are defined using an ArcShell configuration item. You can review existing definitions here. Do not modify any of the delivered items unless you know what you are doing.
+\`\`\`
+ls "\${arcHome}/config/object_models/"
+\`\`\`
+Your custom object models belong in the Global or User configuration file locations.
+
+* "\${arcGlobalHome}/config/object_models/"
+* "\${arcuUserHome}/config/object_models/"
+
+You can then load, modify, and save records based upon the object models you create using this module.
+EOF
 }
+
+function __exampleArcShellObjects {
+   echo "Returning the contents of the persons.cfg file..."
+   cat "${arcHome}/config/object_models/persons.cfg"
+   echo ""
+
+   echo "Saving record 'Ethan'..."
+   eval "$(objects_init_object "persons")"
+   name="Ethan"
+   birthdate="19010101"
+   objects_save_object "persons" "Ethan"
+
+   echo "Saving record 'Tucker'..."
+   eval "$(objects_init_object "persons")"
+   name="Tucker"
+   objects_save_object "persons" "Tucker"
+
+   echo "Listing all objects or type 'persons'..."
+   objects_list_objects "persons"
+
+   echo "Loading 'Ethan' and returning values..."
+   eval "$(objects_load_object "persons" "Ethan")"
+   echo "${name}:${birthdate}"
+
+   echo "Loading 'Tucker' and returning values..."
+   eval "$(objects_load_object "persons" "Tucker")"
+   echo "${name}:${birthdate}"
+
+   objects_delete_object "persons" "Ethan"
+   objects_delete_object "persons" "Tucker"
+}
+
+function _objectsRegisterConfiguredObjectModels {
+   ${arcRequireBoundVariables}
+   typeset object_model object_model_file object_model_type
+   while read object_model; do
+      object_model_file="$(config_return_object_path "object_models" "${object_model}")"
+      object_model_type="$(file_get_file_root_name "${object_model_file}")"
+      objects_register_object_model_file "${object_model_type}" "${object_model_file}"
+   done < <(config_list_all_objects "object_models")
+}
+
+function objects_register_object_model_file {
+   # Registers an object model using a file instead of a function.
+   # >>> objects_register_object_model_file "modelName" "filePath"
+   ${arcRequireBoundVariables}
+   typeset modelName filePath
+   modelName="${1}"
+   filePath="${2}"
+   str_raise_not_a_key_str "objects_register_object_model_file" "${modelName}" && ${returnFalse}
+   _objectsSaveExistingDef "${modelName}"
+   _objectsReturnLoadableObjectModel "${filePath}" > "${dirObjectModels}/${modelName}.def" || ${returnFalse} 
+   cat "${filePath}" | grep "=" | str_remove_comments -stdin | awk -F"=" '{print $1}' | sed "s/$/=/" > "${dirObjectModels}/${modelName}"
+   _objectsDidModelJustChange "${modelName}" $$ objects_update_objects "${modelName}"
+ }
+
+ function _objectsReturnLoadableObjectModel {
+   # Takes "var=val" lines and returns "var=${var:-val}" instead.
+   # >>> _objectsReturnLoadableObjectModel "filePath"
+   ${arcRequireBoundVariables}
+   typeset filePath line_in_file
+   filePath="${1}"
+   file_raise_file_not_found "${filePath}" && ${returnFalse} 
+   echo "cat <<EOF"
+   while read line_in_file; do
+      if [[ -n "${line_in_file%%=*}" ]]; then
+         printf "%s=\"%s%s:-%s%s\"\n" "${line_in_file%%=*}" "\${" "${line_in_file%%=*}" "${line_in_file#*=}" "}"
+      fi
+   done < <(str_remove_comments "${filePath}")
+   echo "EOF"
+   echo ""
+   ${returnTrue} 
+ }
 
 function _objectsDidModelJustChange {
    # Return true if the model changed since the last time it was registered.
@@ -84,22 +145,11 @@ function _objectsSaveExistingDef {
    fi
 }
 
-function _objectsReturnObjectFunctionName {
-   ${arcRequireBoundVariables}
-   typeset modelName objectName
-   modelName="${1}"
-   if [[ -f "${dirObjectModels}/${modelName}.def" ]]; then
-      cat "${dirObjectModels}/${modelName}.def"
-   else
-      _objectsThrowError "Model does not exist; $*: _objectsReturnObjectFunctionName"
-   fi
-}
-
 function objects_init_object {
    # Return the text required to set all values associated with a model to null.
    # >>> objects_init_object "modelName"
    ${arcRequireBoundVariables}
-   debug2 "objects_init_object: $*"
+   debug3 "objects_init_object: $*"
    modelName="${1}"
    _objectsRaiseModelNotFound "${modelName}" && ${returnFalse}
    echo ". "${dirObjectModels}/${modelName}""
@@ -159,7 +209,7 @@ function objects_create_temporary_object {
    # Create a temporary object.
    # >>> objects_create_temporary_object "modelName" "objectName"
    ${arcRequireBoundVariables}
-   debug2 "objects_create_temporary_object: $*"
+   debug3 "objects_create_temporary_object: $*"
    _objects_create_object "${dirTemporaryObjects}/${1}/${2}" || ${returnFalse} 
    ${returnTrue} 
 }
@@ -168,7 +218,7 @@ function _objects_create_object {
    # Create an object.
    # >>> _objects_create_object "targetFile"
    ${arcRequireBoundVariables}
-   debug2 "_objects_create_object: $*" 
+   debug3 "_objects_create_object: $*" 
    typeset targetFile modelName objectName modelDir
    targetFile="${1}"
    objectName="$(basename "${targetFile}")"
@@ -176,8 +226,7 @@ function _objects_create_object {
    modelDir="$(dirname "${targetFile}")"
    if [[ -f "${dirObjectModels}/${modelName}.def" ]]; then
       mkdir -p "${modelDir}"
-      modelDef=$(cat "${dirObjectModels}/${modelName}.def")
-      ${modelDef} > "${targetFile}"
+      . "${dirObjectModels}/${modelName}.def" > "${targetFile}"
       ${returnTrue}
    else
       ${returnFalse} 
@@ -222,7 +271,7 @@ function objects_save_temporary_object {
    # >>> objects_save_temporary_object "modelName" "objectName"
    ${arcRequireBoundVariables}
    typeset modelName objectName
-   debug2 "objects_save_temporary_object: $*"
+   debug3 "objects_save_temporary_object: $*"
    utl_raise_invalid_option "objects_save_temporary_object" "(( $# == 2 ))" "$*" && ${returnFalse} 
    modelName="${1}"
    objectName="${2}"
@@ -420,7 +469,7 @@ function _objectsLoadObject {
    #
    # >>> _objectsLoadObject "file_name"
    ${arcRequireBoundVariables}
-   debug2 "_objectsLoadObject: $*"
+   debug3 "_objectsLoadObject: $*"
    typeset file_name
    file_name="${1}"
    if [[ -f "${file_name}" ]]; then

@@ -10,14 +10,16 @@
 _msgDir="${arcTmpDir}/_arcshell_msg"
 mkdir -p "${_msgDir}/queues"
 
+# ToDo: Need to implement 2 groups, one with queuing and one with no queuing or short queueing.
+
 function test_file_setup {
    arcshell_mail_program="_fakeMailX"
    (
    cat <<EOF
 group_emails='foo@bar.com'
+group_hold=1
 EOF
    ) > "${arcHome}/config/contact_groups/foo.cfg"
-   contact_groups_refresh
 }
 
 function __readmeMessaging {
@@ -714,7 +716,6 @@ function test_file_teardown {
    contact_group_delete "bar"
    arcshell_mail_program="mail"
    rm "${arcHome}/config/contact_groups/foo.cfg" 2> /dev/null
-   contact_groups_refresh
 }
 
 

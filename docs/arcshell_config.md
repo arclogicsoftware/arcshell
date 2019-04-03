@@ -97,7 +97,6 @@ Return the full path to all files of object type and object name.
 Return the full path to the file which defines the "object".
 ```bash
 > config_return_object_path "object_type" "object_name"
-# -a: Return all object paths in narrowing order of scope.
 ```
 
 ### config_copy_object

@@ -1,13 +1,6 @@
 
-function persons_data_model_for_unittest {
-   cat <<EOF
-name="${name:-}"
-birthdate=${birthdate:-19000101}
-EOF
-}
-
 function test_objects_setup {
-   objects_delete_object_model -f "persons"
+   :
 }
 
 function test__objectsCreateObjectInitFile {
@@ -22,17 +15,12 @@ function test__objectsSaveExistingDef {
    :
 }
 
-function test_objects_register_object_model {
-   ! objects_does_object_model_exist "persons" && pass_test || fail_test "model should not exist"
-   objects_register_object_model "persons" "persons_data_model_for_unittest"
-   objects_does_object_model_exist "persons" && pass_test || fail_test "model should exist"
-   objects_register_object_model "persons" "persons_data_model_for_unittest" 2>&1 | assert -l 0 "Registering an existing model should not return any output."
-}
-
-function test__objectsReturnObjectFunctionName {
-   _objectsReturnObjectFunctionName "persons" | assert "persons_data_model_for_unittest"
-   persons_data_model_for_unittest | grep "name" | assert -l 1
-}
+# function test_objects_register_object_model {
+#    ! objects_does_object_model_exist "persons" && pass_test || fail_test "model should not exist"
+#    objects_register_object_model "persons" "persons_data_model_for_unittest"
+#    objects_does_object_model_exist "persons" && pass_test || fail_test "model should exist"
+#    objects_register_object_model "persons" "persons_data_model_for_unittest" 2>&1 | assert -l 0 "Registering an existing model should not return any output."
+# }
 
 function test_objects_init_object {
    name="foo"

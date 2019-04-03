@@ -24,20 +24,8 @@ This module is a prototype/proof of concept.
 EOF
 }
 
-function __setupArcShellCompiler {
-   objects_register_object_model "compiler_group" "_compilerGroupDef" 
-}
-
 function test_file_setup {
    __setupArcShellCompiler
-}
-
-function _compilerGroupDef {
-   # Return the compiler model for a group.
-   # >>> _compilerGroupDef
-   cat <<EOF
-_compiler_group="${_compiler_group:-}"
-EOF
 }
 
 function compiler_start {

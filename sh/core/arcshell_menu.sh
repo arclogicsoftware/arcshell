@@ -11,20 +11,6 @@ mkdir -p "${_menuDir}"
 _tty=$(boot_return_tty_device)
 _g_workingMenuKey=
 
-function __setupArcShellMenu {
-   objects_register_object_model "menu" "_menuMenuObjectModel" 
-}
-
-function _menuMenuObjectModel {
-   cat <<EOF
-MenuTitle="${MenuTitle:-}"
-MenuEnableAllOption=${MenuEnableAllOption:-0}
-MenuAllOptionIsDefault=${MenuAllOptionIsDefault:-0}
-MenuDefaultItemNumber=${MenuDefaultItemNumber:=0}
-MenuIsEasy=${MenuIsEasy:-0}
-MenuAutoSelect=${MenuAutoSelect:-0}
-EOF
-}
 
 function _menuItemObjectModule {
    cat <<EOF
@@ -48,10 +34,10 @@ function menu_create {
    str_raise_not_a_key_str "menu_create" "${key}" && ${returnFalse}
    rm -rf "${_menuDir}/${key}"
    mkdir -p "${_menuDir}/${key}"
-   eval "$(objects_init_object "menu")"
+   eval "$(objects_init_object "arcshell_menu")"
    MenuTitle="${title}"
    cp /dev/null ${_menuDir}/${key}/itemCount
-   objects_save_temporary_object "menu" "${key}" 
+   objects_save_temporary_object "arcshell_menu" "${key}" 
    menu_set "${key}"
    ${returnTrue}
 }
@@ -75,7 +61,7 @@ function menu_set_all_option_on {
    _menuRaiseWorkingMenuNotSet && ${returnFalse}
    eval "$(_menuLoad "${_g_workingMenuKey}")"
    MenuEnableAllOption=1
-   objects_save_temporary_object "menu" "${_g_workingMenuKey}"
+   objects_save_temporary_object "arcshell_menu" "${_g_workingMenuKey}"
    ${returnTrue}
 }
 
@@ -86,7 +72,7 @@ function menu_set_all_option_off {
    _menuRaiseWorkingMenuNotSet && ${returnFalse}
    eval "$(_menuLoad "${_g_workingMenuKey}")"
    MenuEnableAllOption=0
-   objects_save_temporary_object "menu" "${_g_workingMenuKey}"
+   objects_save_temporary_object "arcshell_menu" "${_g_workingMenuKey}"
    ${returnTrue}
 }
 
@@ -98,7 +84,7 @@ function menu_set_all_option_to_default {
    menu_set_all_option_on
    eval "$(_menuLoad "${_g_workingMenuKey}")"
    MenuAllOptionIsDefault=1
-   objects_save_temporary_object "menu" "${_g_workingMenuKey}"
+   objects_save_temporary_object "arcshell_menu" "${_g_workingMenuKey}"
    ${returnTrue}
 }
 
@@ -110,7 +96,7 @@ function menu_set_auto_select_on {
    _menuRaiseWorkingMenuNotSet && ${returnFalse}
    eval "$(_menuLoad "${_g_workingMenuKey}")"
    MenuAutoSelect=1
-   objects_save_temporary_object "menu" "${_g_workingMenuKey}"
+   objects_save_temporary_object "arcshell_menu" "${_g_workingMenuKey}"
    ${returnTrue}
 }
 
@@ -122,7 +108,7 @@ function menu_set_auto_select_off {
    _menuRaiseWorkingMenuNotSet && ${returnFalse}
    eval "$(_menuLoad "${_g_workingMenuKey}")"
    MenuAutoSelect=0
-   objects_save_temporary_object "menu" "${_g_workingMenuKey}"
+   objects_save_temporary_object "arcshell_menu" "${_g_workingMenuKey}"
    ${returnTrue}
 }
 
@@ -166,7 +152,7 @@ function menu_add_text {
    if (( ${isDefaultItem} )); then
       eval "$(_menuLoad "${_g_workingMenuKey}")"
       MenuDefaultItemNumber=${itemCount}
-      objects_save_temporary_object "menu" "${_g_workingMenuKey}"
+      objects_save_temporary_object "arcshell_menu" "${_g_workingMenuKey}"
    fi
    ${returnTrue}
 }
@@ -199,7 +185,7 @@ function menu_add_menu {
    if (( ${isDefaultItem} )); then
       eval "$(_menuLoad "${_g_workingMenuKey}")"
       MenuDefaultItemNumber=${itemCount}
-      objects_save_temporary_object "menu" "${_g_workingMenuKey}"
+      objects_save_temporary_object "arcshell_menu" "${_g_workingMenuKey}"
    fi
    ${returnTrue}
 }
@@ -251,7 +237,7 @@ function menu_add_command {
    if (( ${isDefaultItem} )); then
       eval "$(_menuLoad "${_g_workingMenuKey}")"
       MenuDefaultItemNumber=${itemCount}
-      objects_save_temporary_object "menu" "${_g_workingMenuKey}"
+      objects_save_temporary_object "arcshell_menu" "${_g_workingMenuKey}"
    fi
    ${returnTrue}
 }
@@ -448,7 +434,7 @@ function _menuLoad {
    # >>> eval "$(_menuLoad "key")"
    typeset key 
    key="${1}"
-   objects_load_temporary_object "menu" "${key}"
+   objects_load_temporary_object "arcshell_menu" "${key}"
 }
 
 function menu_get_item_count {
@@ -538,7 +524,7 @@ function _menuDeleteMenu {
    if [[ -d "${_menuDir}/${key}" ]]; then
       rm -rf "${_menuDir}/${key}"
    fi
-   objects_delete_temporary_object "menu" "${key}"
+   objects_delete_temporary_object "arcshell_menu" "${key}"
    ${returnTrue}
 }
 
@@ -623,7 +609,7 @@ function menu_does_menu_exist {
    debug2 "menu_does_menu_exist: $*"
    typeset key
    key="${1:-'DoesNotExist'}"
-   if objects_does_temporary_object_exist "menu" "${key}"; then
+   if objects_does_temporary_object_exist "arcshell_menu" "${key}"; then
       ${returnTrue} 
    else
       ${returnFalse} 

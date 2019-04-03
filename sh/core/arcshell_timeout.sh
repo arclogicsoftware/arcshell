@@ -15,10 +15,6 @@ function test_file_setup {
 }
 
 function __setupArcShellTimeout {
-   if objects_does_object_model_exist "ArcShellTimeoutTimers"; then
-      objects_delete_object_model "ArcShellTimeoutTimers"
-   fi
-   objects_register_object_model "ArcShellTimeoutTimers" "_timeoutModel"
    _timeoutRebuildTimeoutsDir
 }
 
@@ -27,14 +23,6 @@ function _timeoutRebuildTimeoutsDir {
    ${arcRequireBoundVariables}
    rm -rf "{_timeoutsDir}"
    mkdir -p "${_timeoutsDir}"
-}
-
-function _timeoutModel {
-   cat <<EOF
-__timeoutStartEpoch=${__timeoutStartEpoch:-0}
-__timeoutSeconds=${__timeoutSeconds:-0}
-__timeoutEndEpoch=${__timeoutEndEpoch:-0}
-EOF
 }
 
 function timeout_set_timer {
@@ -46,7 +34,7 @@ function timeout_set_timer {
    typeset timerKey 
    timerKey="${1}"
    timeout_delete_timer "${timerKey}"
-   eval "$(objects_init_object "ArcShellTimeoutTimers")"
+   eval "$(objects_init_object "arcshell_timeout_timer")"
    __timeoutSeconds=${2:-60}
    if ! timeout_exists "${timerKey}"; then
       __timeoutStartEpoch=$(dt_epoch)
@@ -73,7 +61,7 @@ function timeout_delete_timer {
    typeset timerKey timerProcessId
    timerKey="${1}"
    if timeout_exists "${timerKey}"; then
-      objects_delete_temporary_object "ArcShellTimeoutTimers" "${timerKey}"
+      objects_delete_temporary_object "arcshell_timeout_timer" "${timerKey}"
    fi
    timerProcessId=$(_timeoutReturnPid "${timerKey}")
    if (( ${timerProcessId} > 0 )); then
@@ -167,7 +155,7 @@ function _timeoutSave {
    ${arcRequireBoundVariables}
    typeset timerKey
    timerKey="${1}"
-   objects_save_temporary_object "ArcShellTimeoutTimers" "${timerKey}"
+   objects_save_temporary_object "arcshell_timeout_timer" "${timerKey}"
 }
 
 function _timeoutsLoadTimer {
@@ -176,7 +164,7 @@ function _timeoutsLoadTimer {
    ${arcRequireBoundVariables}
    typeset timerKey
    timerKey="${1}"
-   echo "$(objects_load_temporary_object "ArcShellTimeoutTimers" "${timerKey}")"
+   echo "$(objects_load_temporary_object "arcshell_timeout_timer" "${timerKey}")"
 }
 
 function timeout_exists {
@@ -185,7 +173,7 @@ function timeout_exists {
    ${arcRequireBoundVariables}
    typeset timerKey
    timerKey="${1}"
-   if objects_does_temporary_object_exist "ArcShellTimeoutTimers" "${timerKey}"; then
+   if objects_does_temporary_object_exist "arcshell_timeout_timer" "${timerKey}"; then
       ${returnTrue}
    else
       ${returnFalse}

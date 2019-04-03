@@ -564,7 +564,38 @@ Number and math functions.
 
 Manages object styled data structures.
 
+## Example(s)
+```bash
 
+   echo "Returning the contents of the persons.cfg file..."
+   cat "${arcHome}/config/object_models/persons.cfg"
+   echo ""
+
+   echo "Saving record 'Ethan'..."
+   eval "$(objects_init_object "persons")"
+   name="Ethan"
+   birthdate="19010101"
+   objects_save_object "persons" "Ethan"
+
+   echo "Saving record 'Tucker'..."
+   eval "$(objects_init_object "persons")"
+   name="Tucker"
+   objects_save_object "persons" "Tucker"
+
+   echo "Listing all objects or type 'persons'..."
+   objects_list_objects "persons"
+
+   echo "Loading 'Ethan' and returning values..."
+   eval "$(objects_load_object "persons" "Ethan")"
+   echo "${name}:${birthdate}"
+
+   echo "Loading 'Tucker' and returning values..."
+   eval "$(objects_load_object "persons" "Tucker")"
+   echo "${name}:${birthdate}"
+
+   objects_delete_object "persons" "Ethan"
+   objects_delete_object "persons" "Tucker"
+```
 
 ### Links
 
