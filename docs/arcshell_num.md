@@ -1,4 +1,7 @@
-# arcshell_num.sh
+# Numbers
+**Number and math functions.**
+
+There are a "number" of number and math related functions in this library. In most cases the name of the function should make the purpose clear.
 
 
 

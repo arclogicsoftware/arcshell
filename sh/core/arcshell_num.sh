@@ -5,6 +5,15 @@
 # module_image="division.png"
 # copyright_notice="Copyright 2019 Arclogic Software"
 
+function __readmeNum {
+   cat <<EOF
+# Numbers
+**Number and math functions.**
+
+There are a "number" of number and math related functions in this library. In most cases the name of the function should make the purpose clear.
+EOF
+}
+
 function num_line_count {
    # Returns line count. Removes any left padded blanks that may show up in Solaris with wc use.
    # >>> num_line_count [-stdin] ["file_name"]
