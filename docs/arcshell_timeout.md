@@ -1,4 +1,6 @@
-# arcshell_timeout.sh
+# Timeout
+
+**Implement timeouts to kill hung processes and perform other time dependent tasks.**
 
 
 

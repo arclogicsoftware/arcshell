@@ -500,8 +500,8 @@ timer_delete
 timer_end
 timer_exists
 timer_log_timer
+timer_mins_expired
 timer_minutes
-timer_minutes_have_expired
 timer_reset
 timer_seconds
 timer_secs_expired

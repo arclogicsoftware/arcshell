@@ -1,4 +1,10 @@
-# arcshell_utl.sh
+# Utilities
+
+> Always code as if the guy who ends up maintaining your code will be a violent psychopath who knows where you live. -- Rick Osborne
+
+**Misc. utilities.**
+
+There are a number of general utilities here which do useful things and don't have a better place to go.
 
 
 

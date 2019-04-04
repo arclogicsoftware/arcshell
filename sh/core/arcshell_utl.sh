@@ -9,6 +9,19 @@
 _g_utlTestFile="${arcTmpDir}/utl$$.test"
 _g_utlZipLastFilePath=
 
+function __readmeUtilities {
+   cat <<EOF
+# Utilities
+
+> Always code as if the guy who ends up maintaining your code will be a violent psychopath who knows where you live. -- Rick Osborne
+
+**Misc. utilities.**
+
+There are a number of general utilities here which do useful things and don't have a better place to go.
+
+EOF
+}
+
 function test_file_setup {
    touch "${_g_utlTestFile}"
    echo "${_g_utlTestFile}" | assert -f

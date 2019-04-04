@@ -1,4 +1,6 @@
-# arcshell_tar.sh
+# Tar
+
+**This module is used to to work with tar files.**
 
 
 

@@ -11,6 +11,9 @@ mkdir -p "${_arcshellCacheDir}"
 function __readmeCaching {
    cat <<EOF
 # Caching
+
+> If you want to set off and go develop some grand new thing, you don't need millions of dollars of capitalization. You need enough pizza and Diet Coke to stick in your refrigerator, a cheap PC to work on and the dedication to go through with it. -- John Carmack
+
 **A simple yet powerful key value data store.**
 
 Use this module to cache values. You can store single values, single lines, or multiple lines.

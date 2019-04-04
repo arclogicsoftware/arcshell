@@ -8,6 +8,14 @@
 _tarDir="${arcTmpDir}/_arcshell_tar"
 mkdir -p "${_tarDir}"
 
+function __readmeTar {
+   cat <<EOF
+# Tar
+
+**This module is used to to work with tar files.**
+EOF
+}
+
 function __setupArcShellTar {
    :
 }

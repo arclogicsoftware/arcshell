@@ -9,9 +9,13 @@
 _timerDir="${arcTmpDir}/_arcshell_timers"
 mkdir -p "${_timerDir}"
 
+# ToDo: Some functionality is unclear here. Review all for clarity.
+
 function __readmeTimer {
    cat <<EOF
-:
+# Timer
+
+**Create and manage timers for timing all kinds of things.**
 EOF
 }
 
@@ -34,25 +38,32 @@ function __exampleTimer {
    timer_end "foo"
 }
 
-function timer_minutes_have_expired {
+function timer_mins_expired {
    # Returns true when timer interval has passed and resets the timer.
-   # >>> timer_minutes_have_expired [-force,-f] "timerKey" minutes
+   # >>> timer_mins_expired [-inittrue,-i] "timerKey" minutes
+   # -inittrue: Forces return of true the first time the timer is created.
+   # timerKey: A unique key used to identify the timer.
+   # minutes: The number of minutes to wait before expiring and returning true.
+   # **Example**
+   # ```
+   # timer_mins_expired "timerX" 1 && echo Yes || echo No
+   # ```
    ${arcRequireBoundVariables}
-   typeset timerKey minutes forceRun 
-   forceRun=0
+   typeset timerKey minutes inittrue 
+   inittrue=0
    while (( $# > 0)); do
       case "${1}" in
-         "-force"|"-f") forceRun=1 ;;
+         "-inittrue"|"-i") inittrue=1 ;;
          *) break ;;
       esac
       shift
    done
-   utl_raise_invalid_option "timer_minutes_have_expired" "(( $# == 2 ))" "$*" && ${returnFalse} 
+   utl_raise_invalid_option "timer_mins_expired" "(( $# == 2 ))" "$*" && ${returnFalse} 
    timerKey="${1}"
    minutes=${2}
    if ! timer_exists "${timerKey}"; then
       timer_create -start "${timerKey}" 
-      if (( ${forceRun} )); then
+      if (( ${inittrue} )); then
          ${returnTrue} 
       else 
          ${returnFalse} 
@@ -65,20 +76,26 @@ function timer_minutes_have_expired {
    fi
 }
 
-function test_timer_minutes_have_expired {
+function test_timer_mins_expired {
    :
 }
 
 function timer_secs_expired {
    # Returns true when timer interval has passed and resets the timer.
-   # >>> timer_secs_expired [-inittrue,-t] "timerKey" seconds
-   # -inittrue: Returns true the first time the timer is initialized.
+   # >>> timer_secs_expired [-inittrue,-i] "timerKey" seconds
+   # -inittrue: Forces return of true the first time the timer is created.
+   # timerKey: A unique key used to identify the timer.
+   # seconds: The number of seconds to wait before expiring and returning true.
+   # **Example**
+   # ```
+   # timer_secs_expired "timerX" 10 && echo Yes || echo No
+   # ```
    ${arcRequireBoundVariables}
    typeset timerKey seconds inittrue
    inittrue=0
    while (( $# > 0)); do
       case "${1}" in
-         "-runonce"|"-f") inittrue=1 ;;
+         "-inittrue"|"-t") inittrue=1 ;;
          *) break ;;
       esac
       shift
@@ -102,26 +119,41 @@ function timer_secs_expired {
 }
 
 function test_timer_secs_expired {
-   :
+   timer_delete "$$"
+   timer_secs_expired "$$" 5 && fail_test "New timer should not return true unless -inittrue is passed." || pass_test 
+   assert_sleep 6 
+   timer_secs_expired "$$" 5 && pass_test || fail_test "Timer should return true, interval has passed."
+   timer_secs_expired "$$" 5 && fail_test "Timer just returned true, should now return false." || pass_test 
+   timer_delete "$$"
+   timer_secs_expired -inittrue "$$" 5 && pass_test || fail_test "Timer should return true first time called when -inittrue is passed."
+   timer_secs_expired -inittrue "$$" 5 && fail_test "Timer should now return false, since it just returned true." || pass_test 
+   timer_delete "$$"
 }
 
 function _timerRaiseDuplicateTimer {
    # Throw error and return true if the timer already exists.
-   # >>> _timerRaiseDuplicateTimer "timerKey" "errorText"
+   # >>> _timerRaiseDuplicateTimer "timerKey" 
+   debug3 "_timerRaiseDuplicateTimer: $*"
    ${arcRequireBoundVariables}
-   typeset timerKey errorText
-   errorText="${1}"
-   timerKey="${2}"
+   typeset timerKey 
+   timerKey="${1}"
    if timer_exists "${timerKey}"; then
       log_error -2 -logkey "timer" -tags "${timerKey}" "Duplicate timer."
+      debug3 "_timerRaiseDuplicateTimer: true"
       ${returnTrue}
    else
+      debug3 "_timerRaiseDuplicateTimer: false"
       ${returnFalse}
    fi
 }
 
 function test__timerRaiseDuplicateTimer {
-   :
+   timer_delete "$$"
+   _timerRaiseDuplicateTimer "$$" && fail_test || pass_test 
+   timer_create "$$" && pass_test || fail_test 
+   _timerRaiseDuplicateTimer "$$" 2>&1 | assert_match "ERROR"
+   _timerRaiseDuplicateTimer "$$" 2>/dev/null && pass_test || fail_test 
+   timer_delete "$$" && pass_test || fail_test 
 }
 
 function _timerRaiseTimerNotFound {
@@ -169,7 +201,7 @@ function timer_create {
    timerKey="${1:-$$}"
    str_raise_not_a_key_str "timer_create" "${timerKey}" && ${returnFalse}
    (( ${timerForce} )) && timer_delete "${timerKey}"
-   _timerRaiseDuplicateTimer "timer_create" "${timerKey}" && ${returnFalse}
+   _timerRaiseDuplicateTimer "${timerKey}" && ${returnFalse}
    _timerInitTimer "${timerKey}" ${autoLog}
    if (( ${autoStart} )); then
       timer_start "${timerKey}"
@@ -179,12 +211,16 @@ function timer_create {
 function test_timer_create {
    timer_delete "timerOne"
    timer_delete "timerY"
-   timer_create "timerOne" 
-   timer_create "timerY" && timer_start "timerY"
+   ! timer_exists "timerOne" && pass_test || fail_test
+   timer_create "timerOne" && pass_test || fail_test 
+   timer_exists "timerOne" && pass_test || fail_test
+   timer_create "timerOne" 2>&1 | assert_match "ERROR" "Should throw duplicate timer error."
+   ! timer_exists "timerY" && pass_test || fail_test
+   timer_create "timerY" && timer_start "timerY" && pass_test || fail_test 
+   timer_exists "timerY" && pass_test || fail_test
    assert_sleep 5
    timer_seconds "timerY" | assert ">3" "Timer should have been running more than 3 seconds."
-   timer_exists "timerOne" && pass_test || fail_test
-   timer_create "timerOne" 2>&1 > /dev/null | assert_match "ERROR"
+   
    timer_create 
    timer_exists "$$" && pass_test || fail_test
    timer_delete "$$"
@@ -486,6 +522,7 @@ EOF
 function timer_exists {
    # Return true if timer exists.
    # >>> timer_exists "timerKey"
+   debug3 "timer_exists: $*"
    ${arcRequireBoundVariables}
    typeset timerKey
    timerKey="${1:-}"

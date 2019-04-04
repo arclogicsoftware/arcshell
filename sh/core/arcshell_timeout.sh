@@ -10,6 +10,14 @@
 _timeoutsDir="/tmp/${LOGNAME}/arcshell/_arcshell_timeouts"
 mkdir -p "${_timeoutsDir}" && chmod 700 "${_timeoutsDir}"
 
+function __readmeTimeout {
+   cat <<EOF
+# Timeout
+
+**Implement timeouts to kill hung processes and perform other time dependent tasks.**
+EOF
+}
+
 function test_file_setup {
    __setupArcShellTimeout
 }

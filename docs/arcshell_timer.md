@@ -1,4 +1,6 @@
-:
+# Timer
+
+**Create and manage timers for timing all kinds of things.**
 
 ## Example(s)
 ```bash
@@ -24,17 +26,30 @@
 ## Reference
 
 
-### timer_minutes_have_expired
+### timer_mins_expired
 Returns true when timer interval has passed and resets the timer.
 ```bash
-> timer_minutes_have_expired [-force,-f] "timerKey" minutes
+> timer_mins_expired [-inittrue,-i] "timerKey" minutes
+# -inittrue: Forces return of true the first time the timer is created.
+# timerKey: A unique key used to identify the timer.
+# minutes: The number of minutes to wait before expiring and returning true.
+# **Example**
+# ```
+# timer_mins_expired "timerX" 1 && echo Yes || echo No
+# ```
 ```
 
 ### timer_secs_expired
 Returns true when timer interval has passed and resets the timer.
 ```bash
-> timer_secs_expired [-inittrue,-t] "timerKey" seconds
-# -inittrue: Returns true the first time the timer is initialized.
+> timer_secs_expired [-inittrue,-i] "timerKey" seconds
+# -inittrue: Forces return of true the first time the timer is created.
+# timerKey: A unique key used to identify the timer.
+# seconds: The number of seconds to wait before expiring and returning true.
+# **Example**
+# ```
+# timer_secs_expired "timerX" 10 && echo Yes || echo No
+# ```
 ```
 
 ### timer_create

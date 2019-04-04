@@ -1,4 +1,8 @@
-# arcshell_threshold_monitor.sh
+# Threshold Monitor
+
+> There are only two kinds of languages: the ones people complain about and the ones nobody uses. -- Bjarne Stroustrup
+
+**Monitors values based on thresholds combined with time limits.**
 
 ## Example(s)
 ```bash

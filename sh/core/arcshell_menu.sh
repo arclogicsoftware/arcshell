@@ -11,7 +11,6 @@ mkdir -p "${_menuDir}"
 _tty=$(boot_return_tty_device)
 _g_workingMenuKey=
 
-
 function _menuItemObjectModule {
    cat <<EOF
 MenuItemText="${MenuItemText:-}"
