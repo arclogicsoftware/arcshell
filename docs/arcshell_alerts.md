@@ -1,3 +1,4 @@
+> If it doesn't have to work, we can do it real quick. -- Watts Humphrey
 
 # Alerting
 

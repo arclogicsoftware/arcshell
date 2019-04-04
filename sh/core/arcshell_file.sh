@@ -10,6 +10,16 @@ mkdir -p "${_fileDir}"
 
 _fileTestFile="${_fileDir}/$$.test"
 
+function __readmeFile {
+   cat <<EOF
+> I have not failed. I've just found 10,000 ways that won't work. -- Richard Pattis
+
+# Files
+
+**Simplifies many common file and directory related tasks.**
+EOF
+}
+
 function __setupArcShellFile {
    _filePurgeFileModifiedHistory
    if boot_raise_program_not_found "perl"; then

@@ -12,7 +12,10 @@
 
 function __readmeLogging {
    cat <<EOF
+> Better train people and risk they leave – than do nothing and risk they stay. -- Anonymous
+
 # Logging
+
 **Logs stuff.**
 
 EOF

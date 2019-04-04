@@ -1,4 +1,8 @@
-# arcshell_flags.sh
+> All problems in computer science can be solved with another level of indirection. -- David Wheeler
+
+# Flags
+
+**Simple way to set and retrieve a keyed value.**
 
 ## Example(s)
 ```bash

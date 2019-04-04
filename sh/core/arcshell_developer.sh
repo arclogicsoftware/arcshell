@@ -1,4 +1,13 @@
 
+function _readmeArcShellDeveloper {
+  cat <<EOF
+> The third version is the first version that doesn't suck. -Mike Simpson
+
+# ArcShell Developer
+
+This module contains things you might need to get up and running with ArcShell core development.
+EOF
+}
 
 function arcdev_setup_env {
   # This function will create all of the required user accounts to support unit testing ArcShell.

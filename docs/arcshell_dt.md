@@ -1,4 +1,8 @@
-# arcshell_dt.sh
+> Nothing is more permanent than a temporary solution. -- Thomas' First Law
+
+# Dates & Times
+
+**Makes working with dates and times easier.**
 
 
 

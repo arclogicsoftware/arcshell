@@ -11,7 +11,10 @@ mkdir -p "${_docengDir}"
 
 function __readmeDocumentationEngine {
    cat <<EOF
+> Make it correct, make it clear, make it concise, make it fast. In that order. -- Wes Dyer
+
 # Documentation Engine
+
 **Generate documentation and help commands from source files.**
 
 The documentation engine is used primarily to generate the documentation located in the docs folder from the files in the \`\`\`\${arcHome}/sh/core\`\`\` directory.

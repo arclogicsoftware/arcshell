@@ -14,7 +14,10 @@ _g_gchartDataFile="${_gchartDir}/$$.tmp"
 
 function __readmeGCharts {
    cat <<EOF
+> Confidence, n.: The feeling you have before you understand the situation. -- Anonymous
+
 # Google Charts
+
 **A module for generating charts using Google Charts.**
 
 EOF

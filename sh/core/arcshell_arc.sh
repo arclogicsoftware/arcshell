@@ -13,6 +13,8 @@ _g_arcLocalPackagesDir="${arcUserHome}/config/packages"
 
 function __readmeArcShell {
    cat <<EOF
+> Working software is the primary measure of progress. -- Agile Manifesto
+
 # ArcShell
 
 **Contains functions to manage local and remote ArcShell nodes.**

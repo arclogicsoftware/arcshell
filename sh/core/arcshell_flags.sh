@@ -9,6 +9,16 @@
 _arcshellFlagsDir=${arcTmpDir}/_arcshell_flags
 mkdir -p "${_arcshellFlagsDir}"
 
+function __readmeFlags {
+   cat <<EOF
+> All problems in computer science can be solved with another level of indirection. -- David Wheeler
+
+# Flags
+
+**Simple way to set and retrieve a keyed value.**
+EOF
+}
+
 function __exampleFlag {
    # Set a flag.
    flag_set "status" "active"

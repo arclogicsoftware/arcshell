@@ -6,6 +6,16 @@
 # module_image="calendar-5.png"
 # copyright_notice="Copyright 2019 Arclogic Software"
 
+function __readmeDatesAndTimes {
+   cat <<EOF
+> Nothing is more permanent than a temporary solution. -- Thomas' First Law
+
+# Dates & Times
+
+**Makes working with dates and times easier.**
+EOF
+}
+
 function __setupArcShellDatetime {
    :
 }

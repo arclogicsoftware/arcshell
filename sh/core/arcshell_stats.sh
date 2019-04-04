@@ -14,9 +14,11 @@ statsHost="$(hostname)"
 
 function __readmeStats {
 cat <<EOF
-# arcshell_stats.sh
+> We should forget about small efficiencies, say about 97% of the time: premature optimization is the root of all evil. -- Donald Knuth
 
-Statistics storage engine with aggregation and calculation capabilities.
+# Statistics
+
+**Stores statistics. Performs aggregation, analysis, and anomaly detection.**
 
 EOF
 }

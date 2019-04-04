@@ -7,7 +7,11 @@
 
 function __readmeCron {
 cat <<EOF
-Evaluates cron expressions.
+> I do not care if it works on your system, I am not gonna ship your computer. -- Anonymous
+
+# Cron
+
+**Make and schedule solutions using cron styled attributes.**
 
 See the Unix documentation for basic information on cron expressions. 
 

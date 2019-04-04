@@ -17,7 +17,10 @@ _g_compilerWorkfile="${_compiler_gDir}/workFile.$$"
 
 function __readmeCompiler {
    cat <<EOF
+> If you use copy and paste while you're coding, you're probably committing a design error. -- David Parnas
+
 # Compiler
+
 **Transforms modules with multiple dependencies into single executable files.**
 
 This module is a prototype/proof of concept.

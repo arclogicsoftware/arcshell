@@ -1,4 +1,8 @@
-# arcshell_menu.sh
+> Any fool can write code that a computer can understand. Good programmers write code that humans can understand. -- Martin Fowler
+
+# Menus
+
+**Builds rich command line menu systems that are dynamic.**
 
 
 

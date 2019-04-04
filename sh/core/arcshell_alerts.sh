@@ -15,6 +15,7 @@ mkdir -p "${_alertsDir}"
 
 function __readmeAlerting {
    cat <<EOF
+> If it doesn't have to work, we can do it real quick. -- Watts Humphrey
 
 # Alerting
 

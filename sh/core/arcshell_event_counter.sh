@@ -8,6 +8,16 @@
 _eventcounterDir="${arcTmpDir}/_arcshell_event_counters"
 mkdir -p "${_eventcounterDir}"
 
+function __readmeFile {
+   cat <<EOF
+> Question: How does a large software project get to be one year late? Answer: One day at a time! -- Fred Brooks
+
+# Event Counter
+
+**This module counts things using text based indicators.**
+EOF
+}
+
 function event_counter_add_event {
    # Records an event in file using the defined prefix and character.
    # >>> event_counter_add_event [-prefix,-p "X"] [group] ["character"]

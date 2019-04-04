@@ -7,7 +7,10 @@
 
 function __readmeNum {
    cat <<EOF
+> There are only 3 numbers of interest to a computer scientist: 1, 0 and infinity. - Anonymous
+
 # Numbers
+
 **Number and math functions.**
 
 There are a "number" of number and math related functions in this library. In most cases the name of the function should make the purpose clear.

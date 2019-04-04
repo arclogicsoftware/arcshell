@@ -1,4 +1,8 @@
-# arcshell_event_counter.sh
+> I have not failed. I've just found 10,000 ways that won't work. -- Richard Pattis
+
+# Files
+
+**Simplifies many common file and directory related tasks.**
 
 
 

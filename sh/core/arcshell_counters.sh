@@ -7,7 +7,10 @@
 
 function __readmeCounters {
    cat <<EOF
+> There is never enough time to do it right first time, but there is always time to go back and fix it when it breaks. -- Anonymous
+
 # Counters
+
 **A fast counter management mechanism.**
 
 Counters provide you with an easy way to instrument your code with a minimal impact on performance.

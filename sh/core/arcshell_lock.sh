@@ -10,9 +10,11 @@ mkdir -p "${arcLockDir}"
 
 function __readmeLocking {
    cat <<EOF
-# Locking
-**Creates and manages locks for you.**
+> Before software should be reusable, it should be usable. -- Ralph Johnson
 
+# Locking
+
+**Creates and manages locks for you.**
 EOF
 }
 

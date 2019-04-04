@@ -13,6 +13,8 @@ mkdir -p "${_timerDir}"
 
 function __readmeTimer {
    cat <<EOF
+> "Weeks of coding can save you hours of planning." - Anonymous
+
 # Timer
 
 **Create and manage timers for timing all kinds of things.**

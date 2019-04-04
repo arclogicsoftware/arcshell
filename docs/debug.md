@@ -1,6 +1,5 @@
 
-> Note: Some basic design decisions here are derived from logsna Python library created by Ruslan Spivak. 
-> https://github.com/rspivak/logsna
+> If debugging is the process of removing software bugs, then programming must be the process of putting them in. --Edsger Dijkstra
 
 ## Features
 * Enable debug globally or at the process level.
@@ -82,6 +81,9 @@ DEBUG1   [2017-02-27 09:10:52] 24037: temp=74
 # Try to dump the buffer again and we can see it is empty until we make more calls.
 $ debug_dump
 ```
+
+> Note: Some basic design decisions here are derived from logsna Python library created by Ruslan Spivak. 
+> https://github.com/rspivak/logsna
 
 
 

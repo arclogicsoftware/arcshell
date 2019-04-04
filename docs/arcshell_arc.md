@@ -1,3 +1,5 @@
+> Working software is the primary measure of progress. -- Agile Manifesto
+
 # ArcShell
 
 **Contains functions to manage local and remote ArcShell nodes.**

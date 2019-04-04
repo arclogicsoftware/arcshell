@@ -30,10 +30,13 @@ _g_test_file="$0"
 
 function __readmeUnittest {
    cat <<EOF
-# unittest.sh
+> I Hate Programming. I Hate Programming. I Hate Programming. It works! I Love Programming. - Anonymous
 
-Build simple, elegant, unit tests for libraries written in shell (bash or ksh). The quickest way to get started is to watch the free training videos, which can be [found here](https://arclogicsoftware.com/arcshell_test_framework). 
+# Unit Testing
 
+**A unit test library for bash and korn shells.**
+
+Build simple, elegant, unit tests for libraries written in shell (bash or ksh). 
 EOF
 }
 

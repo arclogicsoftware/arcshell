@@ -1,4 +1,7 @@
+> I have always wished for my computer to be as easy to use as my telephone; my wish has come true because I can no longer figure out how to use my telephone. -- Bjarne Stroustrup
+
 # Contact Groups
+
 **Manages group membership and the rules used to send messages to the group.**
 
 Contact groups are used to route messages to the right people, at the right time, using the configured means.

@@ -15,7 +15,10 @@ _g_configIsDirty=0
 
 function __readmeConfig {
    cat <<EOF
+> I'm not a great programmer; I'm just a good programmer with great habits. -- Kent Beck
+
 # Configuration
+
 **Manage configuration files.**
 
 This module can be used to interact with a configuration files and ArcShell configuration objects.

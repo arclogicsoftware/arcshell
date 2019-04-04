@@ -9,9 +9,9 @@ _thresholdDir="${arcTmpDir}/_arcshell_threshold_monitors" && mkdir -p "${_thresh
 
 function __readmeThresholdMonitor {
    cat <<EOF
-# Threshold Monitor
-
 > There are only two kinds of languages: the ones people complain about and the ones nobody uses. -- Bjarne Stroustrup
+
+# Threshold Monitor
 
 **Monitors values based on thresholds combined with time limits.**
 EOF

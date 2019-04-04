@@ -9,7 +9,10 @@
 
 function __readmeChat {
   cat <<EOF
+> Programming is not like being in the CIA; you don't get credit for being sneaky. It's more like advertising; you get lots of credit for making your connections as blatant as possible. -- Steve McConnell 
+
 # Chat
+
 **Supports sending messages to services like Slack.**
 
 This module currently supports Slack. You will need to obtain a web hook from Slack which enables you to post messages to a single channel. You will specify the allowed channel when you create the web hook. 

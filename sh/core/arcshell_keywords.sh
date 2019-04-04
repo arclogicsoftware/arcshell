@@ -9,6 +9,12 @@ mkdir -p "${arcHome}/config/keywords"
 
 function __readmeKeywords {
    cat <<EOF
+> Good programmers never write what they can steal or borrow. -- Jeff Atwood
+
+# Keywords
+
+**Manages ArcShell keywords.**
+
 Keywords are found in the \`\`\`\${arcHome}/config/keywords\`\`\` folder.
 
 To change the settings for a keyword copy the keyword file to the \`\`\`\${arcGlobalHome}/config/keywords\`\`\` folder or \`\`\`\${arcUserHome}/config/keywords\`\`\` and modify it. 
