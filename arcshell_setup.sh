@@ -64,9 +64,9 @@ fi
 _arcshell_banner
 log_setup "Setting up Arcshell." 1
 
-function _throwArcShellSetupErrpr {
+function _throwArcShellSetupError {
    # Return an error message to standard error.
-   # >>> _throwArcShellSetupErrpr "error"
+   # >>> _throwArcShellSetupError "error"
    throw_error "arcshell_setup.sh" "${1}"
 }
 
@@ -74,7 +74,7 @@ function _setupRaiseHomeNotDefined {
    #
    #
    if [[ ! -d "${HOME:-}" ]]; then
-      _throwArcShellSetupErrpr "'\${HOME}' is not defined or the directory it points to does not exist."
+      _throwArcShellSetupError "'\${HOME}' is not defined or the directory it points to does not exist."
       ${returnTrue} 
    else 
       ${returnFalse} 
@@ -93,7 +93,7 @@ function _setupArcShellMoveUserHome {
       ${returnTrue} 
    fi
    if [[ -d "${new_dir}" ]]; then
-      _throwArcShellSetupErrpr "Failed to move the user home. '${new_dir}' already exists."
+      _throwArcShellSetupError "Failed to move the user home. '${new_dir}' already exists."
       ${returnFalse} 
    fi
    log_setup "Moving '\${arcUserHome}' from '${current_dir}' to '${new_dir}'." 1
@@ -107,12 +107,12 @@ function _setupArcShellMoveUserHome {
 }
 
 if (( $# > 0 )); then
-   _throwArcShellSetupErrpr "Error: Argument invalid: Try -help."
+   _throwArcShellSetupError "Error: Argument invalid: Try -help."
    exit 1
 fi
 
 if [[ ! -f "./arcshell_setup.sh" ]]; then
-   _throwArcShellSetupErrpr "Switch to the directory containing 'arcshell_setup.sh' before running setup."
+   _throwArcShellSetupError "Switch to the directory containing 'arcshell_setup.sh' before running setup."
    ${exitFalse}
 fi
 
@@ -176,12 +176,12 @@ function _setupCreateRequiredDirs {
    typeset root_dir 
    root_dir="${1}"
    if [[ -d "${root_dir}" ]]; then
-      for d in "app" "sh" "sql" "tmp" "schedules" "config"; do
+      for d in "app" "sh" "sql" "tmp" "schedules" "config" "bin"; do
          mkdir -p "${root_dir}/${d}"
          chmod 700 "${root_dir}/${d}"
       done
    else
-      _throwArcShellSetupErrpr ""
+      _throwArcShellSetupError ""
    fi
 }
 
@@ -238,7 +238,7 @@ if [[ -z "\${arcHome:-}" ]]; then
    arcVersion=${arcVersion}
    arcEditor="${EDITOR:-"vi"}"
    ARC_EDITOR="${EDITOR:-"vi"}"
-   export PATH="\${PATH}:\${arcUserHome}:\${arcUserHome}/sh:\${arcGlobalHome}:\${arcGlobalHome}/sh:\${arcHome}:\${arcHome}/sh"
+   export PATH="\${PATH}:\${arcUserHome}:\${arcUserHome}/sh:\${arcUserHome}/bin:\${arcGlobalHome}:\${arcGlobalHome}/sh:\${arcGlobalHome}/bin:\${arcHome}:\${arcHome}/sh:\${arcHome}/bin"
    [[ -f "\${arcHome}/config/arcshell/arcshell.cfg" ]] && . "\${arcHome}/config/arcshell/arcshell.cfg"
    [[ -f "\${arcGlobalHome}/config/arcshell/arcshell.cfg" ]] && . "\${arcGlobalHome}/config/arcshell/arcshell.cfg"
    [[ -f "\${arcUserHome}/config/arcshell/arcshell.cfg" ]] && . "\${arcUserHome}/config/arcshell/arcshell.cfg"

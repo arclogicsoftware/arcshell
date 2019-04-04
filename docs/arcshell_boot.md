@@ -1,4 +1,8 @@
-# arcshell_boot.sh
+> If your bug has a one in a million chance of happening, it'll happen next Tuesday. -- Anonymous
+
+# Boot
+
+**Things we need to load or do first.**
 
 
 
@@ -26,8 +30,16 @@ Returns a simple unix commented banner to ```stderr```.
 ```
 
 ### boot_is_valid_ksh
+Return true if current shell is ksh.
+```bash
+> boot_is_valid_ksh
+```
 
 ### boot_is_valid_bash
+Return true if current shell is bash.
+```bash
+> boot_is_valid_bash
+```
 
 ### boot_return_shell_type
 Return a string to identify the shell type, either 'bash' or 'ksh'.

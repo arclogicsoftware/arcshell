@@ -5,6 +5,16 @@
 # module_image="power.png"
 # copyright_notice="Copyright 2019 Arclogic Software"
 
+function __readmeArcShellBoot {
+  cat <<EOF
+> If your bug has a one in a million chance of happening, it'll happen next Tuesday. -- Anonymous
+
+# Boot
+
+**Things we need to load or do first.**
+EOF
+}
+
 # Remove any aliases that force user interaction.
 if alias rm 1>/dev/null 2> /dev/null; then
   unalias rm
@@ -29,7 +39,7 @@ function boot_return_with_shbang {
 }
 
 function _bootSetsUpRuntime {
-  #
+  # Used to configure minimal environment for scripts built with the compiler.
   # >>> _bootSetsUpRuntime
   cat <<'EOF'
 mkdir -p "${HOME}/arclogic/arcshell"
@@ -100,6 +110,8 @@ function _arcshell_log {
 }
 
 function boot_is_valid_ksh {
+  # Return true if current shell is ksh.
+  # >>> boot_is_valid_ksh
    if [[ -n "${KSH_VERSION:-}" ]] && (( $(echo ${SECONDS:-} | grep "\." | wc -l) > 0 )); then
       ${returnTrue}
    else
@@ -108,6 +120,8 @@ function boot_is_valid_ksh {
 }
 
 function boot_is_valid_bash {
+  # Return true if current shell is bash.
+  # >>> boot_is_valid_bash
    if [[ -n "${BASH:-}" ]]; then
       ${returnTrue}
    else
