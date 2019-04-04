@@ -1,4 +1,5 @@
-# arcshell_gchart.sh
+# Google Charts
+**A module for generating charts using Google Charts.**
 
 
 

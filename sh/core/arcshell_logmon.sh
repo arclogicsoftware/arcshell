@@ -14,22 +14,22 @@ _g_logmonMeta=
 
 function __readmeLogmon {
    cat <<EOF
-## Log Monitoring
+# Log Monitoring
 
-This short code block shows how easy it is to monitor logs with 
-ArcShell. New lines are read from the file using **logmon_read_log**
-and piped to a handler called **var_log_messages**. Notifications and
-other actions are configured within the handler.
+**Monitor log files. Trigger alerts, notifications, and log entries using flexible log file handlers.**
 
-\`\`\`bash
-logmon_read_log -max 10 "/var/log/messages" | \\
-   logmon_handle_log -stdin "var_log_messages"
+This short code block shows how easy it is to monitor logs with ArcShell. 
+
+New lines are read from the file using **logmon_read_log** and piped to a log handler called **var_log_messages.cfg**. 
+
+Notifications and other actions are configured within the handler.
+
+\`\`\`
+logmon_read_log -max 10 "/var/log/messages" | logmon_handle_log -stdin "var_log_messages.cfg"
 \`\`\`
 
 EOF
 }
-
-# ToDo: Enable named buffers instead of just numbered.
 
 function test_file_setup {
    __setupLogmon
@@ -104,21 +104,6 @@ function logmon_append {
    _logmonGrep ${ignore_case} "${from_buffer_id}" "${regex}" >> "${_g_logmonBufferFile}${to_buffer_id}"
    ${returnTrue} 
 }
-
-# function _logmonRecord {
-#    # Returns the default record which stores data about a monitored log file.
-#    # >>> _logmonRecord
-#    cat <<EOF
-# _logmonFileBytes=${_logmonFileBytes:-0}
-# _logmonSizePlusMinusEqual=${_logmonSizePlusMinusEqual:-"="}
-# _logmonHeaderHash=${_logmonHeaderHash:-0}
-# _logmonHeaderModifiedFlag=${_logmonHeaderModifiedFlag:-0}
-# _logmonFileMaxSizeInBytes=${_logmonFileMaxSizeInBytes:-0}
-# _logmonMaxReadBytes=${_logmonMaxReadBytes:-0}
-# _logmonFileUpdateTime=${_logmonFileUpdateTime:-0}
-# _logmonStartingByte=${_logmonStartingByte:-0}
-# EOF
-# }
 
 function logmon_reset {
    # Removes all buffer files and resets a couple of global variables.

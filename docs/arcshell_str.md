@@ -1,4 +1,8 @@
-# arcshell_str.sh
+# Strings
+
+**Library loaded with string functions.**
+
+There are a number of string related functions in this library. In most cases the name of the function should make the purpose clear.
 
 
 
@@ -52,36 +56,42 @@ Note: Compressed tar files include the .tar. as part of file extension.
 ### str_capitalize
 Capitalize the first letter of each word in a string.
 ```bash
-> str_capitalize [ -stdin|"string" ]
+> str_capitalize [-stdin|"string" ]
 ```
 
 ### str_escape
 Add backslashes to the following characters, .[]()*$, and return string.
 ```bash
-> str_escape [-stdin|"string"]
+> str_escape [-stdin] ["string"]
 # -stdin: Read standard input.
 ```
 
 ### str_return_part_between_words
 ```bash
-> str_return_part_between_words [-defaultValue "X"] [-startWord "X"] [-endWord "X"] "inputStr"
+> str_return_part_between_words [-defaultValue "X"] [-startWord,-s "X"] [-endWord,-e "X"] "inputStr"
 # -defaultValue: Return value if nothing else is found.
 # -startWord: Option start word, else beginning of inputStr is assumed.
 # -endWord: Optional end word, else end of inputStr is assumed.
 # inputStr: String being evaluated.
+# **Example**
+# ```
+# $ str_return_part_between_words -s "mission" -e "important" \
+# > "This mission is too important for me to allow you to jeopardize it."
+# is too
+# ```
 ```
 
 ### str_len
 Read input or standard input and return the length of a string.
 ```bash
-> str_len "string"
+> str_len [-stdin] ["string"]
 # string: With no "string", read STDIN.
 # 
 # **Example**
 # ```
 # $ str_len "/home/poste/Dropbox/arcshell/core"
 # 33
-# $ echo "/home/poste/Dropbox/arcshell/core" | str_len
+# $ echo "/home/poste/Dropbox/arcshell/core" | str_len -stdin
 # 33
 # ```
 ```

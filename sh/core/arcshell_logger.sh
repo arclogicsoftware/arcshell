@@ -10,6 +10,14 @@
 
 [[ -z "${arcTmpDir}" ]] && ${returnFalse} 
 
+function __readmeLogging {
+   cat <<EOF
+# Logging
+**Logs stuff.**
+
+EOF
+}
+
 _loggerHome="${arcTmpDir}/_arcshell_logger"
 mkdir -p "${_loggerHome}"
 _g_log_default_log_file="${arcLogFile:-"${arcLogDir}/arcshell.log"}"

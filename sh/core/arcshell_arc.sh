@@ -11,6 +11,14 @@ mkdir -p "${_arcDir}"
 _g_arcGlobalPackagesDir="${arcGlobalHome}/config/packages"
 _g_arcLocalPackagesDir="${arcUserHome}/config/packages"
 
+function __readmeArcShell {
+   cat <<EOF
+# ArcShell
+
+**Contains functions to manage local and remote ArcShell nodes.**
+EOF
+}
+
 function __setupArcShell {
    # Unsuspend the daemon anytime you run setup.
    ! flag_exists "daemon_suspended" && flag_set "daemon_suspended" "no"

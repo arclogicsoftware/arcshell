@@ -27,7 +27,7 @@
 ### timer_minutes_have_expired
 Returns true when timer interval has passed and resets the timer.
 ```bash
-> timer_expired_minutes [-force,-f] "timerKey" minutes
+> timer_minutes_have_expired [-force,-f] "timerKey" minutes
 ```
 
 ### timer_secs_expired

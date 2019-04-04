@@ -7,6 +7,16 @@
 
 _strTestFile="${arcTmpDir}/string$$.test"
 
+function __readmeStrings {
+   cat <<EOF
+# Strings
+
+**Library loaded with string functions.**
+
+There are a number of string related functions in this library. In most cases the name of the function should make the purpose clear.
+EOF
+}
+
 function str_shuffle_lines {
    # Shuffle input or lines from a file.
    # >>> str_shuffle_lines [-stdin] "file_name"
@@ -146,7 +156,7 @@ function test_str_replace_file_name {
 
 function str_capitalize {
    # Capitalize the first letter of each word in a string.
-   # >>> str_capitalize [ -stdin|"string" ]
+   # >>> str_capitalize [-stdin|"string" ]
    ${arcRequireBoundVariables}
    if [[ "${1:-}" == "-stdin" ]]; then
       ${arcAwkProg} '{for(i=1;i<=NF;i++){ $i=toupper(substr($i,1,1)) substr($i,2) }}1'
@@ -163,7 +173,7 @@ function test_str_capitalize {
 
 function str_escape {
    # Add backslashes to the following characters, .[]()*$, and return string.
-   # >>> str_escape [-stdin|"string"]
+   # >>> str_escape [-stdin] ["string"]
    # -stdin: Read standard input.
    ${arcRequireBoundVariables}
    if [[ "${1:-}" == "-stdin" ]]; then
@@ -180,11 +190,17 @@ function test_str_escape {
 }
 
 function str_return_part_between_words {
-   # >>> str_return_part_between_words [-defaultValue "X"] [-startWord "X"] [-endWord "X"] "inputStr"
+   # >>> str_return_part_between_words [-defaultValue "X"] [-startWord,-s "X"] [-endWord,-e "X"] "inputStr"
    # -defaultValue: Return value if nothing else is found.
    # -startWord: Option start word, else beginning of inputStr is assumed.
    # -endWord: Optional end word, else end of inputStr is assumed.
    # inputStr: String being evaluated.
+   # **Example**
+   # ```
+   # $ str_return_part_between_words -s "mission" -e "important" \
+   # >    "This mission is too important for me to allow you to jeopardize it."
+   # is too
+   # ```
    ${arcRequireBoundVariables}
    typeset startWord endWord inputStr betweenWords returnStr b s defaultValue
    s=" "
@@ -195,15 +211,15 @@ function str_return_part_between_words {
    defaultValue=
    while (( $# > 0)); do
       case "${1}" in
-         "-startWord")
+         "-startWord"|"-s")
             shift
             startWord="${1}"
             ;;
-         "-endWord")
+         "-endWord"|"-e")
             shift 
             endWord="${1}"
             ;;
-         "-defaultValue")
+         "-defaultValue"|"-d")
             shift 
             defaultValue="${1}"
             ;;
@@ -218,8 +234,8 @@ function str_return_part_between_words {
    done
    utl_raise_invalid_arg_option "str_return_part_between_words" "$*" && ${returnFalse}
    utl_raise_invalid_arg_count "str_return_part_between_words" "(( $# <= 1 ))" && ${returnFalse}
-   [[ -z "${inputStr}" ]] && inputStr="${1}"
-   [[ -z "${startWord}" ]] && betweenWords=1 || betweenWords=0
+   [[ -z "${inputStr:-}" ]] && inputStr="${1}"
+   [[ -z "${startWord:-}" ]] && betweenWords=1 || betweenWords=0
    while IFS= read -r x; do
       if [[ "${x}" != " " ]]; then
          b="${b}${x}"  
@@ -250,46 +266,48 @@ function test_str_return_part_between_words {
    str_return_part_between_words -startWord "push" -endWord "to" -inputStr "push foo" | assert "foo"
    str_return_part_between_words -startWord "to" -inputStr "push to foo" | assert "foo"
    str_return_part_between_words -startWord "to" -inputStr "push foo" | assert -z
+   str_return_part_between_words -s "mission" -e "important" \
+      "This mission is too important for me to allow you to jeopardize it." | assert "is too"
 }
 
 function str_len {
    # Read input or standard input and return the length of a string. 
-   # >>> str_len "string"
+   # >>> str_len [-stdin] ["string"]
    # string: With no "string", read STDIN. 
    #
    # **Example**
    # ```
    # $ str_len "/home/poste/Dropbox/arcshell/core"
    # 33
-   # $ echo "/home/poste/Dropbox/arcshell/core" | str_len
+   # $ echo "/home/poste/Dropbox/arcshell/core" | str_len -stdin
    # 33
    # ```
    ${arcRequireBoundVariables}
    typeset x
-   if [[ -n "${1:-}" ]]; then
-      echo "${1}" | str_len
-   else
+   if [[ "${1:-}" == "-stdin" ]]; then
       while read -r x; do
          echo ${#x}
       done
+   else 
+      echo ${#1}
    fi
 }
 
 function test_str_len {
    str_len "abc" | assert 3
-   echo "abc d" | str_len | assert 5
+   echo "abc d" | str_len -stdin | assert 5
 }
 
 function str_center2 {
    #
    # >>> str_center2 "length" "character"
    ${arcRequireBoundVariables}
-   typeset total_length spacer input_str str_len spacer_length
+   typeset total_length spacer input_str len spacer_length
    total_length="${1}"
    spacer="${2:-" "}"
    input_str="$(cat)"
-   str_len=$(str_len "${input_str}")
-   ((spacer_length=(total_length-str_len)/2))
+   len=$(str_len "${input_str}")
+   ((spacer_length=(total_length-len)/2))
    printf "$(str_repeat "${spacer}" ${spacer_length})"
    printf "${input_str}"
    printf "$(str_repeat "${spacer}" ${spacer_length})\n"

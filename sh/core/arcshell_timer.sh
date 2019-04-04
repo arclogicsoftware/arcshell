@@ -36,7 +36,7 @@ function __exampleTimer {
 
 function timer_minutes_have_expired {
    # Returns true when timer interval has passed and resets the timer.
-   # >>> timer_expired_minutes [-force,-f] "timerKey" minutes
+   # >>> timer_minutes_have_expired [-force,-f] "timerKey" minutes
    ${arcRequireBoundVariables}
    typeset timerKey minutes forceRun 
    forceRun=0

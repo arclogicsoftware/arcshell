@@ -1,6 +1,6 @@
-This module provides users with the ability to install, package, update, uninstall, and run commands on other ArcShell nodes over SSH. 
+# ArcShell
 
-There are other helpful commands which can be used when building your own modules for ArcShell. Please see the documentation for each function below.
+**Contains functions to manage local and remote ArcShell nodes.**
 
 ## Example(s)
 ```bash

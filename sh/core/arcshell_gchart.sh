@@ -12,6 +12,14 @@ statsHost="$(hostname)"
 
 _g_gchartDataFile="${_gchartDir}/$$.tmp"
 
+function __readmeGCharts {
+   cat <<EOF
+# Google Charts
+**A module for generating charts using Google Charts.**
+
+EOF
+}
+
 function gchart_read_data {
    # Reads chart data from standard input. 
    # >>> gchart_read_data "column_list" 

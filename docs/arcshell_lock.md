@@ -1,4 +1,5 @@
-# arcshell_lock.sh
+# Locking
+**Creates and manages locks for you.**
 
 
 

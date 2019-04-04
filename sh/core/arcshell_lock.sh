@@ -8,6 +8,14 @@
 arcLockDir="${arcTmpDir}/_arcshell_locks"
 mkdir -p "${arcLockDir}"
 
+function __readmeLocking {
+   cat <<EOF
+# Locking
+**Creates and manages locks for you.**
+
+EOF
+}
+
 function __setupArcShellLock {
    :
 }
