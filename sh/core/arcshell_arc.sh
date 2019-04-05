@@ -84,7 +84,7 @@ function arc_update_from_github {
    tmpDir="$(mktempd)"
    starting_dir="$(pwd)"
    cd "${tmpDir}" || ${returnFalse} 
-   wget "${__github_download_url}" 
+   wget "${download_url}" 
    unzip "${tmpDir}/"*".zip"
    if (( $(file_list_dirs "${tmpDir}" | wc -l) != 1 )); then
       log_error -2 -logkey "arcshell" "Downloaded file contained more than one root directory: $*: _arcDownloadAndUpdateFromGitHubMasterZipFile"
@@ -93,7 +93,8 @@ function arc_update_from_github {
    new_directory="$(file_list_dirs "${tmpDir}")"
    cd "${new_directory}" || ${returnFalse} 
    find "${tmpDir}/${new_directory}" -type f -name "*.sh" -exec chmod 700 {} \;
-   arc_setup 
+   cd "${arcHome}" || ${returnFalse} 
+   ./arcshell_setup.sh 
    cd "${starting_dir}"
    rm -rf "${tmpDir}"
    ${returnTrue} 
