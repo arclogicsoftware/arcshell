@@ -26,7 +26,7 @@ fi
 
 uninstall_file="${install_home}/bin/uninstall_psnapper.sh"
 
-cp /dev/null "${uninstall_file}"
+echo "sch_delete_task psnapper.sh" > "${uninstall_file}"
 
 tmpDir="$(mktempd)"
 
@@ -34,6 +34,7 @@ cd "${tmpDir}" || ${exitFalse}
 
 wget https://github.com/tanelpoder/psnapper/archive/master.zip
 unzip ./master.zip
+rm ./master.zip
 
 mv "./psnapper-master/LICENSE" "./psnapper-master/psnapper-LICENSE"
 mv "./psnapper-master/README.md" "./psnapper-master/psnapper-README.md"

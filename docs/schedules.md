@@ -10,8 +10,6 @@
 * Track enabled notification groups.
 * Tracks and logs any changes in ArcShell files.
 
-### slack_alive.sh
-
 ## 01m
 
 ### arcshell_01m_tasks.sh
