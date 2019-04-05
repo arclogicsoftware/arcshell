@@ -4,6 +4,10 @@
 
 **Contains functions to manage local and remote ArcShell nodes.**
 
+This module provides users with the ability to install, package, update, uninstall, and run commands on other ArcShell nodes over SSH. 
+
+There are other helpful commands which can be used when building your own modules for ArcShell. 
+
 ## Example(s)
 ```bash
 
@@ -26,6 +30,13 @@
 
 ## Reference
 
+
+### arc_update_from_github
+Updates the current ArcShell home from GitHub.
+```bash
+> arc_update_from_github [-delete,-d] ["url"]
+# -delete: Delete files from local node which don't exist on the source.
+```
 
 ### arc_menu
 Runs the ArcShell main menu.

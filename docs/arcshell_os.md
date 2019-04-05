@@ -1,4 +1,8 @@
-# arcshell_os.sh
+> A code is like love, it has created with clear intentions at the beginning, but it can get complicated. -- Gerry Geek
+
+# OS
+
+**Basic operating system related functions for Unix/Linux.**
 
 
 

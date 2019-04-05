@@ -20,6 +20,7 @@ arc_show
 arc_sync
 arc_uninstall
 arc_update
+arc_update_from_github
 arc_version
 assert
 assert_banner

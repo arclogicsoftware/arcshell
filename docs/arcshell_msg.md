@@ -1,3 +1,5 @@
+> Learning the art of programming, like most other disciplines, consists of first learning the rules and then learning when to break them. -- Joshua Bloch
+
 # Messaging
 
 **Manages the routing and sending of messages.**

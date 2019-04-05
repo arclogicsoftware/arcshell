@@ -18,6 +18,11 @@ function __readmeArcShell {
 # ArcShell
 
 **Contains functions to manage local and remote ArcShell nodes.**
+
+This module provides users with the ability to install, package, update, uninstall, and run commands on other ArcShell nodes over SSH. 
+
+There are other helpful commands which can be used when building your own modules for ArcShell. 
+
 EOF
 }
 
@@ -39,14 +44,6 @@ function __configArcShell {
    fi
 }
 
-function __readmeArcShellModule {
-   cat <<EOF
-This module provides users with the ability to install, package, update, uninstall, and run commands on other ArcShell nodes over SSH. 
-
-There are other helpful commands which can be used when building your own modules for ArcShell. Please see the documentation for each function below.
-EOF
-}
-
 function __exampleArcShell {
    # Package the current ArcShell home.
    arc_pkg 
@@ -63,6 +60,43 @@ function __exampleArcShell {
    arc_sync
    # Remove ArcShell from the report 'tst' home/
    arc_uninstall
+}
+
+function arc_update_from_github {
+   # Updates the current ArcShell home from GitHub.
+   # >>> arc_update_from_github [-delete,-d] ["url"]
+   # -delete: Delete files from local node which don't exist on the source.
+   ${arcRequireBoundVariables}
+   typeset delete_option download_url tmpDir starting_dir
+   delete_option=0
+   download_url="https://github.com/arclogicsoftware/arcshell/archive/master.zip"
+   while (( $# > 0)); do
+      case "${1}" in
+         "-delete"|"-d") delete_option=1 ;;
+         *) break ;;
+      esac
+      shift
+   done
+   utl_raise_invalid_option "arc_update_from_github" "(( $# <= 1 ))" "$*" && ${returnFalse}
+   (( $# == 1 )) && download_url="${1}"
+   boot_raise_program_not_found "wget" && ${returnFalse} 
+   boot_raise_program_not_found "unzip" && ${returnFalse} 
+   tmpDir="$(mktempd)"
+   starting_dir="$(pwd)"
+   cd "${tmpDir}" || ${returnFalse} 
+   wget "${__github_download_url}" 
+   unzip "${tmpDir}/"*".zip"
+   if (( $(file_list_dirs "${tmpDir}" | wc -l) != 1 )); then
+      log_error -2 -logkey "arcshell" "Downloaded file contained more than one root directory: $*: _arcDownloadAndUpdateFromGitHubMasterZipFile"
+      ${returnFalse} 
+   fi
+   new_directory="$(file_list_dirs "${tmpDir}")"
+   cd "${new_directory}" || ${returnFalse} 
+   find "${tmpDir}/${new_directory}" -type f -name "*.sh" -exec chmod 700 {} \;
+   arc_setup 
+   cd "${starting_dir}"
+   rm -rf "${tmpDir}"
+   ${returnTrue} 
 }
 
 function arc_menu {

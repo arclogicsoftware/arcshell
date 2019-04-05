@@ -6,6 +6,18 @@
 # copyright_notice="Copyright 2019 Arclogic Software"
 
 # ToDo: Add options to summarize by "comm" or "user" or both.
+
+function __readmeOS {
+   cat <<EOF
+> A code is like love, it has created with clear intentions at the beginning, but it can get complicated. -- Gerry Geek
+
+# OS
+
+**Basic operating system related functions for Unix/Linux.**
+
+EOF
+}
+
 function os_return_process_cpu_seconds {
    # Returns a record for each process and converts '0-00:00:00' cpu time to seconds.
    # >>> os_return_process_cpu_seconds
