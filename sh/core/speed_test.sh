@@ -1,6 +1,5 @@
 
 
-
 function expression_test {
    typeset x
    x="${1}"

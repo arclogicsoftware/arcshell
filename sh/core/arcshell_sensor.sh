@@ -8,6 +8,16 @@
 _sensorHome="${arcTmpDir}/_arcshell_sensors" && mkdir -p "${_sensorHome}"
 _sensorTestFile="${arcTmpDir}/sensor$$.test"
 
+function __readmeSensors {
+   cat <<EOF
+> Second-guessing a decision made by a programming-language designer is the first step on the road to becoming one. -- Robert Sedgewick, Kevin Wayne
+
+# Sensors
+
+**Detects changes or things that have not changed.**
+EOF
+}
+
 function _sensorTasks {
    stats_read_counter_group -v -t "sensors" "sensors"
 }

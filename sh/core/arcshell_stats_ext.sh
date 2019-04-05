@@ -1,9 +1,20 @@
 
-# module_name="Statistics Extended"
-# module_about="Extends the statistics interface."
+# module_name="Statistics - Extended"
+# module_about="Extends capabilities of the statistics interface."
 # module_version=1
 # module_image=""
 # copyright_notice="Copyright 2019 Arclogic Software"
+
+function __readmeExtendedStats {
+   cat <<EOF
+> The function of good software is to make the complex appear to be simple. -- Grady Booch
+
+# Statistics - Extended
+
+**Extends capabilities of the statistics interface.**
+
+EOF
+}
 
 function stats_read_counter_group {
    # Reads a counter group as a source for stats.

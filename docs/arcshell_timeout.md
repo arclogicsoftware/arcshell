@@ -1,3 +1,5 @@
+> Though a program be but three lines long, someday it will have to be maintained. -- The Tao Of Programming 
+
 # Timeout
 
 **Implement timeouts to kill hung processes and perform other time dependent tasks.**

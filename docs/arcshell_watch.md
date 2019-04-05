@@ -1,4 +1,8 @@
-# arcshell_watch.sh
+> There is a great satisfaction in building good tools for other people to use. -- Freeman Dyson
+
+# Watcher
+
+**Watches files, directories, processes and other things.**
 
 
 

@@ -1,4 +1,8 @@
-# arcshell_sensor.sh
+> Second-guessing a decision made by a programming-language designer is the first step on the road to becoming one. -- Robert Sedgewick, Kevin Wayne
+
+# Sensors
+
+**Detects changes or things that have not changed.**
 
 
 

@@ -15,7 +15,10 @@
 
 function __sshReadme {
    cat <<EOF
+> Give a man a program, frustrate him for a day. Teach a man to program, frustrate him for a lifetime. -- Muhammad Waseem
+
 # SSH
+
 **Connect using SSH and execute remote scripts or commands.**
 
 Use this module to quickly connect to any of your configured SSH connections. 

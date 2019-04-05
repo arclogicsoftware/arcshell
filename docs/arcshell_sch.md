@@ -1,4 +1,8 @@
+> Abstraction is the elimination of the irrelevant and the amplification of the essential. -- Robert C. Martin
+
 # ArcShell Scheduler
+
+**Easily create scheduled tasks.**
 
 This module runs scheduled tasks from your scheduled task folders.
 

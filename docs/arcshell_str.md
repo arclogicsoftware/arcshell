@@ -1,3 +1,5 @@
+> As a rule, software systems do not work well until they have been used, and have failed repeatedly, in real applications. -- Dave Parnas
+
 # Strings
 
 **Library loaded with string functions.**

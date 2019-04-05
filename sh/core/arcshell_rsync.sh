@@ -5,6 +5,16 @@
 # module_image="repeat-1.png"
 # copyright_notice="Copyright 2019 Arclogic Software"
 
+function __readmeRsync {
+   cat <<EOF
+> The perfect kind of architecture decision is the one which never has to be made
+
+# Rsync
+
+**A simple rsync interface.**
+EOF
+}
+
 function rsync_dir {
    # Sync 'source_dir' to 'target_dir'. 'target_dir' may be created if it does not exist.
    # >>> rsync_dir [-ssh,-s "X"] [-delete,-d] [-exclude,-e "X"] source_dir target_dir

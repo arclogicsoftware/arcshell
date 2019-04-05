@@ -1,4 +1,8 @@
-# arcshell_rsync.sh
+> The perfect kind of architecture decision is the one which never has to be made
+
+# Rsync
+
+**A simple rsync interface.**
 
 
 

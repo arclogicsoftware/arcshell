@@ -1,4 +1,8 @@
-# arcshell_stack.sh
+> When you don't create things, you become defined by your tastes rather than ability. Your tastes only narrow & exclude people. So create. -- Why The Lucky Stiff
+
+# Data Stacks
+
+**Create and manage small data stacks which operate a little like arrays.**
 
 
 

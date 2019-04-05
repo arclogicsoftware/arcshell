@@ -16,6 +16,16 @@ _watchErrors=
 
 # ToDo: watch_list_dirs - List directories being watched and possible stats/metrics.
 
+function __readmeWatcher {
+   cat <<EOF
+> There is a great satisfaction in building good tools for other people to use. -- Freeman Dyson
+
+# Watcher
+
+**Watches files, directories, processes and other things.**
+
+EOF
+}
 function test_function_setup {
    debug3 "Setting up test function."
    rm -rf "/tmp/foo"

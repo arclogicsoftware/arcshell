@@ -10,6 +10,8 @@ mkdir -p "${_tarDir}"
 
 function __readmeTar {
    cat <<EOF
+> Difficult to code, impossible to maintain. -- Anonymous
+
 # Tar
 
 **This module is used to to work with tar files.**

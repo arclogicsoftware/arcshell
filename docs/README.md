@@ -35,7 +35,7 @@
 | [SSH Connection Manager](#ssh_connection_manager) | SSH connection manager. |
 | [SSH](#ssh) | Connect using SSH and execute remote scripts or commands. |
 | [Data Stacks](#data_stacks) | Create and manage small data stacks which operate a little like arrays. |
-| [Statistics Extended](#statistics_extended) | Extends the statistics interface. |
+| [Statistics - Extended](#statistics_-_extended) | Extends capabilities of the statistics interface. |
 | [Statistics](#statistics) | Stores statistics. Performs aggregation, analysis, and anomaly detection. |
 | [Strings](#strings) | Library loaded with string functions. |
 | [Tar](#tar) | This module is used to to work with tar files. |
@@ -757,13 +757,13 @@ Create and manage small data stacks which operate a little like arrays.
 
 ----
 
-<a name="statistics_extended"/>
+<a name="statistics_-_extended"/>
 
 
 
-## Statistics Extended (arcshell_stats_ext.sh)
+## Statistics - Extended (arcshell_stats_ext.sh)
 
-Extends the statistics interface.
+Extends capabilities of the statistics interface.
 
 
 
