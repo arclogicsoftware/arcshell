@@ -68,11 +68,11 @@ function arc_update_from_github {
    # -delete: Delete files from local node which don't exist on the source.
    ${arcRequireBoundVariables}
    typeset delete_option download_url tmpDir starting_dir
-   delete_option=0
+   delete_option=
    download_url="https://github.com/arclogicsoftware/arcshell/archive/master.zip"
    while (( $# > 0)); do
       case "${1}" in
-         "-delete"|"-d") delete_option=1 ;;
+         "-delete"|"-d") delete_option="-delete" ;;
          *) break ;;
       esac
       shift
@@ -94,7 +94,7 @@ function arc_update_from_github {
    cd "${new_directory}" || ${returnFalse} 
    find "${tmpDir}/${new_directory}" -type f -name "*.sh" -exec chmod 700 {} \;
    #cd "${arcHome}" || ${returnFalse} 
-   ./arcshell_update.sh 
+   ./arcshell_update.sh ${delete_option:-}
    cd "${starting_dir}"
    rm -rf "${tmpDir}"
    ${returnTrue} 
