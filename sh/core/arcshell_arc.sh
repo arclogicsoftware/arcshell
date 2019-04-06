@@ -93,8 +93,8 @@ function arc_update_from_github {
    new_directory="$(file_list_dirs "${tmpDir}")"
    cd "${new_directory}" || ${returnFalse} 
    find "${tmpDir}/${new_directory}" -type f -name "*.sh" -exec chmod 700 {} \;
-   cd "${arcHome}" || ${returnFalse} 
-   ./arcshell_setup.sh 
+   #cd "${arcHome}" || ${returnFalse} 
+   ./arcshell_update.sh 
    cd "${starting_dir}"
    rm -rf "${tmpDir}"
    ${returnTrue} 
