@@ -72,7 +72,7 @@ _msgUniqId_=
 
 function __configArcShellMessaging {
    ! timer_exists "lastTextSent" && timer_create "lastTextSent"
-   counters_set "messaging,messages_sent,+0"
+   counters_set "messaging,total_messages_sent,+0"
    ${returnTrue} 
 }
 
@@ -159,9 +159,8 @@ function msg_check_message_queues {
    _msgPurgeInvalidContactGroups
    queued_emails_count=$(_msgReturnQueueItemTypeCount "emailQueue")
    queued_texts_count=$(_msgReturnQueueItemTypeCount "textQueue")
-   counters_set "messaging,checked_queues,+1"
-   counters_set "messaging,emails_in_queue,=${queued_emails_count}"
-   counters_set "messaging,texts_in_queue,=${queued_texts_count}"
+   counters_set "messaging,queued_email_messages (actual),=${queued_emails_count}"
+   counters_set "messaging,queued_sms_messages (actual),=${queued_texts_count}"
    if _msgCheckQueues; then
       ${returnTrue} 
    else 
@@ -320,8 +319,7 @@ function _msgSendMail {
       log_error -2 -logkey "messaging" "Mail program is not recognized."
       ${returnFalse} 
    fi 
-   counters_set "messaging,messages_sent,+1"
-   counters_set "messaging,messages_sent_to_${to},+1"
+   counters_set "messaging,total_messages_sent,+1"
    log_boring -logkey "arcshell" -tags "messaging,send" "Sending email with subject '${subject}' to '${to}'."
    ${returnTrue} 
 }

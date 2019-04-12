@@ -78,7 +78,7 @@ function ssh_connect {
 }
 
 function ssh_check {
-   # Validate the health of the current ssh connection.
+   # Validate the health of the current ssh connection. Works against local node too.
    # >>> ssh_check [-ssh,-s "X"] [-fix,-f] ["ssh_connection"]
    # -fix: Automatically fixes issues.
    # ssh_connection: Same as '-ssh'.
@@ -99,7 +99,6 @@ function ssh_check {
    (( $# == 1 )) && ssh_connection="${1}" 
    ssh_connection="$(_sshXREF "${ssh_connection}")"
    while read ssh_node; do
-      _sshIsNodeLocalHost "${ssh_node}" && continue
       _sshCheckConnection ${autofix_option} "${ssh_node}" 
    done < <(_sshListMembers "${ssh_connection:-}")
    ${returnTrue} 
@@ -651,7 +650,7 @@ function test__sshReturnSSHKeyFilePath {
 }
 
 function _sshCheckConnection {
-   # Validate the health of the an ssh connection.
+   # Validate the health of the an ssh configuration in "${HOME}/.ssh".
    # >>> _sshCheckConnection autofix_option "ssh_node_or_alias"
    # autofix_option: Automatically fixes issues.
    # ssh_node_or_alias: SSH user@host or alias.

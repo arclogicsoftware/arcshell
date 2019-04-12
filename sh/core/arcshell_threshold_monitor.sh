@@ -93,6 +93,9 @@ function threshold_monitor {
    cat > "${tmpFile}.stdin"
    touch "${_thresholdDir}/thresholds_${threshold_group}.tmp"
 
+   counters_set "threshold_monitor,${threshold_group},checked,+1"
+   counters_set "threshold_monitor,${threshold_group},failed,+0"
+
    # Threshold 1
    _thresholdRemoveMessageFile
    while IFS="|" read metric_key metric_value; do
@@ -101,9 +104,7 @@ function threshold_monitor {
       if is_truthy "${enabled_1:-1}" && [[ -n "${threshold_1:-}" ]]; then
          if _thresholdsEval "${threshold_group}" "${metric_key}_1" "${metric_value}" "${threshold_1}" "${duration_min_1}" "${keyword_1:-}"; then
             return_true_1=1
-            counters_set "threshold_monitor,${threshold_group}_1_exceeded,+1"
-         else
-            counters_set "threshold_monitor,${threshold_group}_1_ok,+1"
+            counters_set "threshold_monitor,${threshold_group},failed,+1"
          fi
       fi
    done < "${tmpFile}.stdin" >> "${tmpFile}"
@@ -119,9 +120,7 @@ function threshold_monitor {
       if is_truthy "${enabled_2:-1}" && [[ -n "${threshold_2:-}" ]]; then
          if _thresholdsEval "${threshold_group}" "${metric_key}_2" "${metric_value}" "${threshold_2}" "${duration_min_2}" "${keyword_2:-}"; then
             return_true_2=1
-            counters_set "threshold_monitor,${threshold_group}_2_exceeded,+1"
-         else
-            counters_set "threshold_monitor,${threshold_group}_2_ok,+1"
+            counters_set "threshold_monitor,${threshold_group},failed,+1"
          fi
       fi
    done < "${tmpFile}.stdin" >> "${tmpFile}"
@@ -137,9 +136,7 @@ function threshold_monitor {
       if is_truthy "${enabled_3:-1}" && [[ -n "${threshold_3:-}" ]]; then
          if _thresholdsEval "${threshold_group}" "${metric_key}_3" "${metric_value}" "${threshold_3}" "${duration_min_3}" "${keyword_3:-}"; then
             return_true_3=1
-            counters_set "threshold_monitor,${threshold_group}_3_exceeded,+1"
-         else
-            counters_set "threshold_monitor,${threshold_group}_3_ok,+1"
+            counters_set "threshold_monitor,${threshold_group},failed,+1"
          fi
       fi
    done < "${tmpFile}.stdin" >> "${tmpFile}"
@@ -148,8 +145,7 @@ function threshold_monitor {
    fi
    
    mv "${tmpFile}" "${_thresholdDir}/thresholds_${threshold_group}.tmp"
-   #debug1 "${_thresholdDir}/thresholds_${threshold_group}.tmp"
-   #cat "${_thresholdDir}/thresholds_${threshold_group}.tmp" | debugd1
+   rm "${tmpFile}"* 2> /dev/null
    if (( ${return_true_1} )) || (( ${return_true_2} )) || (( ${return_true_3} )); then
       ${returnTrue} 
    else

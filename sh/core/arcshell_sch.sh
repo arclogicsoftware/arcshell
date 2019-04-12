@@ -121,17 +121,17 @@ function _schProcessSchedule {
    debug3 "_schProcessSchedule: $*"
    typeset schedule_name task_file_path task_name bg_process
    schedule_name="${1}"
+   counters_set "scheduler,${schedule_name},total_run_count,+1"
    while read task_file_path; do 
       task_name="$(basename "${task_file_path}")"
       if sch_is_task_enabled "${task_name}"; then
          chmod 700 "${task_file_path}"
          "${task_file_path}" &
          bg_process=$!
-         counters_set "scheduler,total_tasks_executed,${task_file_path},+1"
+         counters_set "scheduler,${schedule_name},total_scripts_executed,+1"
          log_boring -logkey "scheduler" -tags "${schedule_name}" "pid=${bg_process};file='${task_file_path}'"
       fi
    done < <(_schReturnFullTaskFilePathForSchedule "${schedule_name}")
-   counters_set "scheduler,schedule_count,${schedule_name},+1"
    ${returnTrue} 
 }
 

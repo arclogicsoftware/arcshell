@@ -145,7 +145,7 @@ function boot_return_shell_type {
 
 # arcHostname: Stores name of local host.
 arcHostname="$(hostname)"
-arcUser="${LOGNAME}"
+arcUser="${LOGNAME:-$(whoami)}"
 arcHost="$(hostname)"
 arcNode="${arcUser}@${arcHost}"
 arcOSType="$(uname -s | tr '[:lower:]' '[:upper:]' | tr -d ' ')"
@@ -430,7 +430,7 @@ function boot_is_aux_instance {
 # we will check .profile and if PS1 is not set we will set it.
 if boot_is_valid_ksh && [[ "${arcOSType}" == "SUNOS" ]]; then
   if (( $(echo "${PS1}" | grep LC_ALL | wc -l | tr -d ' ') )); then
-    export PS1="${LOGNAME}@$(hostname):\${PWD} \$ "
+     export PS1="${LOGNAME:-$(whoami)}@$(hostname):\${PWD} \$ "
   fi
 fi
 

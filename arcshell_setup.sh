@@ -3,6 +3,8 @@
 
 # Todo: Implement -crontab.
 
+LOGNAME=
+
 function arcshell_setup_usage {
    cat <<EOF
 ./arcshell_setup.sh [-usr "X"] [-doc] [-aux] [-reset] [-admin "X"] [-help]
@@ -193,7 +195,7 @@ log_setup "Global home \${arcGlobalHome} is '${arcGlobalHome}'."
 log_setup "User home \${arcUserHome} is '${arcUserHome}'."
 log_setup "Date: $(date)"
 log_setup "Hostname: $(hostname)"
-log_setup "User: ${LOGNAME}"
+log_setup "User: ${LOGNAME:-$(whoami)}"
 
 if ! $(boot_is_valid_bash) && ! $(boot_is_valid_ksh); then
    echo "ArcShell needs to be installed using the Bash or Korn shell."

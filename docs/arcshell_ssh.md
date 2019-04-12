@@ -15,7 +15,7 @@ Connect to a node using SSH.
 ```
 
 ### ssh_check
-Validate the health of the current ssh connection.
+Validate the health of the current ssh connection. Works against local node too.
 ```bash
 > ssh_check [-ssh,-s "X"] [-fix,-f] ["ssh_connection"]
 # -fix: Automatically fixes issues.
