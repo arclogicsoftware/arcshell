@@ -3,8 +3,6 @@
 
 # Todo: Implement -crontab.
 
-LOGNAME=
-
 function arcshell_setup_usage {
    cat <<EOF
 ./arcshell_setup.sh [-usr "X"] [-doc] [-aux] [-reset] [-admin "X"] [-help]
