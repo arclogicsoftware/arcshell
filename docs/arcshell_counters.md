@@ -57,6 +57,12 @@ Counters are "eventually" consistent. A background process runs every minute and
 ## Reference
 
 
+### counters_list
+Return the list of all counter groups.
+```bash
+> counters_list
+```
+
 ### counters_set
 Sets or updates a counter value.
 ```bash

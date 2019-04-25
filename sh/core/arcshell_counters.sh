@@ -72,6 +72,13 @@ function test_file_setup {
    _g_counterSafeMode=0
 }
 
+function counters_list {
+   # Return the list of all counter groups.
+   # >>> counters_list 
+   ${arcRequireBoundVariables}
+   file_list_files "${_counterDir}" | file_get_file_root_name -stdin
+}
+
 function _countersUpdateDirtyGroups {
    # Update counters for all groups with pending counter updates.
    # >>> _countersUpdateDirtyGroups 

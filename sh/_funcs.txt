@@ -99,6 +99,7 @@ counters_does_group_exist
 counters_force_update
 counters_get
 counters_get_group
+counters_list
 counters_raise_group_does_not_exist
 counters_set
 counters_update
@@ -205,6 +206,7 @@ gchart_datetime_string
 gchart_read_data
 gchart_return_html_page
 get_shell_type
+initialstate_create_bucket
 initialstate_post_stat
 initialstate_post_stream
 initialstate_test
