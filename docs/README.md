@@ -45,7 +45,6 @@
 | [Utilities](#utilities) | Misc. utilities. |
 | [Watcher](#watcher) | Watches files, directories, processes and other things. |
 | [Debug](#debug) | Provides advanced debug capabiltiies. |
-| [Initial State](#initial_state) | This is an interface for the Initial State streaming API. |
 | [Unit Testing](#unit_testing) | A unit test library for bash and korn shells. |
 
 ----
@@ -967,23 +966,6 @@ Provides advanced debug capabiltiies.
 ### Links
 
 * [Reference](./debug.md)
-
-
-----
-
-<a name="initial_state"/>
-
-![radar.png](./images/radar.png)
-
-## Initial State (initialstate-dev.sh)
-
-This is an interface for the Initial State streaming API.
-
-
-
-### Links
-
-* [Reference](./initialstate-dev.md)
 
 
 ----

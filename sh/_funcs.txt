@@ -206,10 +206,6 @@ gchart_datetime_string
 gchart_read_data
 gchart_return_html_page
 get_shell_type
-initialstate_create_bucket
-initialstate_post_stat
-initialstate_post_stream
-initialstate_test
 is_defined
 is_email_address
 is_linux
