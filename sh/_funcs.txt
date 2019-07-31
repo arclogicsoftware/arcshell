@@ -338,13 +338,17 @@ os_create_process
 os_disks
 os_get_process_count
 os_is_process_id_process_name_running
+os_is_process_regex_running
 os_return_cpu_pct_used
+os_return_hash
 os_return_load
 os_return_os_type
 os_return_process_cpu_seconds
 os_return_total_cpu_seconds
 os_return_vmstat
 os_spawn_busy_process
+os_uses_apt_get
+os_uses_yum
 pass_test
 pkg_dir
 pkg_list
@@ -455,6 +459,7 @@ str_append_to_file_if_missing
 str_capitalize
 str_center
 str_center2
+str_delete_last_word
 str_escape
 str_get_char_count
 str_get_last_char

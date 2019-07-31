@@ -57,5 +57,7 @@ fi
 . "${arcHome}/sh/core/arcshell_utl.sh"
 . "${arcHome}/sh/core/arcshell_watch.sh"
 
+. "${arcHome}/sh/core/eks.sh"
+
 PATH="$(utl_add_dirs_to_unix_path "${arcUserHome}/sh" "${arcHome}/sh" "${arcHome}/sh/core")"
 

@@ -176,7 +176,7 @@ function _setupCreateRequiredDirs {
    typeset root_dir 
    root_dir="${1}"
    if [[ -d "${root_dir}" ]]; then
-      for d in "app" "sh" "sql" "tmp" "schedules" "config" "bin"; do
+      for d in "sh" "sql" "tmp" "schedules" "config"; do
          mkdir -p "${root_dir}/${d}"
          chmod 700 "${root_dir}/${d}"
       done
@@ -238,7 +238,7 @@ if [[ -z "\${arcHome:-}" ]]; then
    arcVersion=${arcVersion}
    arcEditor="${EDITOR:-"vi"}"
    ARC_EDITOR="${EDITOR:-"vi"}"
-   export PATH="\${PATH}:\${arcUserHome}:\${arcUserHome}/sh:\${arcUserHome}/bin:\${arcGlobalHome}:\${arcGlobalHome}/sh:\${arcGlobalHome}/bin:\${arcHome}:\${arcHome}/sh:\${arcHome}/bin"
+   export PATH="\${PATH}:\${arcUserHome}:\${arcUserHome}/sh:\${arcGlobalHome}:\${arcGlobalHome}/sh:\${arcHome}:\${arcHome}/sh"
    [[ -f "\${arcHome}/config/arcshell/arcshell.cfg" ]] && . "\${arcHome}/config/arcshell/arcshell.cfg"
    [[ -f "\${arcGlobalHome}/config/arcshell/arcshell.cfg" ]] && . "\${arcGlobalHome}/config/arcshell/arcshell.cfg"
    [[ -f "\${arcUserHome}/config/arcshell/arcshell.cfg" ]] && . "\${arcUserHome}/config/arcshell/arcshell.cfg"

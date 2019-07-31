@@ -563,7 +563,7 @@ function utl_remove_blank_lines {
    if [[ "${1:-}" == "-stdin" ]]; then
       egrep -v "^ *$|^$"
    else 
-      echo "${1}" | utl_remove_blank_lines -stdin
+      cat "${1}" | utl_remove_blank_lines -stdin
    fi
 }
 

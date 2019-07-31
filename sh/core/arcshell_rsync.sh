@@ -94,10 +94,14 @@ function _rsyncDir {
          --rsh="sshpass -e ssh -l ${ssh_user}" \
          "${source_dir}/" "${ssh_node}:${target_dir}"
    else 
-      rsync --exclude-from "${exclude_file}" --stats --progress --recursive --times --links --perms -z ${delete_option} \
+      if [[ -n "${node_ssh_key:-}" ]]; then
+         node_ssh_key="$(_sshReturnSSHKeyFilePath "${node_ssh_key}")"
+         rsync --exclude-from "${exclude_file}" -e "ssh -i "${node_ssh_key}"" --stats --progress --recursive --times --links --perms -z ${delete_option} \
          "${source_dir}/" "${ssh_node}:${target_dir}"
+      else
+         rsync --exclude-from "${exclude_file}" --stats --progress --recursive --times --links --perms -z ${delete_option} \
+            "${source_dir}/" "${ssh_node}:${target_dir}"
+      fi
    fi
    ${returnTrue} 
 }
-
-

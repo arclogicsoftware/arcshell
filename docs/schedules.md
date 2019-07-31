@@ -26,8 +26,6 @@ Collects server performance metrics using "vmstat".
 
 Collects os load metrics and monitor for os load thresholds.
 
-### initial_state_test-dev.sh
-
 ## 05m
 
 ### arcshell_05m_tasks.sh

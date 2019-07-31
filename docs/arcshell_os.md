@@ -9,6 +9,24 @@
 ## Reference
 
 
+### os_return_hash
+Return the hash of a string value.
+```bash
+> os_return_hash "string"
+```
+
+### os_uses_yum
+Return true if yum is found in PATH.
+```bash
+> os_uses_yum
+```
+
+### os_uses_apt_get
+Return true if apt-get is found in PATH.
+```bash
+> os_uses_apt_get
+```
+
 ### os_return_process_cpu_seconds
 Returns a record for each process and converts '0-00:00:00' cpu time to seconds.
 ```bash
@@ -58,6 +76,12 @@ Return short hostname in upper-case.
 Return the list of disks available.
 ```bash
 > os_disks
+```
+
+### os_is_process_regex_running
+
+```bash
+> os_is_process_regex_running "regex"
 ```
 
 ### os_is_process_id_process_name_running

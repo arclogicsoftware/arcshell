@@ -211,6 +211,12 @@ Return the N'th word in line.
 # ```
 ```
 
+### str_delete_last_word
+
+```bash
+> 
+```
+
 ### str_get_last_word
 Return last word in a string or each line read from standard input.
 ```bash

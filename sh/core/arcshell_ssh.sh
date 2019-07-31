@@ -67,13 +67,25 @@ function ssh_connect {
       eval "$(ssh_load "${ssh_node}")"
       _sshSetSSHPASS "${ssh_node}"
       tmpFile="$(mktempf)"
-      if [[ -f "${node_ssh_key}" ]]; then
+      if [[ -n "${node_ssh_key:-}" ]]; then
+         node_ssh_key="$(_returnNodeSSHKeyPath "${node_ssh_key}")"
          ${SSHPASSPROG:-} ssh -i "${node_ssh_key}" "${ssh_node}" -p ${node_port} #2> "${tmpFile}.err"
       else
          ${SSHPASSPROG:-} ssh "${ssh_node}" -p ${node_port} #2> "${tmpFile}.err"
       fi
       #_ssh_raise_ssh_error "${tmpFile}.err" 
       rm "${tmpFile}"
+   fi
+}
+
+function _returnNodeSSHKeyPath {
+   # 
+   # >>> _returnNodeSSHKeyPath "ssh_key_file"
+   ${arcRequireBoundVariables}
+   if [[ -f "${1}" ]]; then
+      echo "${1}"
+   else 
+      config_return_object_path "ssh_keys" "${1}"
    fi
 }
 
@@ -331,6 +343,7 @@ function _sshCopyToNode {
       _sshSetSSHPASS "${ssh_node}"
       log_terminal "Copying '${source_path}' to '${ssh_node}:${target_path}'..."
       if [[ -n "${node_ssh_key:-}" ]]; then
+         node_ssh_key="$(_returnNodeSSHKeyPath "${node_ssh_key}")"
          ${SSHPASSPROG:-} scp ${recursive_permissions_option} -i "${node_ssh_key}" -P "${node_port}" "${source_path}" "${ssh_node}:${target_path}" < /dev/null
          errors=$? 
       else
@@ -452,8 +465,15 @@ function _sshRunCommandOnTarget {
    else
       # echo "${command}" | ssh "${ssh_node}" -p ${node_port} "${node_shell:-"\$0"}"
       _sshSetSSHPASS "${ssh_node}"
-      if ! ${SSHPASSPROG:-} ssh "${ssh_node}" -p ${node_port} "${node_shell:-"\$0"}" < "${tmpFile}"; then
-         errors=1
+      if [[ -n "${node_ssh_key:-}" ]]; then
+         node_ssh_key="$(_returnNodeSSHKeyPath "${node_ssh_key}")"
+         if ! ${SSHPASSPROG:-} ssh -i "${node_ssh_key}" "${ssh_node}" -p ${node_port} "${node_shell:-"\$0"}" < "${tmpFile}"; then
+            errors=1
+         fi
+      else
+         if ! ${SSHPASSPROG:-} ssh "${ssh_node}" -p ${node_port} "${node_shell:-"\$0"}" < "${tmpFile}"; then
+            errors=1
+         fi
       fi
       # if ! ${SSHPASSPROG:-} ssh "${ssh_node}" -p ${node_port} "${command}" < /dev/null; then
       #    errors=1
@@ -556,8 +576,9 @@ function _sshRunFileAtNode {
          "${tmpFile}"
          errors=$?
       fi
-   elif [[ -f "${node_ssh_key:-}" ]]; then
+   elif [[ -n "${node_ssh_key:-}" ]]; then
       _sshSetSSHPASS "${ssh_node}"
+      node_ssh_key="$(_returnNodeSSHKeyPath "${node_ssh_key}")"
       ${SSHPASSPROG:-} ssh -t -i "${node_ssh_key}" "${ssh_node}" -p ${node_port} "$(cat ${file_path})" < /dev/null
       errors=$?
    else

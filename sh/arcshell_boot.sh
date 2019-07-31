@@ -155,7 +155,8 @@ returnTrue="return 0"
 exitFalse="exit 1"
 returnFalse="return 1"
 arcRequireBoundVariables="set -o nounset"
-arcAllowUnboundVariables="set +o nounset"
+#arcAllowUnboundVariables="set +o nounset"
+arcAllowUnboundVariables="set -u"
 
 function _arcshell_timestamp {
    date +"%Y-%m-%d_%H%M%S"

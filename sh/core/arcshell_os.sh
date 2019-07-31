@@ -18,6 +18,39 @@ function __readmeOS {
 EOF
 }
 
+function os_return_hash {
+   # Return the hash of a string value.
+   # >>> os_return_hash "string"
+   ${arcRequireBoundVariables}
+   if (( ${sha1sum_is_installed} )) ; then
+      echo "${1}" | sha1sum | cut -d" " -f1 
+   elif (( ${md5sum_is_installed} )); then
+      echo "${1}" | md5sum | cut -d" " -f1
+   else 
+      log_error -2 -logkey "os_return_hash" "sha1sum and md5sum are not installed!"
+   fi      
+}
+
+function os_uses_yum {
+   # Return true if yum is found in PATH.
+   # >>> os_uses_yum
+   if boot_is_program_found "yum"; then
+      ${returnTrue} 
+   else 
+      ${returnFalse} 
+   fi 
+}
+
+function os_uses_apt_get {
+   # Return true if apt-get is found in PATH.
+   # >>> os_uses_apt_get 
+   if boot_is_program_found "apt-get"; then
+      ${returnTrue} 
+   else 
+      ${returnFalse} 
+   fi 
+}
+
 function os_return_process_cpu_seconds {
    # Returns a record for each process and converts '0-00:00:00' cpu time to seconds.
    # >>> os_return_process_cpu_seconds
@@ -156,6 +189,13 @@ function os_disks {
    esac
 }
  
+function os_is_process_regex_running {
+   #
+   # >>> os_is_process_regex_running "regex"
+   :
+   # ToDo
+}
+
 function os_is_process_id_process_name_running {
    # Return true if a process ID is running. Checks using process ID alone, or by ID and regular expression.
    # >>> os_is_process_id_process_name_running "processId" ["regex"]

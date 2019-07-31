@@ -630,6 +630,23 @@ function test_str_get_word_num {
    echo "x y z" | str_get_word_num 1 | assert "x"
 }
 
+function str_delete_last_word {
+   #
+   # >>>
+   ${arcRequireBoundVariables}
+   typeset x 
+   if [[ "${1:-}" == "-stdin" ]]; then
+      sed '$s/\w*$//'
+   else 
+      echo "${1:-}" | str_delete_last_word -stdin
+   fi
+}
+
+function test_str_delete_last_word {
+   # ToDo
+   :
+}
+
 function str_get_last_word {
    # Return last word in a string or each line read from standard input.
    # >>> str_get_last_word [-stdin|"string" ]   
