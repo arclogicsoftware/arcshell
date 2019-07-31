@@ -24,7 +24,6 @@ fi
 . "${arcHome}/sh/core/arcshell_dt.sh"
 . "${arcHome}/sh/core/debug.sh"
 . "${arcHome}/sh/core/arcshell_doceng.sh"
-# . "${arcHome}/sh/core/arcshell_ext.sh"
 . "${arcHome}/sh/core/arcshell_event_counter.sh"
 . "${arcHome}/sh/core/arcshell_file.sh"
 . "${arcHome}/sh/core/arcshell_flags.sh"
@@ -56,8 +55,6 @@ fi
 . "${arcHome}/sh/core/unittest.sh"
 . "${arcHome}/sh/core/arcshell_utl.sh"
 . "${arcHome}/sh/core/arcshell_watch.sh"
-
-. "${arcHome}/sh/core/eks.sh"
 
 PATH="$(utl_add_dirs_to_unix_path "${arcUserHome}/sh" "${arcHome}/sh" "${arcHome}/sh/core")"
 
