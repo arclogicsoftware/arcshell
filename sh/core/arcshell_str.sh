@@ -1075,6 +1075,29 @@ function test_str_replace_tabs_with_space {
    str_replace_tabs_with_space "$(printf "\t Tab \t\n")" | assert "  Tab  "
 }
 
+function str_replace_spaces {
+   #
+   # >>> str_replace_spaces [-stdin|string] ["character"]
+   ${arcRequireBoundVariables}
+   typeset c s
+   if [[ "${1:-}" == "-stdin" ]]; then
+      shift 
+      c="${1:-_}"
+      tr " " "${c}"
+   else
+      s="${1}"
+      c="${2:-_}"
+      echo "${1}" | str_replace_spaces -stdin "${c}"
+   fi
+}
+
+function test_str_replace_spaces {
+   echo "foo bar fi" | str_replace_spaces -stdin | assert "foo_bar_fi"
+   echo "foo bar fi" | str_replace_spaces -stdin "x" | assert "fooxbarxfi"
+   str_replace_spaces "foo bar fi" | assert "foo_bar_fi"
+   str_replace_spaces "foo bar fi" "x" | assert "fooxbarxfi"
+}
+
 function str_replace_end_of_line_with_slash_n {
    # Returns input and replaces line endings with literal "\n". Used for JSON data primarily.
    # >>> str_replace_end_of_line_with_slash_n [-stdin|"file"]

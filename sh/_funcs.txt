@@ -479,6 +479,7 @@ str_remove_ticks_and_quotes
 str_repeat
 str_replace_end_of_line_with_slash_n
 str_replace_file_name
+str_replace_spaces
 str_replace_tabs_with_space
 str_return_matching_column_num
 str_return_part_between_words

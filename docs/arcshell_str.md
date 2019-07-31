@@ -360,6 +360,12 @@ Replace tab characters in ```string``` with a single space.
 > str_replace_tabs_with_space [-stdin|"string"]
 ```
 
+### str_replace_spaces
+
+```bash
+> str_replace_spaces [-stdin|string] ["character"]
+```
+
 ### str_replace_end_of_line_with_slash_n
 Returns input and replaces line endings with literal "\n". Used for JSON data primarily.
 ```bash
